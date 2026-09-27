@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Inscription | Profaycel</title>
+
+    <meta name="description"
+          content="Créez votre compte Profaycel : élève, parent ou administration.">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ========================================
+         HEADER
+    ========================================= -->
+
+    <header class="header">
+
+        <div class="container header-container">
+
+            <!-- LOGO -->
+
+            <a href="index.html" class="logo">
+                Profaycel
+            </a>
+
+
+            <!-- BOUTON MOBILE -->
+
+            <button
+                class="mobile-menu-button"
+                type="button"
+                aria-label="Ouvrir le menu"
+                aria-expanded="false">
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </button>
+
+
+            <!-- NAVIGATION -->
+
+            <nav class="navigation">
+
+                <ul>
+
+                    <li>
+                        <a href="index.html">
+                            Accueil
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="about.html">
+                            À propos
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="cours.html">
+                            Cours
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="robotique.html">
+                            Robotique
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="projets.html">
+                            Projets
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="ressources.html">
+                            Ressources
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="contact.html">
+                            Contact
+                        </a>
+                    </li>
+
+                </ul>
+
+            </nav>
+
+
+            <!-- ACTIONS -->
+
+            <div class="header-actions">
+
+                <a
+                    href="eleve.html"
+                    class="header-button">
+
+                    Espace Élève
+
+                </a>
+
+                <a
+                    href="parent.html"
+                    class="header-button">
+
+                    Espace Parent
+
+                </a>
+
+                <a
+                    href="admin.html"
+                    class="header-button">
+
+                    Administration
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- ========================================
+         MAIN
+    ========================================= -->
+
+    <main>
+
+        <section class="auth-section">
+
+            <div class="auth-container">
+
+                <div class="auth-card">
+
+                    <!-- HEADER -->
+
+                    <div class="auth-header">
+
+                        <div class="section-label">
+                            INSCRIPTION
+                        </div>
+
+                        <h1>
+                            Créer votre
+                            <br>
+                            compte Profaycel.
+                        </h1>
+
+                        <p>
+                            Rejoignez Profaycel et accédez à votre espace personnel.
+                        </p>
+
+                    </div>
+
+
+                    <!-- FORM -->
+
+                    <form class="auth-form" id="register-form">
+
+                        <div class="auth-form-group">
+
+                            <label for="name">
+                                Nom complet
+                            </label>
+
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                placeholder="Votre nom complet"
+                                required>
+
+                        </div>
+
+
+                        <div class="auth-form-group">
+
+                            <label for="role">
+                                Je suis
+                            </label>
+
+                            <select
+                                id="role"
+                                name="role"
+                                class="auth-form-select"
+                                required>
+
+                                <option value="">-- Choisir --</option>
+                                <option value="eleve">Élève</option>
+                                <option value="parent">Parent</option>
+                                <option value="admin">Enseignant / Admin</option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="auth-form-group">
+
+                            <label for="email">
+                                Adresse email
+                            </label>
+
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="votre@email.com"
+                                required>
+
+                        </div>
+
+
+                        <div class="auth-form-group">
+
+                            <label for="password">
+                                Mot de passe
+                            </label>
+
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Créez un mot de passe"
+                                required>
+
+                        </div>
+
+
+                        <div class="auth-form-group">
+
+                            <label for="password-confirm">
+                                Confirmer le mot de passe
+                            </label>
+
+                            <input
+                                type="password"
+                                id="password-confirm"
+                                name="password-confirm"
+                                placeholder="Confirmez le mot de passe"
+                                required>
+
+                        </div>
+
+
+                        <div class="auth-form-options">
+
+                            <label>
+
+                                <input
+                                    type="checkbox"
+                                    name="terms"
+                                    required>
+
+                                J'accepte les conditions d'utilisation
+
+                            </label>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="button button-primary">
+
+                            Créer mon compte →
+
+                        </button>
+
+                    </form>
+
+
+                    <!-- FOOTER -->
+
+                    <div class="auth-footer">
+
+                        Vous avez déjà un compte ?
+                        <a href="login.html">
+                            Se connecter
+                        </a>
+
+                    </div>
+
+
+                    <a href="index.html" class="auth-back-link">
+                        ← Retour à l'accueil
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ========================================
+         FOOTER
+    ========================================= -->
+
+    <footer class="footer">
+
+        <div class="container">
+
+            <div class="footer-content">
+
+                <div>
+
+                    <a
+                        href="index.html"
+                        class="footer-logo">
+
+                        Profaycel
+
+                    </a>
+
+                    <p>
+                        Éducation • Technologie • Robotique
+                    </p>
+
+                </div>
+
+
+                <div>
+
+                    <p>
+                        © 2026 Profaycel — Tous droits réservés.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+    <!-- ========================================
+         JAVASCRIPT
+    ========================================= -->
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

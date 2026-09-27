@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Gestion des classes | Profaycel</title>
+
+    <meta
+        name="description"
+        content="Gestion des classes et des niveaux de la plateforme Profaycel."
+    >
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="header">
+
+        <div class="container header-container">
+
+
+            <!-- LOGO -->
+
+            <a href="index.html" class="logo">
+                Profaycel
+            </a>
+
+
+            <!-- BOUTON MOBILE -->
+
+            <button
+                class="mobile-menu-button"
+                type="button"
+                aria-label="Ouvrir le menu"
+                aria-expanded="false">
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </button>
+
+
+            <!-- NAVIGATION -->
+
+            <nav class="navigation">
+
+                <ul>
+
+                    <li>
+                        <a href="index.html">
+                            Accueil
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="about.html">
+                            À propos
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="cours.html">
+                            Cours
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="robotique.html">
+                            Robotique
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="projets.html">
+                            Projets
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="ressources.html">
+                            Ressources
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="contact.html">
+                            Contact
+                        </a>
+                    </li>
+
+                </ul>
+
+            </nav>
+
+
+            <!-- ACTIONS -->
+
+            <div class="header-actions">
+
+                <a
+                    href="eleve.html"
+                    class="header-button">
+
+                    Espace Élève
+
+                </a>
+
+                <a
+                    href="parent.html"
+                    class="header-button">
+
+                    Espace Parent
+
+                </a>
+
+                <a
+                    href="admin.html"
+                    class="header-button">
+
+                    Administration
+
+                </a>
+
+            </div>
+
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <section class="student-dashboard-hero">
+
+        <div class="container">
+
+            <p class="section-label">
+                ADMINISTRATION
+            </p>
+
+            <h1>
+                Gestion des classes
+            </h1>
+
+            <p>
+                Organisez les niveaux, les classes et les groupes
+                d'apprentissage de Profaycel.
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CONTENU PRINCIPAL
+    ====================================================== -->
+
+    <main class="student-dashboard">
+
+        <div class="container">
+
+
+            <!-- =================================================
+                 INTRODUCTION
+            ================================================== -->
+
+            <section class="student-welcome-card">
+
+                <div>
+
+                    <span class="student-label">
+                        CLASSES
+                    </span>
+
+                    <h2>
+                        Organisation pédagogique
+                    </h2>
+
+                    <p>
+                        Cette page permettra de créer et gérer les niveaux,
+                        les classes, les groupes et les élèves associés.
+                    </p>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="header-button"
+                    id="btn-add-classe">
+
+                    + Ajouter une classe
+
+                </button>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 STATISTIQUES
+            ================================================== -->
+
+            <section class="student-dashboard-grid">
+
+
+                <!-- CLASSES -->
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        🏫
+                    </div>
+
+                    <h3>
+                        3
+                    </h3>
+
+                    <p>
+                        Classes
+                    </p>
+
+                </article>
+
+
+
+                <!-- ÉLÈVES -->
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        👥
+                    </div>
+
+                    <h3>
+                        3
+                    </h3>
+
+                    <p>
+                        Élèves
+                    </p>
+
+                </article>
+
+
+
+                <!-- NIVEAUX -->
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        🎓
+                    </div>
+
+                    <h3>
+                        3
+                    </h3>
+
+                    <p>
+                        Niveaux
+                    </p>
+
+                </article>
+
+
+            </section>
+
+
+
+            <!-- =================================================
+                 LISTE DES CLASSES
+            ================================================== -->
+
+            <section class="student-welcome-card">
+
+                <div>
+
+                    <span class="student-label">
+                        LISTE
+                    </span>
+
+                    <h2>
+                        Classes disponibles
+                    </h2>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 CLASSES
+            ================================================== -->
+
+            <section class="student-dashboard-grid" id="classes-grid"></section>
+
+
+
+            <!-- =================================================
+                 NIVEAUX
+            ================================================== -->
+
+            <section class="student-welcome-card">
+
+                <div>
+
+                    <span class="student-label">
+                        NIVEAUX
+                    </span>
+
+                    <h2>
+                        Niveaux pédagogiques
+                    </h2>
+
+                    <p>
+                        Profaycel pourra gérer plusieurs niveaux scolaires
+                        et plusieurs groupes pour chaque niveau.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+
+            <section class="student-dashboard-grid">
+
+
+                <!-- 7ÈME -->
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        7️⃣
+                    </div>
+
+                    <h3>
+                        7ème année
+                    </h3>
+
+                    <p>
+                        Niveau collège.
+                    </p>
+
+                    <a href="#">
+                        Gérer →
+                    </a>
+
+                </article>
+
+
+
+                <!-- 8ÈME -->
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        8️⃣
+                    </div>
+
+                    <h3>
+                        8ème année
+                    </h3>
+
+                    <p>
+                        Niveau collège.
+                    </p>
+
+                    <a href="#">
+                        Gérer →
+                    </a>
+
+                </article>
+
+
+
+                <!-- 9ÈME -->
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        9️⃣
+                    </div>
+
+                    <h3>
+                        9ème année
+                    </h3>
+
+                    <p>
+                        Niveau collège.
+                    </p>
+
+                    <a href="#">
+                        Gérer →
+                    </a>
+
+                </article>
+
+
+
+                <!-- 1ÈRE SECONDAIRE -->
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        🎓
+                    </div>
+
+                    <h3>
+                        1ère secondaire
+                    </h3>
+
+                    <p>
+                        Niveau secondaire.
+                    </p>
+
+                    <a href="#">
+                        Gérer →
+                    </a>
+
+                </article>
+
+
+            </section>
+
+
+
+            <!-- =================================================
+                 GESTION DES GROUPES
+            ================================================== -->
+
+            <section class="student-welcome-card">
+
+                <div>
+
+                    <span class="student-label">
+                        GROUPES
+                    </span>
+
+                    <h2>
+                        Organisation des groupes
+                    </h2>
+
+                    <p>
+                        Un même niveau pourra contenir plusieurs groupes.
+                        Chaque groupe pourra avoir ses propres élèves,
+                        horaires, séances et cours.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 ACTIONS RAPIDES
+            ================================================== -->
+
+            <section class="student-dashboard-grid">
+
+
+                <!-- NOUVELLE CLASSE -->
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        ➕
+                    </div>
+
+                    <h3>
+                        Nouvelle classe
+                    </h3>
+
+                    <p>
+                        Créer une nouvelle classe ou un nouveau groupe.
+                    </p>
+
+                    <a href="#">
+                        Ajouter →
+                    </a>
+
+                </article>
+
+
+
+                <!-- AJOUTER ÉLÈVE -->
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        👤
+                    </div>
+
+                    <h3>
+                        Ajouter un élève
+                    </h3>
+
+                    <p>
+                        Ajouter un élève à une classe existante.
+                    </p>
+
+                    <a href="eleves.html">
+                        Ajouter →
+                    </a>
+
+                </article>
+
+
+
+                <!-- PLANNING -->
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        📅
+                    </div>
+
+                    <h3>
+                        Planning
+                    </h3>
+
+                    <p>
+                        Organiser les horaires et les séances
+                        de chaque groupe.
+                    </p>
+
+                    <a href="#">
+                        Gérer →
+                    </a>
+
+                </article>
+
+
+
+                <!-- ENSEIGNANT -->
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        👨‍🏫
+                    </div>
+
+                    <h3>
+                        Enseignant
+                    </h3>
+
+                    <p>
+                        Associer un enseignant ou responsable
+                        à une classe.
+                    </p>
+
+                    <a href="#">
+                        Gérer →
+                    </a>
+
+                </article>
+
+
+            </section>
+
+
+
+            <!-- =================================================
+                 PROCHAINE ÉTAPE
+            ================================================== -->
+
+            <section class="student-welcome-card">
+
+                <div>
+
+                    <span class="student-label">
+                        PROCHAINE ÉTAPE
+                    </span>
+
+                    <h2>
+                        Gestion des cours
+                    </h2>
+
+                    <p>
+                        Une fois les classes organisées, chaque classe
+                        pourra être associée à ses cours, ressources
+                        et activités pédagogiques.
+                    </p>
+
+                </div>
+
+                <a
+                    href="admin.html"
+                    class="header-button">
+
+                    Administration
+
+                </a>
+
+            </section>
+
+
+            <!-- =================================================
+                 MODAL — AJOUTER / MODIFIER UNE CLASSE
+            ================================================== -->
+
+            <div class="modal-overlay" id="classe-modal">
+
+                <div class="modal-box">
+
+                    <div class="modal-header">
+
+                        <h2 id="classe-modal-title">
+                            Ajouter une classe
+                        </h2>
+
+                        <button
+                            type="button"
+                            class="modal-close"
+                            id="classe-modal-close">
+
+                            ✕
+
+                        </button>
+
+                    </div>
+
+
+                    <form id="classe-form" class="modal-form">
+
+                        <input
+                            type="hidden"
+                            id="classe-id"
+                            name="classe-id">
+
+
+                        <div class="modal-form-group">
+
+                            <label for="classe-nom">
+                                Nom de la classe
+                            </label>
+
+                            <input
+                                type="text"
+                                id="classe-nom"
+                                name="classe-nom"
+                                placeholder="8ème année"
+                                required>
+
+                        </div>
+
+
+                        <div class="modal-form-group">
+
+                            <label for="classe-niveau">
+                                Niveau
+                            </label>
+
+                            <input
+                                type="text"
+                                id="classe-niveau"
+                                name="classe-niveau"
+                                placeholder="8">
+
+                        </div>
+
+
+                        <div class="modal-form-group">
+
+                            <label for="classe-groupe">
+                                Groupe
+                            </label>
+
+                            <input
+                                type="text"
+                                id="classe-groupe"
+                                name="classe-groupe"
+                                placeholder="Groupe A">
+
+                        </div>
+
+
+                        <div class="modal-form-group">
+
+                            <label for="classe-enseignant">
+                                Enseignant
+                            </label>
+
+                            <input
+                                type="text"
+                                id="classe-enseignant"
+                                name="classe-enseignant"
+                                placeholder="Profaycel">
+
+                        </div>
+
+
+                        <div class="modal-form-group">
+
+                            <label for="classe-statut">
+                                Statut
+                            </label>
+
+                            <select
+                                id="classe-statut"
+                                name="classe-statut">
+
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="modal-actions">
+
+                            <button
+                                type="button"
+                                class="button button-secondary"
+                                id="classe-modal-cancel">
+
+                                Annuler
+
+                            </button>
+
+                            <button
+                                type="submit"
+                                class="button button-primary">
+
+                                Enregistrer
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer class="footer">
+
+        <div class="container">
+
+            <div class="footer-content">
+
+                <div>
+
+                    <a
+                        href="index.html"
+                        class="footer-logo">
+
+                        Profaycel
+
+                    </a>
+
+                    <p>
+                        Éducation • Technologie • Robotique
+                    </p>
+
+                </div>
+
+
+                <div>
+
+                    <p>
+                        © 2026 Profaycel — Tous droits réservés.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

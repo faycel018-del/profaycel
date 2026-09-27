@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Gestion des élèves | Profaycel</title>
+
+    <meta
+        name="description"
+        content="Gestion des élèves de la plateforme Profaycel."
+    >
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="header">
+
+        <div class="container header-container">
+
+
+            <!-- LOGO -->
+
+            <a href="index.html" class="logo">
+                Profaycel
+            </a>
+
+
+            <!-- BOUTON MOBILE -->
+
+            <button
+                class="mobile-menu-button"
+                type="button"
+                aria-label="Ouvrir le menu"
+                aria-expanded="false">
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </button>
+
+
+            <!-- NAVIGATION -->
+
+            <nav class="navigation">
+
+                <ul>
+
+                    <li>
+                        <a href="index.html">
+                            Accueil
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="about.html">
+                            À propos
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="cours.html">
+                            Cours
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="robotique.html">
+                            Robotique
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="projets.html">
+                            Projets
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="ressources.html">
+                            Ressources
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="contact.html">
+                            Contact
+                        </a>
+                    </li>
+
+                </ul>
+
+            </nav>
+
+
+            <!-- ACTIONS -->
+
+            <div class="header-actions">
+
+                <a
+                    href="eleve.html"
+                    class="header-button">
+
+                    Espace Élève
+
+                </a>
+
+                <a
+                    href="parent.html"
+                    class="header-button">
+
+                    Espace Parent
+
+                </a>
+
+                <a
+                    href="admin.html"
+                    class="header-button">
+
+                    Administration
+
+                </a>
+
+            </div>
+
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <section class="student-dashboard-hero">
+
+        <div class="container">
+
+            <p class="section-label">
+                ADMINISTRATION
+            </p>
+
+            <h1>
+                Gestion des élèves
+            </h1>
+
+            <p>
+                Consultez, organisez et gérez les élèves
+                inscrits sur la plateforme Profaycel.
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CONTENU PRINCIPAL
+    ====================================================== -->
+
+    <main class="student-dashboard">
+
+        <div class="container">
+
+
+            <!-- INTRODUCTION -->
+
+            <section class="student-welcome-card">
+
+                <div>
+
+                    <span class="student-label">
+                        ÉLÈVES
+                    </span>
+
+                    <h2>
+                        Liste des élèves
+                    </h2>
+
+                    <p>
+                        Cette page permettra de gérer les profils,
+                        les classes, les parents et le statut des élèves.
+                    </p>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="header-button"
+                    id="btn-add-eleve">
+
+                    + Ajouter un élève
+
+                </button>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 ÉLÈVES
+            ================================================== -->
+
+            <section class="student-dashboard-grid" id="eleves-grid"></section>
+
+
+
+            <!-- =================================================
+                 PROCHAINE ÉTAPE
+            ================================================== -->
+
+            <section class="student-welcome-card">
+
+                <div>
+
+                    <span class="student-label">
+                        PROCHAINE ÉTAPE
+                    </span>
+
+                    <h2>
+                        Gestion des profils
+                    </h2>
+
+                    <p>
+                        Plus tard, chaque élève disposera d'un profil
+                        complet avec ses informations personnelles,
+                        son parent, sa classe, ses présences,
+                        ses résultats, ses devoirs et ses documents.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 MODAL — AJOUTER / MODIFIER UN ÉLÈVE
+            ================================================== -->
+
+            <div class="modal-overlay" id="eleve-modal">
+
+                <div class="modal-box">
+
+                    <div class="modal-header">
+
+                        <h2 id="modal-title">
+                            Ajouter un élève
+                        </h2>
+
+                        <button
+                            type="button"
+                            class="modal-close"
+                            id="modal-close">
+
+                            ✕
+
+                        </button>
+
+                    </div>
+
+
+                    <form id="eleve-form" class="modal-form">
+
+                        <input
+                            type="hidden"
+                            id="eleve-id"
+                            name="eleve-id">
+
+
+                        <div class="modal-form-group">
+
+                            <label for="eleve-nom">
+                                Nom
+                            </label>
+
+                            <input
+                                type="text"
+                                id="eleve-nom"
+                                name="eleve-nom"
+                                placeholder="Nom de l'élève"
+                                required>
+
+                        </div>
+
+
+                        <div class="modal-form-group">
+
+                            <label for="eleve-prenom">
+                                Prénom
+                            </label>
+
+                            <input
+                                type="text"
+                                id="eleve-prenom"
+                                name="eleve-prenom"
+                                placeholder="Prénom de l'élève"
+                                required>
+
+                        </div>
+
+
+                        <div class="modal-form-group">
+
+                            <label for="eleve-email">
+                                Email
+                            </label>
+
+                            <input
+                                type="email"
+                                id="eleve-email"
+                                name="eleve-email"
+                                placeholder="email@example.com">
+
+                        </div>
+
+
+                        <div class="modal-form-group">
+
+                            <label for="eleve-telephone">
+                                Téléphone
+                            </label>
+
+                            <input
+                                type="text"
+                                id="eleve-telephone"
+                                name="eleve-telephone"
+                                placeholder="+216 XX XXX XXX">
+
+                        </div>
+
+
+                        <div class="modal-form-group">
+
+                            <label for="eleve-classe">
+                                Classe
+                            </label>
+
+                            <input
+                                type="text"
+                                id="eleve-classe"
+                                name="eleve-classe"
+                                placeholder="8ème année">
+
+                        </div>
+
+
+                        <div class="modal-form-group">
+
+                            <label for="eleve-statut">
+                                Statut
+                            </label>
+
+                            <select
+                                id="eleve-statut"
+                                name="eleve-statut">
+
+                                <option value="actif">Actif</option>
+                                <option value="inactif">Inactif</option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="modal-actions">
+
+                            <button
+                                type="button"
+                                class="button button-secondary"
+                                id="modal-cancel">
+
+                                Annuler
+
+                            </button>
+
+                            <button
+                                type="submit"
+                                class="button button-primary">
+
+                                Enregistrer
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer class="footer">
+
+        <div class="container">
+
+            <div class="footer-content">
+
+                <div>
+
+                    <a
+                        href="index.html"
+                        class="footer-logo">
+
+                        Profaycel
+
+                    </a>
+
+                    <p>
+                        Éducation • Technologie • Robotique
+                    </p>
+
+                </div>
+
+
+                <div>
+
+                    <p>
+                        © 2026 Profaycel — Tous droits réservés.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

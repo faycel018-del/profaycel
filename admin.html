@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Administration | Profaycel</title>
+
+    <meta
+        name="description"
+        content="Espace d'administration de la plateforme Profaycel."
+    >
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="header">
+
+        <div class="container header-container">
+
+
+            <!-- LOGO -->
+
+            <a href="index.html" class="logo">
+                Profaycel
+            </a>
+
+
+            <!-- BOUTON MOBILE -->
+
+            <button
+                class="mobile-menu-button"
+                type="button"
+                aria-label="Ouvrir le menu"
+                aria-expanded="false">
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </button>
+
+
+            <!-- NAVIGATION -->
+
+            <nav class="navigation">
+
+                <ul>
+
+                    <li>
+                        <a href="index.html">
+                            Accueil
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="about.html">
+                            À propos
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="cours.html">
+                            Cours
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="robotique.html">
+                            Robotique
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="projets.html">
+                            Projets
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="ressources.html">
+                            Ressources
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="contact.html">
+                            Contact
+                        </a>
+                    </li>
+
+                </ul>
+
+            </nav>
+
+
+            <!-- ACTIONS -->
+
+            <div class="header-actions">
+
+                <a
+                    href="eleve.html"
+                    class="header-button">
+
+                    Espace Élève
+
+                </a>
+
+                <a
+                    href="parent.html"
+                    class="header-button">
+
+                    Espace Parent
+
+                </a>
+
+                <a
+                    href="admin.html"
+                    class="header-button">
+
+                    Administration
+
+                </a>
+
+            </div>
+
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         ADMINISTRATION
+    ====================================================== -->
+
+    <main>
+
+
+        <!-- HERO -->
+
+        <section class="student-dashboard-hero">
+
+            <div class="container">
+
+                <p class="section-label">
+                    ESPACE ADMINISTRATION
+                </p>
+
+                <h1>
+                    Tableau de bord Profaycel
+                </h1>
+
+                <p>
+                    Gérez les élèves, les parents, les classes,
+                    les cours et l'ensemble du suivi pédagogique.
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- DASHBOARD -->
+
+        <section class="student-dashboard">
+
+            <div class="container">
+
+
+                <!-- BIENVENUE -->
+
+                <section class="student-welcome-card">
+
+                    <span class="student-label">
+                        ADMINISTRATION
+                    </span>
+
+                    <h2>
+                        Bienvenue dans votre espace de gestion
+                    </h2>
+
+                    <p>
+                        Depuis cette interface, vous pouvez accéder
+                        aux différentes fonctions administratives
+                        de la plateforme Profaycel.
+                    </p>
+
+                </section>
+
+
+
+                <!-- STATISTIQUES -->
+
+                <section class="student-welcome-card">
+
+                    <span class="student-label">
+                        STATISTIQUES
+                    </span>
+
+                    <h2>
+                        Vue d'ensemble
+                    </h2>
+
+                    <p>
+                        Statistiques de la plateforme Profaycel.
+                    </p>
+
+                </section>
+
+
+                <section class="student-dashboard-grid">
+
+
+                    <!-- ÉLÈVES -->
+
+                    <article class="student-dashboard-card">
+
+                        <div class="dashboard-card-icon">
+                            👥
+                        </div>
+
+                        <h3 id="stats-eleves">
+                            ...
+                        </h3>
+
+                        <p>
+                            Élèves enregistrés
+                        </p>
+
+                    </article>
+
+
+
+                    <!-- PARENTS -->
+
+                    <article class="student-dashboard-card">
+
+                        <div class="dashboard-card-icon">
+                            👨‍👩‍👧
+                        </div>
+
+                        <h3 id="stats-parents">
+                            ...
+                        </h3>
+
+                        <p>
+                            Parents enregistrés
+                        </p>
+
+                    </article>
+
+
+
+                    <!-- CLASSES -->
+
+                    <article class="student-dashboard-card">
+
+                        <div class="dashboard-card-icon">
+                            🏫
+                        </div>
+
+                        <h3 id="stats-classes">
+                            ...
+                        </h3>
+
+                        <p>
+                            Classes
+                        </p>
+
+                    </article>
+
+
+
+                    <!-- COURS -->
+
+                    <article class="student-dashboard-card">
+
+                        <div class="dashboard-card-icon">
+                            📚
+                        </div>
+
+                        <h3 id="stats-cours">
+                            ...
+                        </h3>
+
+                        <p>
+                            Cours
+                        </p>
+
+                    </article>
+
+
+
+                    <!-- DEVOIRS -->
+
+                    <article class="student-dashboard-card">
+
+                        <div class="dashboard-card-icon">
+                            📝
+                        </div>
+
+                        <h3 id="stats-devoirs">
+                            ...
+                        </h3>
+
+                        <p>
+                            Devoirs
+                        </p>
+
+                    </article>
+
+
+
+                    <!-- SÉANCES -->
+
+                    <article class="student-dashboard-card">
+
+                        <div class="dashboard-card-icon">
+                            📅
+                        </div>
+
+                        <h3 id="stats-seances">
+                            ...
+                        </h3>
+
+                        <p>
+                            Séances
+                        </p>
+
+                    </article>
+
+
+
+                    <!-- DOCUMENTS -->
+
+                    <article class="student-dashboard-card">
+
+                        <div class="dashboard-card-icon">
+                            📄
+                        </div>
+
+                        <h3 id="stats-documents">
+                            ...
+                        </h3>
+
+                        <p>
+                            Documents
+                        </p>
+
+                    </article>
+
+
+
+                    <!-- ANNONCES -->
+
+                    <article class="student-dashboard-card">
+
+                        <div class="dashboard-card-icon">
+                            📢
+                        </div>
+
+                        <h3 id="stats-annonces">
+                            ...
+                        </h3>
+
+                        <p>
+                            Annonces
+                        </p>
+
+                    </article>
+
+
+                </section>
+
+
+
+                <!-- GESTION PRINCIPALE -->
+
+                <section class="student-welcome-card">
+
+                    <span class="student-label">
+                        GESTION PRINCIPALE
+                    </span>
+
+                    <h2>
+                        Gestion pédagogique
+                    </h2>
+
+
+                    <div class="student-dashboard-grid">
+
+
+                        <!-- ELEVES -->
+
+                        <article class="student-dashboard-card">
+
+                            <div class="dashboard-card-icon">
+                                👥
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    Élèves
+                                </h3>
+
+                                <p>
+                                    Gérer les élèves et leurs profils.
+                                </p>
+
+                                <a href="eleves.html">
+                                    Gérer les élèves →
+                                </a>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- PARENTS -->
+
+                        <article class="student-dashboard-card">
+
+                            <div class="dashboard-card-icon">
+                                👨‍👩‍👧
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    Parents
+                                </h3>
+
+                                <p>
+                                    Gérer les parents et les associations
+                                    avec leurs enfants.
+                                </p>
+
+                                <a href="parents.html">
+                                    Gérer les parents →
+                                </a>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- CLASSES -->
+
+                        <article class="student-dashboard-card">
+
+                            <div class="dashboard-card-icon">
+                                🏫
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    Classes
+                                </h3>
+
+                                <p>
+                                    Organiser les niveaux et les groupes.
+                                </p>
+
+                                <a href="classes.html">
+                                    Gérer les classes →
+                                </a>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- COURS -->
+
+                        <article class="student-dashboard-card">
+
+                            <div class="dashboard-card-icon">
+                                📚
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    Cours
+                                </h3>
+
+                                <p>
+                                    Créer et organiser les cours.
+                                </p>
+
+                                <a href="cours-admin.html">
+                                    Gérer les cours →
+                                </a>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- DEVOIRS -->
+
+                        <article class="student-dashboard-card">
+
+                            <div class="dashboard-card-icon">
+                                📝
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    Devoirs
+                                </h3>
+
+                                <p>
+                                    Créer et suivre les devoirs.
+                                </p>
+
+                                <a href="devoirs-admin.html">
+                                    Gérer les devoirs →
+                                </a>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- SEANCES -->
+
+                        <article class="student-dashboard-card">
+
+                            <div class="dashboard-card-icon">
+                                📅
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    Séances
+                                </h3>
+
+                                <p>
+                                    Organiser les séances et le planning.
+                                </p>
+
+                                <a href="seances-admin.html">
+                                    Gérer les séances →
+                                </a>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- PRESENCE -->
+
+                        <article class="student-dashboard-card">
+
+                            <div class="dashboard-card-icon">
+                                ✅
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    Présence
+                                </h3>
+
+                                <p>
+                                    Suivre les présences et les absences.
+                                </p>
+
+                                <a href="presence-admin.html">
+                                    Gérer la présence →
+                                </a>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- RESULTATS -->
+
+                        <article class="student-dashboard-card">
+
+                            <div class="dashboard-card-icon">
+                                📊
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    Résultats
+                                </h3>
+
+                                <p>
+                                    Gérer les évaluations et les notes.
+                                </p>
+
+                                <a href="resultats-admin.html">
+                                    Gérer les résultats →
+                                </a>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- DOCUMENTS -->
+
+                        <article class="student-dashboard-card">
+
+                            <div class="dashboard-card-icon">
+                                📁
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    Documents
+                                </h3>
+
+                                <p>
+                                    Gérer les fichiers et ressources.
+                                </p>
+
+                                <a href="documents-admin.html">
+                                    Gérer les documents →
+                                </a>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- ANNONCES -->
+
+                        <article class="student-dashboard-card">
+
+                            <div class="dashboard-card-icon">
+                                📢
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    Annonces
+                                </h3>
+
+                                <p>
+                                    Communiquer avec les élèves et les parents.
+                                </p>
+
+                                <a href="annonces-admin.html">
+                                    Gérer les annonces →
+                                </a>
+
+                            </div>
+
+                        </article>
+
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- ACCÈS RAPIDES -->
+
+                <section class="student-welcome-card">
+
+                    <span class="student-label">
+                        ACCÈS RAPIDES
+                    </span>
+
+                    <h2>
+                        Actions fréquentes
+                    </h2>
+
+
+                    <div class="student-dashboard-grid">
+
+
+                        <!-- AJOUTER ELEVE -->
+
+                        <article class="student-dashboard-card">
+
+                            <div class="dashboard-card-icon">
+                                ➕
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    Ajouter un élève
+                                </h3>
+
+                                <p>
+                                    Créer un nouveau profil élève.
+                                </p>
+
+                                <a href="eleves.html">
+                                    Accéder →
+                                </a>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- NOUVELLE SEANCE -->
+
+                        <article class="student-dashboard-card">
+
+                            <div class="dashboard-card-icon">
+                                📅
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    Nouvelle séance
+                                </h3>
+
+                                <p>
+                                    Planifier une nouvelle séance.
+                                </p>
+
+                                <a href="seances-admin.html">
+                                    Accéder →
+                                </a>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- NOUVELLE ANNONCE -->
+
+                        <article class="student-dashboard-card">
+
+                            <div class="dashboard-card-icon">
+                                📢
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    Nouvelle annonce
+                                </h3>
+
+                                <p>
+                                    Publier une information.
+                                </p>
+
+                                <a href="annonces-admin.html">
+                                    Accéder →
+                                </a>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- SUIVI PEDAGOGIQUE -->
+
+                        <article class="student-dashboard-card">
+
+                            <div class="dashboard-card-icon">
+                                📊
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    Suivi pédagogique
+                                </h3>
+
+                                <p>
+                                    Consulter les résultats et la présence.
+                                </p>
+
+                                <a href="resultats-admin.html">
+                                    Accéder →
+                                </a>
+
+                            </div>
+
+                        </article>
+
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- ESPACES UTILISATEURS -->
+
+                <section class="student-welcome-card">
+
+                    <span class="student-label">
+                        ESPACES UTILISATEURS
+                    </span>
+
+                    <h2>
+                        Accès aux différents espaces
+                    </h2>
+
+                    <p>
+                        Ces espaces seront ensuite protégés par un système
+                        de connexion et des permissions avec Supabase.
+                    </p>
+
+
+                    <div class="student-dashboard-grid">
+
+
+                        <!-- ELEVE -->
+
+                        <article class="student-dashboard-card">
+
+                            <div class="dashboard-card-icon">
+                                🎓
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    Espace Élève
+                                </h3>
+
+                                <p>
+                                    Cours, devoirs, résultats, séances,
+                                    documents et annonces.
+                                </p>
+
+                                <a href="eleve.html">
+                                    Ouvrir →
+                                </a>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- PARENT -->
+
+                        <article class="student-dashboard-card">
+
+                            <div class="dashboard-card-icon">
+                                👨‍👩‍👧
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    Espace Parent
+                                </h3>
+
+                                <p>
+                                    Suivi de l'enfant, présence,
+                                    résultats et informations.
+                                </p>
+
+                                <a href="parent.html">
+                                    Ouvrir →
+                                </a>
+
+                            </div>
+
+                        </article>
+
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- ÉTAPE SUIVANTE -->
+
+                <section class="student-welcome-card">
+
+                    <span class="student-label">
+                        ÉTAPE SUIVANTE
+                    </span>
+
+                    <h2>
+                        Connexion et base de données
+                    </h2>
+
+                    <p>
+                        Une fois la structure et le design terminés,
+                        nous connecterons la plateforme à Supabase
+                        pour rendre les données réelles et sécuriser
+                        les espaces Élève, Parent et Administration.
+                    </p>
+
+                </section>
+
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer class="footer">
+
+        <div class="container">
+
+            <div class="footer-content">
+
+                <div>
+
+                    <a
+                        href="index.html"
+                        class="footer-logo">
+
+                        Profaycel
+
+                    </a>
+
+                    <p>
+                        Éducation • Technologie • Robotique
+                    </p>
+
+                </div>
+
+
+                <div>
+
+                    <p>
+                        © 2026 Profaycel — Tous droits réservés.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

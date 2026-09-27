@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gestion des annonces | Profaycel</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="container header-container">
+
+        <a href="index.html" class="logo">
+            Profaycel
+        </a>
+
+        <button
+            class="mobile-menu-button"
+            type="button"
+            aria-label="Ouvrir le menu"
+            aria-expanded="false">
+
+            <span></span>
+            <span></span>
+            <span></span>
+
+        </button>
+
+        <nav class="navigation">
+
+            <ul>
+
+                <li>
+                    <a href="index.html">
+                        Accueil
+                    </a>
+                </li>
+
+                <li>
+                    <a href="about.html">
+                        À propos
+                    </a>
+                </li>
+
+                <li>
+                    <a href="cours.html">
+                        Cours
+                    </a>
+                </li>
+
+                <li>
+                    <a href="robotique.html">
+                        Robotique
+                    </a>
+                </li>
+
+                <li>
+                    <a href="projets.html">
+                        Projets
+                    </a>
+                </li>
+
+                <li>
+                    <a href="ressources.html">
+                        Ressources
+                    </a>
+                </li>
+
+                <li>
+                    <a href="contact.html">
+                        Contact
+                    </a>
+                </li>
+
+            </ul>
+
+        </nav>
+
+        <div class="header-actions">
+
+            <a href="eleve.html" class="header-button">
+                Espace Élève
+            </a>
+
+            <a href="parent.html" class="header-button">
+                Espace Parent
+            </a>
+
+            <a href="admin.html" class="header-button">
+                Administration
+            </a>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <!-- HERO -->
+
+    <section class="student-dashboard-hero">
+
+        <div class="container">
+
+            <span class="section-label">
+                ADMINISTRATION
+            </span>
+
+            <h1>
+                Gestion des annonces
+            </h1>
+
+            <p>
+                Publiez des informations et communiquez facilement
+                avec les élèves et les parents de Profaycel.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- CONTENU -->
+
+    <section class="student-dashboard">
+
+        <div class="container">
+
+            <!-- INTRO -->
+
+            <div class="student-welcome-card">
+
+                <span class="section-label">
+                    ANNONCES
+                </span>
+
+                <h2>
+                    Communication Profaycel
+                </h2>
+
+                <p>
+                    Cette interface permettra de créer des annonces,
+                    choisir leurs destinataires et gérer leur publication.
+                </p>
+
+            </div>
+
+
+            <!-- STATISTIQUES -->
+
+            <div class="student-dashboard-grid">
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        📢
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            0
+                        </h3>
+
+                        <p>
+                            Annonces publiées
+                        </p>
+
+                    </div>
+
+                </article>
+
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        📝
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            0
+                        </h3>
+
+                        <p>
+                            Brouillons
+                        </p>
+
+                    </div>
+
+                </article>
+
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        👥
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            0
+                        </h3>
+
+                        <p>
+                            Destinataires
+                        </p>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+
+            <!-- ACTION RAPIDE -->
+
+            <section class="student-welcome-card">
+
+                <span class="section-label">
+                    ACTION RAPIDE
+                </span>
+
+                <h2>
+                    Créer une annonce
+                </h2>
+
+                <p>
+                    Rédigez une nouvelle annonce et choisissez
+                    les personnes qui pourront la consulter.
+                </p>
+
+                <a href="#" class="header-button">
+                    + Nouvelle annonce
+                </a>
+
+            </section>
+
+
+            <!-- ANNONCES -->
+
+            <section class="student-welcome-card">
+
+                <span class="section-label">
+                    PUBLICATIONS
+                </span>
+
+                <h2>
+                    Annonces disponibles
+                </h2>
+
+                <p>
+                    Les annonces créées apparaîtront ici.
+                </p>
+
+
+                <div class="student-dashboard-grid" id="annonces-grid"></div>
+
+            </section>
+
+
+            <!-- TYPES -->
+
+            <section class="student-welcome-card">
+
+                <span class="section-label">
+                    TYPES D'ANNONCES
+                </span>
+
+                <h2>
+                    Catégories possibles
+                </h2>
+
+                <p>
+                    Les annonces pourront être classées selon leur objectif.
+                </p>
+
+                <ul>
+
+                    <li>
+                        Information générale
+                    </li>
+
+                    <li>
+                        Nouveau cours
+                    </li>
+
+                    <li>
+                        Devoir
+                    </li>
+
+                    <li>
+                        Évaluation
+                    </li>
+
+                    <li>
+                        Modification du planning
+                    </li>
+
+                    <li>
+                        Absence ou changement de séance
+                    </li>
+
+                    <li>
+                        Événement
+                    </li>
+
+                    <li>
+                        Information importante
+                    </li>
+
+                </ul>
+
+            </section>
+
+
+            <!-- DESTINATAIRES -->
+
+            <section class="student-welcome-card">
+
+                <span class="section-label">
+                    DESTINATAIRES
+                </span>
+
+                <h2>
+                    Qui peut recevoir une annonce ?
+                </h2>
+
+                <p>
+                    L'administration pourra choisir les destinataires
+                    de chaque publication.
+                </p>
+
+                <ul>
+
+                    <li>
+                        Tous les élèves
+                    </li>
+
+                    <li>
+                        Tous les parents
+                    </li>
+
+                    <li>
+                        Élèves d'une classe
+                    </li>
+
+                    <li>
+                        Parents d'une classe
+                    </li>
+
+                    <li>
+                        Un élève spécifique
+                    </li>
+
+                    <li>
+                        Un parent spécifique
+                    </li>
+
+                </ul>
+
+            </section>
+
+
+            <!-- STRUCTURE -->
+
+            <section class="student-welcome-card">
+
+                <span class="section-label">
+                    STRUCTURE
+                </span>
+
+                <h2>
+                    Informations prévues
+                </h2>
+
+                <p>
+                    Chaque annonce pourra contenir :
+                </p>
+
+                <ul>
+
+                    <li>
+                        Titre
+                    </li>
+
+                    <li>
+                        Contenu
+                    </li>
+
+                    <li>
+                        Type d'annonce
+                    </li>
+
+                    <li>
+                        Destinataires
+                    </li>
+
+                    <li>
+                        Classe concernée
+                    </li>
+
+                    <li>
+                        Date de publication
+                    </li>
+
+                    <li>
+                        Date d'expiration
+                    </li>
+
+                    <li>
+                        Pièce jointe
+                    </li>
+
+                    <li>
+                        Statut : brouillon / publié
+                    </li>
+
+                </ul>
+
+            </section>
+
+
+            <!-- ESPACE ELEVE -->
+
+            <section class="student-welcome-card">
+
+                <span class="section-label">
+                    ESPACE ÉLÈVE
+                </span>
+
+                <h2>
+                    Annonces pour les élèves
+                </h2>
+
+                <p>
+                    Les élèves pourront retrouver les annonces
+                    qui leur sont destinées directement dans leur espace.
+                </p>
+
+                <a href="eleve.html" class="header-button">
+                    Espace Élève →
+                </a>
+
+            </section>
+
+
+            <!-- ESPACE PARENT -->
+
+            <section class="student-welcome-card">
+
+                <span class="section-label">
+                    ESPACE PARENT
+                </span>
+
+                <h2>
+                    Annonces pour les parents
+                </h2>
+
+                <p>
+                    Les parents pourront consulter les informations
+                    concernant leur enfant et leur classe.
+                </p>
+
+                <a href="parent.html" class="header-button">
+                    Espace Parent →
+                </a>
+
+            </section>
+
+
+            <!-- FIN STRUCTURE ADMIN -->
+
+            <section class="student-welcome-card">
+
+                <span class="section-label">
+                    STRUCTURE ADMINISTRATIVE
+                </span>
+
+                <h2>
+                    Gestion administrative principale terminée
+                </h2>
+
+                <p>
+                    Les principales sections de l'administration
+                    Profaycel sont maintenant définies :
+                    élèves, parents, classes, cours, devoirs,
+                    séances, présence, résultats, documents et annonces.
+                </p>
+
+                <a href="admin.html" class="header-button">
+                    Retour à l'administration →
+                </a>
+
+            </section>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer class="footer">
+
+    <div class="container">
+
+        <div class="footer-content">
+
+            <div class="footer-logo">
+
+                <strong>
+                    Profaycel
+                </strong>
+
+                <p>
+                    Éducation • Technologie • Robotique
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="footer-bottom">
+
+            <p>
+                © 2026 Profaycel — Tous droits réservés.
+            </p>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>

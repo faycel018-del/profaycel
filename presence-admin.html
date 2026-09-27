@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gestion de la présence | Profaycel</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="container header-container">
+
+        <a href="index.html" class="logo">
+            Profaycel
+        </a>
+
+        <button
+            class="mobile-menu-button"
+            type="button"
+            aria-label="Ouvrir le menu"
+            aria-expanded="false">
+
+            <span></span>
+            <span></span>
+            <span></span>
+
+        </button>
+
+        <nav class="navigation">
+
+            <ul>
+
+                <li>
+                    <a href="index.html">Accueil</a>
+                </li>
+
+                <li>
+                    <a href="about.html">À propos</a>
+                </li>
+
+                <li>
+                    <a href="cours.html">Cours</a>
+                </li>
+
+                <li>
+                    <a href="robotique.html">Robotique</a>
+                </li>
+
+                <li>
+                    <a href="projets.html">Projets</a>
+                </li>
+
+                <li>
+                    <a href="ressources.html">Ressources</a>
+                </li>
+
+                <li>
+                    <a href="contact.html">Contact</a>
+                </li>
+
+            </ul>
+
+        </nav>
+
+        <div class="header-actions">
+
+            <a href="eleve.html" class="header-button">
+                Espace Élève
+            </a>
+
+            <a href="parent.html" class="header-button">
+                Espace Parent
+            </a>
+
+            <a href="admin.html" class="header-button">
+                Administration
+            </a>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <!-- HERO -->
+
+    <section class="student-dashboard-hero">
+
+        <div class="container">
+
+            <span class="section-label">
+                ADMINISTRATION
+            </span>
+
+            <h1>
+                Gestion de la présence
+            </h1>
+
+            <p>
+                Suivez la présence et les absences des élèves
+                séance par séance.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- CONTENU -->
+
+    <section class="student-dashboard">
+
+        <div class="container">
+
+            <!-- INTRO -->
+
+            <div class="student-welcome-card">
+
+                <span class="student-label">
+                    PRÉSENCE
+                </span>
+
+                <h2>
+                    Suivi des élèves
+                </h2>
+
+                <p>
+                    Cette interface permettra d'enregistrer la présence,
+                    l'absence, le retard ou l'absence justifiée de chaque
+                    élève pour chaque séance.
+                </p>
+
+            </div>
+
+
+            <!-- STATISTIQUES -->
+
+            <div class="student-dashboard-grid">
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        👥
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            0
+                        </h3>
+
+                        <p>
+                            Présences
+                        </p>
+
+                    </div>
+
+                </article>
+
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        ❌
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            0
+                        </h3>
+
+                        <p>
+                            Absences
+                        </p>
+
+                    </div>
+
+                </article>
+
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        ⏰
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            0
+                        </h3>
+
+                        <p>
+                            Retards
+                        </p>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+
+            <!-- CHOIX DE SEANCE -->
+
+            <section class="student-welcome-card">
+
+                <span class="student-label">
+                    ACTION RAPIDE
+                </span>
+
+                <h2>
+                    Faire l'appel
+                </h2>
+
+                <p>
+                    Sélectionnez une séance pour enregistrer
+                    la présence des élèves.
+                </p>
+
+                <a href="#" class="header-button">
+                    + Faire l'appel
+                </a>
+
+            </section>
+
+
+            <!-- SEANCES -->
+
+            <section class="student-welcome-card">
+
+                <span class="student-label">
+                    SÉANCES
+                </span>
+
+                <h2>
+                    Séances disponibles
+                </h2>
+
+                <p>
+                    Choisissez une séance pour consulter
+                    ou modifier les présences.
+                </p>
+
+
+                <div class="student-dashboard-grid" id="presence-grid"></div>
+
+            </section>
+
+
+            <!-- STATUTS -->
+
+            <section class="student-welcome-card">
+
+                <span class="student-label">
+                    STATUTS
+                </span>
+
+                <h2>
+                    États possibles
+                </h2>
+
+                <p>
+                    Pour chaque élève et chaque séance,
+                    le système pourra enregistrer :
+                </p>
+
+                <ul>
+
+                    <li>
+                        Présent
+                    </li>
+
+                    <li>
+                        Absent
+                    </li>
+
+                    <li>
+                        Absent justifié
+                    </li>
+
+                    <li>
+                        En retard
+                    </li>
+
+                </ul>
+
+            </section>
+
+
+            <!-- SUIVI -->
+
+            <section class="student-welcome-card">
+
+                <span class="student-label">
+                    SUIVI
+                </span>
+
+                <h2>
+                    Historique de présence
+                </h2>
+
+                <p>
+                    Chaque élève pourra avoir un historique
+                    de ses présences et absences.
+                    Les parents pourront également consulter
+                    les informations concernant leur enfant.
+                </p>
+
+                <a href="#" class="header-button">
+                    Historique →
+                </a>
+
+            </section>
+
+
+            <!-- PROCHAINE ETAPE -->
+
+            <section class="student-welcome-card">
+
+                <span class="student-label">
+                    PROCHAINE ÉTAPE
+                </span>
+
+                <h2>
+                    Gestion des résultats
+                </h2>
+
+                <p>
+                    Ensuite, nous allons construire la gestion
+                    des notes, évaluations, moyennes et résultats
+                    des élèves.
+                </p>
+
+                <a href="resultats-admin.html" class="header-button">
+                    Résultats →
+                </a>
+
+            </section>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer class="footer">
+
+    <div class="container">
+
+        <div class="footer-content">
+
+            <div class="footer-logo">
+
+                <strong>
+                    Profaycel
+                </strong>
+
+                <p>
+                    Éducation • Technologie • Robotique
+                </p>
+
+            </div>
+
+            <div class="footer-bottom">
+
+                <p>
+                    © 2026 Profaycel — Tous droits réservés.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>

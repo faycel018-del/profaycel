@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gestion des résultats | Profaycel</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="container header-container">
+
+        <a href="index.html" class="logo">
+            Profaycel
+        </a>
+
+        <button
+            class="mobile-menu-button"
+            type="button"
+            aria-label="Ouvrir le menu"
+            aria-expanded="false">
+
+            <span></span>
+            <span></span>
+            <span></span>
+
+        </button>
+
+        <nav class="navigation">
+
+            <ul>
+
+                <li>
+                    <a href="index.html">Accueil</a>
+                </li>
+
+                <li>
+                    <a href="about.html">À propos</a>
+                </li>
+
+                <li>
+                    <a href="cours.html">Cours</a>
+                </li>
+
+                <li>
+                    <a href="robotique.html">Robotique</a>
+                </li>
+
+                <li>
+                    <a href="projets.html">Projets</a>
+                </li>
+
+                <li>
+                    <a href="ressources.html">Ressources</a>
+                </li>
+
+                <li>
+                    <a href="contact.html">Contact</a>
+                </li>
+
+            </ul>
+
+        </nav>
+
+        <div class="header-actions">
+
+            <a href="eleve.html" class="header-button">
+                Espace Élève
+            </a>
+
+            <a href="parent.html" class="header-button">
+                Espace Parent
+            </a>
+
+            <a href="admin.html" class="header-button">
+                Administration
+            </a>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <!-- HERO -->
+
+    <section class="student-dashboard-hero">
+
+        <div class="container">
+
+            <span class="section-label">
+                ADMINISTRATION
+            </span>
+
+            <h1>
+                Gestion des résultats
+            </h1>
+
+            <p>
+                Enregistrez les évaluations, les notes et les résultats
+                des élèves et suivez leur progression pédagogique.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- CONTENU -->
+
+    <section class="student-dashboard">
+
+        <div class="container">
+
+            <!-- INTRO -->
+
+            <div class="student-welcome-card">
+
+                <span class="student-label">
+                    RÉSULTATS
+                </span>
+
+                <h2>
+                    Suivi des performances
+                </h2>
+
+                <p>
+                    Cette interface permettra d'enregistrer les notes
+                    des élèves, les évaluations, les moyennes et les
+                    remarques pédagogiques.
+                </p>
+
+            </div>
+
+
+            <!-- STATISTIQUES -->
+
+            <div class="student-dashboard-grid">
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        📊
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            0
+                        </h3>
+
+                        <p>
+                            Évaluations
+                        </p>
+
+                    </div>
+
+                </article>
+
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        👥
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            0
+                        </h3>
+
+                        <p>
+                            Notes enregistrées
+                        </p>
+
+                    </div>
+
+                </article>
+
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        📈
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            —
+                        </h3>
+
+                        <p>
+                            Moyenne générale
+                        </p>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+
+            <!-- ACTION RAPIDE -->
+
+            <section class="student-welcome-card">
+
+                <span class="student-label">
+                    ACTION RAPIDE
+                </span>
+
+                <h2>
+                    Ajouter une évaluation
+                </h2>
+
+                <p>
+                    Créez une évaluation et saisissez les résultats
+                    des élèves concernés.
+                </p>
+
+                <a href="#" class="header-button">
+                    + Nouvelle évaluation
+                </a>
+
+            </section>
+
+
+            <!-- EVALUATIONS -->
+
+            <section class="student-welcome-card">
+
+                <span class="student-label">
+                    ÉVALUATIONS
+                </span>
+
+                <h2>
+                    Évaluations disponibles
+                </h2>
+
+                <p>
+                    Les évaluations créées apparaîtront ici.
+                </p>
+
+
+                <div class="student-dashboard-grid" id="resultats-grid"></div>
+
+            </section>
+
+
+            <!-- STRUCTURE -->
+
+            <section class="student-welcome-card">
+
+                <span class="student-label">
+                    STRUCTURE DES RÉSULTATS
+                </span>
+
+                <h2>
+                    Informations prévues
+                </h2>
+
+                <p>
+                    Pour chaque résultat, le système pourra enregistrer :
+                </p>
+
+                <ul>
+
+                    <li>
+                        Élève
+                    </li>
+
+                    <li>
+                        Classe
+                    </li>
+
+                    <li>
+                        Matière
+                    </li>
+
+                    <li>
+                        Évaluation
+                    </li>
+
+                    <li>
+                        Date de l'évaluation
+                    </li>
+
+                    <li>
+                        Note obtenue
+                    </li>
+
+                    <li>
+                        Barème
+                    </li>
+
+                    <li>
+                        Moyenne
+                    </li>
+
+                    <li>
+                        Appréciation
+                    </li>
+
+                    <li>
+                        Remarque de l'enseignant
+                    </li>
+
+                </ul>
+
+            </section>
+
+
+            <!-- SUIVI PARENT -->
+
+            <section class="student-welcome-card">
+
+                <span class="student-label">
+                    ESPACE PARENT
+                </span>
+
+                <h2>
+                    Consultation des résultats
+                </h2>
+
+                <p>
+                    Les parents pourront consulter les résultats
+                    de leur enfant depuis leur espace personnel.
+                </p>
+
+                <a href="parent.html" class="header-button">
+                    Espace Parent →
+                </a>
+
+            </section>
+
+
+            <!-- SUIVI ELEVE -->
+
+            <section class="student-welcome-card">
+
+                <span class="student-label">
+                    ESPACE ÉLÈVE
+                </span>
+
+                <h2>
+                    Résultats personnels
+                </h2>
+
+                <p>
+                    Chaque élève pourra consulter ses propres notes,
+                    moyennes et remarques depuis son espace personnel.
+                </p>
+
+                <a href="eleve.html" class="header-button">
+                    Espace Élève →
+                </a>
+
+            </section>
+
+
+            <!-- PROCHAINE ETAPE -->
+
+            <section class="student-welcome-card">
+
+                <span class="student-label">
+                    PROCHAINE ÉTAPE
+                </span>
+
+                <h2>
+                    Gestion des documents
+                </h2>
+
+                <p>
+                    Ensuite, nous allons construire l'espace de gestion
+                    des documents et fichiers : cours, devoirs, PDF,
+                    exercices et autres ressources pédagogiques.
+                </p>
+
+                <a href="documents-admin.html" class="header-button">
+                    Documents →
+                </a>
+
+            </section>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer class="footer">
+
+    <div class="container">
+
+        <div class="footer-content">
+
+            <div class="footer-logo">
+
+                <strong>
+                    Profaycel
+                </strong>
+
+                <p>
+                    Éducation • Technologie • Robotique
+                </p>
+
+            </div>
+
+            <div class="footer-bottom">
+
+                <p>
+                    © 2026 Profaycel — Tous droits réservés.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Gestion des parents | Profaycel</title>
+
+    <meta
+        name="description"
+        content="Gestion des parents de la plateforme Profaycel."
+    >
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="header">
+
+        <div class="container header-container">
+
+
+            <!-- LOGO -->
+
+            <a href="index.html" class="logo">
+                Profaycel
+            </a>
+
+
+            <!-- BOUTON MOBILE -->
+
+            <button
+                class="mobile-menu-button"
+                type="button"
+                aria-label="Ouvrir le menu"
+                aria-expanded="false">
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </button>
+
+
+            <!-- NAVIGATION -->
+
+            <nav class="navigation">
+
+                <ul>
+
+                    <li>
+                        <a href="index.html">
+                            Accueil
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="about.html">
+                            À propos
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="cours.html">
+                            Cours
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="robotique.html">
+                            Robotique
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="projets.html">
+                            Projets
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="ressources.html">
+                            Ressources
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="contact.html">
+                            Contact
+                        </a>
+                    </li>
+
+                </ul>
+
+            </nav>
+
+
+            <!-- ACTIONS -->
+
+            <div class="header-actions">
+
+                <a
+                    href="eleve.html"
+                    class="header-button">
+
+                    Espace Élève
+
+                </a>
+
+                <a
+                    href="parent.html"
+                    class="header-button">
+
+                    Espace Parent
+
+                </a>
+
+                <a
+                    href="admin.html"
+                    class="header-button">
+
+                    Administration
+
+                </a>
+
+            </div>
+
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <section class="student-dashboard-hero">
+
+        <div class="container">
+
+            <p class="section-label">
+                ADMINISTRATION
+            </p>
+
+            <h1>
+                Gestion des parents
+            </h1>
+
+            <p>
+                Consultez et gérez les parents ainsi que
+                les enfants qui leur sont associés.
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CONTENU PRINCIPAL
+    ====================================================== -->
+
+    <main class="student-dashboard">
+
+        <div class="container">
+
+
+            <!-- =================================================
+                 INTRODUCTION
+            ================================================== -->
+
+            <section class="student-welcome-card">
+
+                <div>
+
+                    <span class="student-label">
+                        PARENTS
+                    </span>
+
+                    <h2>
+                        Liste des parents
+                    </h2>
+
+                    <p>
+                        Cette page permettra de gérer les comptes des parents,
+                        leurs coordonnées et les élèves qui leur sont associés.
+                    </p>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="header-button"
+                    id="btn-add-parent">
+
+                    + Ajouter un parent
+
+                </button>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 STATISTIQUES
+            ================================================== -->
+
+            <section class="student-dashboard-grid">
+
+
+                <!-- PARENTS -->
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        👨‍👩‍👧
+                    </div>
+
+                    <h3>
+                        3
+                    </h3>
+
+                    <p>
+                        Parents enregistrés
+                    </p>
+
+                </article>
+
+
+
+                <!-- COMPTES ACTIFS -->
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        ✅
+                    </div>
+
+                    <h3>
+                        3
+                    </h3>
+
+                    <p>
+                        Comptes actifs
+                    </p>
+
+                </article>
+
+
+
+                <!-- ENFANTS -->
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        👥
+                    </div>
+
+                    <h3>
+                        3
+                    </h3>
+
+                    <p>
+                        Élèves associés
+                    </p>
+
+                </article>
+
+
+            </section>
+
+
+
+            <!-- =================================================
+                 TITRE LISTE
+            ================================================== -->
+
+            <section class="student-welcome-card">
+
+                <div>
+
+                    <span class="student-label">
+                        LISTE
+                    </span>
+
+                    <h2>
+                        Parents enregistrés
+                    </h2>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 LISTE DES PARENTS
+            ================================================== -->
+
+            <section class="student-dashboard-grid" id="parents-grid"></section>
+
+
+
+            <!-- =================================================
+                 RELATION PARENT / ÉLÈVE
+            ================================================== -->
+
+            <section class="student-welcome-card">
+
+                <div>
+
+                    <span class="student-label">
+                        RELATION PARENT — ÉLÈVE
+                    </span>
+
+                    <h2>
+                        Suivi familial
+                    </h2>
+
+                    <p>
+                        Chaque compte parent pourra être associé à un ou
+                        plusieurs enfants. Le parent pourra ensuite accéder
+                        aux informations autorisées concernant chaque enfant :
+                        présence, résultats, devoirs, cours et annonces.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 ACTIONS RAPIDES
+            ================================================== -->
+
+            <section class="student-dashboard-grid">
+
+
+                <!-- AJOUTER -->
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        ➕
+                    </div>
+
+                    <h3>
+                        Ajouter un parent
+                    </h3>
+
+                    <p>
+                        Créer le profil d'un nouveau parent.
+                    </p>
+
+                    <a href="#">
+                        Ajouter →
+                    </a>
+
+                </article>
+
+
+
+                <!-- ASSOCIER -->
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        🔗
+                    </div>
+
+                    <h3>
+                        Associer un enfant
+                    </h3>
+
+                    <p>
+                        Relier un parent à un élève existant.
+                    </p>
+
+                    <a href="#">
+                        Associer →
+                    </a>
+
+                </article>
+
+
+
+                <!-- COMMUNICATION -->
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        💬
+                    </div>
+
+                    <h3>
+                        Communication
+                    </h3>
+
+                    <p>
+                        Préparer les futurs outils de communication
+                        avec les parents.
+                    </p>
+
+                    <a href="#">
+                        Gérer →
+                    </a>
+
+                </article>
+
+
+
+                <!-- DOCUMENTS -->
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        📁
+                    </div>
+
+                    <h3>
+                        Documents
+                    </h3>
+
+                    <p>
+                        Gérer les documents accessibles aux parents.
+                    </p>
+
+                    <a href="#">
+                        Gérer →
+                    </a>
+
+                </article>
+
+
+            </section>
+
+
+
+            <!-- =================================================
+                 PROCHAINE ÉTAPE
+            ================================================== -->
+
+            <section class="student-welcome-card">
+
+                <div>
+
+                    <span class="student-label">
+                        PROCHAINE ÉTAPE
+                    </span>
+
+                    <h2>
+                        Gestion des classes
+                    </h2>
+
+                    <p>
+                        La prochaine partie permettra d'organiser les niveaux,
+                        les classes, les groupes et les élèves qui leur sont associés.
+                    </p>
+
+                </div>
+
+                <a
+                    href="admin.html"
+                    class="header-button">
+
+                    Administration
+
+                </a>
+
+            </section>
+
+
+            <!-- =================================================
+                 MODAL — AJOUTER / MODIFIER UN PARENT
+            ================================================== -->
+
+            <div class="modal-overlay" id="parent-modal">
+
+                <div class="modal-box">
+
+                    <div class="modal-header">
+
+                        <h2 id="parent-modal-title">
+                            Ajouter un parent
+                        </h2>
+
+                        <button
+                            type="button"
+                            class="modal-close"
+                            id="parent-modal-close">
+
+                            ✕
+
+                        </button>
+
+                    </div>
+
+
+                    <form id="parent-form" class="modal-form">
+
+                        <input
+                            type="hidden"
+                            id="parent-id"
+                            name="parent-id">
+
+
+                        <div class="modal-form-group">
+
+                            <label for="parent-nom">
+                                Nom
+                            </label>
+
+                            <input
+                                type="text"
+                                id="parent-nom"
+                                name="parent-nom"
+                                placeholder="Nom du parent"
+                                required>
+
+                        </div>
+
+
+                        <div class="modal-form-group">
+
+                            <label for="parent-prenom">
+                                Prénom
+                            </label>
+
+                            <input
+                                type="text"
+                                id="parent-prenom"
+                                name="parent-prenom"
+                                placeholder="Prénom du parent"
+                                required>
+
+                        </div>
+
+
+                        <div class="modal-form-group">
+
+                            <label for="parent-email">
+                                Email
+                            </label>
+
+                            <input
+                                type="email"
+                                id="parent-email"
+                                name="parent-email"
+                                placeholder="email@example.com">
+
+                        </div>
+
+
+                        <div class="modal-form-group">
+
+                            <label for="parent-telephone">
+                                Téléphone
+                            </label>
+
+                            <input
+                                type="text"
+                                id="parent-telephone"
+                                name="parent-telephone"
+                                placeholder="+216 XX XXX XXX">
+
+                        </div>
+
+
+                        <div class="modal-form-group">
+
+                            <label for="parent-statut">
+                                Statut
+                            </label>
+
+                            <select
+                                id="parent-statut"
+                                name="parent-statut">
+
+                                <option value="actif">Actif</option>
+                                <option value="inactif">Inactif</option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="modal-form-group">
+
+                            <label for="parent-enfant">
+                                Enfant associé
+                            </label>
+
+                            <select
+                                id="parent-enfant"
+                                name="parent-enfant">
+
+                                <option value="">-- Aucun --</option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="modal-actions">
+
+                            <button
+                                type="button"
+                                class="button button-secondary"
+                                id="parent-modal-cancel">
+
+                                Annuler
+
+                            </button>
+
+                            <button
+                                type="submit"
+                                class="button button-primary">
+
+                                Enregistrer
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer class="footer">
+
+        <div class="container">
+
+            <div class="footer-content">
+
+                <div>
+
+                    <a
+                        href="index.html"
+                        class="footer-logo">
+
+                        Profaycel
+
+                    </a>
+
+                    <p>
+                        Éducation • Technologie • Robotique
+                    </p>
+
+                </div>
+
+
+                <div>
+
+                    <p>
+                        © 2026 Profaycel — Tous droits réservés.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

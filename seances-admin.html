@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gestion des séances | Profaycel</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="container header-container">
+
+        <a href="index.html" class="logo">
+            Profaycel
+        </a>
+
+        <button
+            class="mobile-menu-button"
+            type="button"
+            aria-label="Ouvrir le menu"
+            aria-expanded="false">
+
+            <span></span>
+            <span></span>
+            <span></span>
+
+        </button>
+
+        <nav class="navigation">
+
+            <ul>
+
+                <li>
+                    <a href="index.html">Accueil</a>
+                </li>
+
+                <li>
+                    <a href="about.html">À propos</a>
+                </li>
+
+                <li>
+                    <a href="cours.html">Cours</a>
+                </li>
+
+                <li>
+                    <a href="robotique.html">Robotique</a>
+                </li>
+
+                <li>
+                    <a href="projets.html">Projets</a>
+                </li>
+
+                <li>
+                    <a href="ressources.html">Ressources</a>
+                </li>
+
+                <li>
+                    <a href="contact.html">Contact</a>
+                </li>
+
+            </ul>
+
+        </nav>
+
+        <div class="header-actions">
+
+            <a href="eleve.html" class="header-button">
+                Espace Élève
+            </a>
+
+            <a href="parent.html" class="header-button">
+                Espace Parent
+            </a>
+
+            <a href="admin.html" class="header-button">
+                Administration
+            </a>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <!-- HERO -->
+
+    <section class="student-dashboard-hero">
+
+        <div class="container">
+
+            <span class="section-label">
+                ADMINISTRATION
+            </span>
+
+            <h1>
+                Gestion des séances
+            </h1>
+
+            <p>
+                Organisez les séances de cours, les horaires,
+                les classes et le contenu pédagogique de chaque séance.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- CONTENU -->
+
+    <section class="student-dashboard">
+
+        <div class="container">
+
+            <!-- INTRO -->
+
+            <div class="student-welcome-card">
+
+                <span class="student-label">
+                    SÉANCES
+                </span>
+
+                <h2>
+                    Planning pédagogique
+                </h2>
+
+                <p>
+                    Cette interface permettra de planifier les séances,
+                    associer une séance à une classe et à une matière,
+                    puis enregistrer son contenu et son statut.
+                </p>
+
+            </div>
+
+
+            <!-- STATISTIQUES -->
+
+            <div class="student-dashboard-grid">
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        📅
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            0
+                        </h3>
+
+                        <p>
+                            Séances prévues
+                        </p>
+
+                    </div>
+
+                </article>
+
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        ✅
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            0
+                        </h3>
+
+                        <p>
+                            Séances terminées
+                        </p>
+
+                    </div>
+
+                </article>
+
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        ⏳
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            0
+                        </h3>
+
+                        <p>
+                            À venir
+                        </p>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+
+            <!-- ACTION RAPIDE -->
+
+            <section class="student-welcome-card">
+
+                <span class="student-label">
+                    ACTION RAPIDE
+                </span>
+
+                <h2>
+                    Planifier une séance
+                </h2>
+
+                <p>
+                    Créez une nouvelle séance en indiquant
+                    la date, l'heure, la classe, la matière
+                    et le contenu prévu.
+                </p>
+
+                <a href="#" class="header-button">
+                    + Nouvelle séance
+                </a>
+
+            </section>
+
+
+            <!-- PLANNING -->
+
+            <section class="student-welcome-card">
+
+                <span class="student-label">
+                    PLANNING
+                </span>
+
+                <h2>
+                    Séances prévues
+                </h2>
+
+                <p>
+                    Les séances planifiées apparaîtront ici.
+                </p>
+
+
+                <div class="student-dashboard-grid" id="seances-grid"></div>
+
+            </section>
+
+
+            <!-- STRUCTURE -->
+
+            <section class="student-welcome-card">
+
+                <span class="student-label">
+                    STRUCTURE D'UNE SÉANCE
+                </span>
+
+                <h2>
+                    Informations prévues
+                </h2>
+
+                <p>
+                    Chaque séance pourra contenir :
+                </p>
+
+                <ul>
+
+                    <li>
+                        Date
+                    </li>
+
+                    <li>
+                        Heure de début
+                    </li>
+
+                    <li>
+                        Heure de fin
+                    </li>
+
+                    <li>
+                        Classe ou groupe
+                    </li>
+
+                    <li>
+                        Matière
+                    </li>
+
+                    <li>
+                        Cours associé
+                    </li>
+
+                    <li>
+                        Salle ou lieu
+                    </li>
+
+                    <li>
+                        Contenu prévu
+                    </li>
+
+                    <li>
+                        Remarques de l'enseignant
+                    </li>
+
+                    <li>
+                        Statut de la séance
+                    </li>
+
+                </ul>
+
+            </section>
+
+
+            <!-- STATUTS -->
+
+            <section class="student-welcome-card">
+
+                <span class="student-label">
+                    STATUT
+                </span>
+
+                <h2>
+                    Suivi des séances
+                </h2>
+
+                <p>
+                    Une séance pourra avoir différents statuts :
+                </p>
+
+                <ul>
+
+                    <li>
+                        Prévue
+                    </li>
+
+                    <li>
+                        En cours
+                    </li>
+
+                    <li>
+                        Terminée
+                    </li>
+
+                    <li>
+                        Annulée
+                    </li>
+
+                    <li>
+                        Reportée
+                    </li>
+
+                </ul>
+
+            </section>
+
+
+            <!-- PROCHAINE ETAPE -->
+
+            <section class="student-welcome-card">
+
+                <span class="student-label">
+                    PROCHAINE ÉTAPE
+                </span>
+
+                <h2>
+                    Gestion de la présence
+                </h2>
+
+                <p>
+                    Après les séances, nous allons construire
+                    le système de présence et d'absence des élèves,
+                    avec un suivi par séance et par élève.
+                </p>
+
+                <a href="presence-admin.html" class="header-button">
+                    Présence →
+                </a>
+
+            </section>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer class="footer">
+
+    <div class="container">
+
+        <div class="footer-content">
+
+            <div class="footer-logo">
+
+                <strong>
+                    Profaycel
+                </strong>
+
+                <p>
+                    Éducation • Technologie • Robotique
+                </p>
+
+            </div>
+
+            <div class="footer-bottom">
+
+                <p>
+                    © 2026 Profaycel — Tous droits réservés.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>

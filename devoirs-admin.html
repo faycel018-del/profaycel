@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Gestion des devoirs | Profaycel</title>
+
+    <meta
+        name="description"
+        content="Gestion des devoirs et exercices de la plateforme Profaycel."
+    >
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="header">
+
+        <div class="container header-container">
+
+
+            <!-- LOGO -->
+
+            <a href="index.html" class="logo">
+                Profaycel
+            </a>
+
+
+            <!-- BOUTON MOBILE -->
+
+            <button
+                class="mobile-menu-button"
+                type="button"
+                aria-label="Ouvrir le menu"
+                aria-expanded="false">
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </button>
+
+
+            <!-- NAVIGATION -->
+
+            <nav class="navigation">
+
+                <ul>
+
+                    <li>
+                        <a href="index.html">
+                            Accueil
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="about.html">
+                            À propos
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="cours.html">
+                            Cours
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="robotique.html">
+                            Robotique
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="projets.html">
+                            Projets
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="ressources.html">
+                            Ressources
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="contact.html">
+                            Contact
+                        </a>
+                    </li>
+
+                </ul>
+
+            </nav>
+
+
+            <!-- ACTIONS -->
+
+            <div class="header-actions">
+
+                <a
+                    href="eleve.html"
+                    class="header-button">
+
+                    Espace Élève
+
+                </a>
+
+                <a
+                    href="parent.html"
+                    class="header-button">
+
+                    Espace Parent
+
+                </a>
+
+                <a
+                    href="admin.html"
+                    class="header-button">
+
+                    Administration
+
+                </a>
+
+            </div>
+
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <section class="student-dashboard-hero">
+
+        <div class="container">
+
+            <p class="section-label">
+                ADMINISTRATION
+            </p>
+
+            <h1>
+                Gestion des devoirs
+            </h1>
+
+            <p>
+                Créez, organisez et suivez les devoirs et exercices
+                destinés aux élèves de Profaycel.
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CONTENU PRINCIPAL
+    ====================================================== -->
+
+    <main class="student-dashboard">
+
+        <div class="container">
+
+
+            <!-- =================================================
+                 INTRODUCTION
+            ================================================== -->
+
+            <section class="student-welcome-card">
+
+                <div>
+
+                    <span class="student-label">
+                        DEVOIRS
+                    </span>
+
+                    <h2>
+                        Suivi des travaux des élèves
+                    </h2>
+
+                    <p>
+                        Cette interface permettra de créer des devoirs,
+                        les associer à un cours ou une classe, définir
+                        une date limite et suivre les travaux remis
+                        par les élèves.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 STATISTIQUES
+            ================================================== -->
+
+            <section class="student-dashboard-grid">
+
+
+                <!-- DEVOIRS -->
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        📝
+                    </div>
+
+                    <h3>
+                        0
+                    </h3>
+
+                    <p>
+                        Devoirs créés
+                    </p>
+
+                </article>
+
+
+
+                <!-- TRAVAUX REMIS -->
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        📤
+                    </div>
+
+                    <h3>
+                        0
+                    </h3>
+
+                    <p>
+                        Travaux remis
+                    </p>
+
+                </article>
+
+
+
+                <!-- EN ATTENTE -->
+
+                <article class="student-dashboard-card">
+
+                    <div class="dashboard-card-icon">
+                        ⏳
+                    </div>
+
+                    <h3>
+                        0
+                    </h3>
+
+                    <p>
+                        En attente
+                    </p>
+
+                </article>
+
+
+            </section>
+
+
+
+            <!-- =================================================
+                 CRÉATION
+            ================================================== -->
+
+            <section class="student-welcome-card">
+
+                <div>
+
+                    <span class="student-label">
+                        ACTION RAPIDE
+                    </span>
+
+                    <h2>
+                        Créer un nouveau devoir
+                    </h2>
+
+                    <p>
+                        Ajoutez un devoir avec son titre,
+                        ses consignes, sa classe et sa date limite.
+                    </p>
+
+                </div>
+
+                <a
+                    href="#"
+                    class="header-button">
+
+                    + Créer un devoir
+
+                </a>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 LISTE
+            ================================================== -->
+
+            <section class="student-welcome-card">
+
+                <div>
+
+                    <span class="student-label">
+                        LISTE DES DEVOIRS
+                    </span>
+
+                    <h2>
+                        Devoirs disponibles
+                    </h2>
+
+                    <p>
+                        Les devoirs créés apparaîtront ici.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 DEVOIRS
+            ================================================== -->
+
+            <section class="student-dashboard-grid" id="devoirs-grid"></section>
+
+
+
+            <!-- =================================================
+                 STRUCTURE D'UN DEVOIR
+            ================================================== -->
+
+            <section class="student-welcome-card">
+
+                <div>
+
+                    <span class="student-label">
+                        STRUCTURE D'UN DEVOIR
+                    </span>
+
+                    <h2>
+                        Informations prévues
+                    </h2>
+
+                    <p>
+                        Chaque devoir pourra contenir :
+                    </p>
+
+                    <ul>
+
+                        <li>
+                            Titre du devoir
+                        </li>
+
+                        <li>
+                            Matière
+                        </li>
+
+                        <li>
+                            Cours associé
+                        </li>
+
+                        <li>
+                            Classe ou groupe
+                        </li>
+
+                        <li>
+                            Consignes
+                        </li>
+
+                        <li>
+                            Exercices ou questions
+                        </li>
+
+                        <li>
+                            Fichiers joints
+                        </li>
+
+                        <li>
+                            Date de publication
+                        </li>
+
+                        <li>
+                            Date limite
+                        </li>
+
+                        <li>
+                            Correction
+                        </li>
+
+                        <li>
+                            Note de l'élève
+                        </li>
+
+                        <li>
+                            Statut : brouillon / publié
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SUIVI
+            ================================================== -->
+
+            <section class="student-welcome-card">
+
+                <div>
+
+                    <span class="student-label">
+                        SUIVI
+                    </span>
+
+                    <h2>
+                        Travaux des élèves
+                    </h2>
+
+                    <p>
+                        Plus tard, l'administration pourra voir
+                        quels élèves ont remis leur travail,
+                        consulter leurs fichiers et enregistrer
+                        leurs notes ou remarques.
+                    </p>
+
+                </div>
+
+                <a
+                    href="#"
+                    class="header-button">
+
+                    Voir les travaux →
+
+                </a>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 PROCHAINE ÉTAPE
+            ================================================== -->
+
+            <section class="student-welcome-card">
+
+                <div>
+
+                    <span class="student-label">
+                        PROCHAINE ÉTAPE
+                    </span>
+
+                    <h2>
+                        Gestion des séances
+                    </h2>
+
+                    <p>
+                        Après les cours et les devoirs, nous allons
+                        construire la gestion des séances :
+                        date, heure, classe, matière, salle,
+                        contenu et statut de la séance.
+                    </p>
+
+                </div>
+
+                <a
+                    href="seances-admin.html"
+                    class="header-button">
+
+                    Séances →
+
+                </a>
+
+            </section>
+
+
+        </div>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer class="footer">
+
+        <div class="container">
+
+            <div class="footer-content">
+
+                <div>
+
+                    <a
+                        href="index.html"
+                        class="footer-logo">
+
+                        Profaycel
+
+                    </a>
+
+                    <p>
+                        Éducation • Technologie • Robotique
+                    </p>
+
+                </div>
+
+
+                <div>
+
+                    <p>
+                        © 2026 Profaycel — Tous droits réservés.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
