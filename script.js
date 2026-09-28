@@ -2256,4 +2256,204 @@ console.log("Page actuelle:", currentPage);
     }
 
 
+
+    // =================================================
+    // 22. MES COURS — AFFICHER LES COURS PERSONNALISÉS
+    // =================================================
+
+    const mesCoursContent = document.querySelector("#mes-cours-content");
+
+    if (mesCoursContent) {
+
+        async function loadMesCours() {
+
+            if (!window.supabaseClient) {
+                setTimeout(loadMesCours, 200);
+                return;
+            }
+
+            // 1. نجيبوا المستخدم الحالي
+            const { data: sessionData } = await window.supabaseClient.auth.getSession();
+            const session = sessionData.session;
+
+            // إذا ما مسجلش
+            if (!session) {
+                mesCoursContent.innerHTML = `
+                    <div class="mes-cours-login">
+                        <p>Connectez-vous pour voir vos cours personnalisés.</p>
+                        <a href="login.html">Se connecter →</a>
+                    </div>
+                `;
+                return;
+            }
+
+            const userId = session.user.id;
+
+            // 2. نجيبوا التلميذ
+            const { data: eleves, error: errEleve } = await window.supabaseClient
+                .from("eleves")
+                .select("*")
+                .eq("user_id", userId);
+
+            if (errEleve || !eleves || eleves.length === 0) {
+                mesCoursContent.innerHTML = `
+                    <div class="mes-cours-empty">
+                        Aucun élève associé à votre compte.
+                    </div>
+                `;
+                return;
+            }
+
+            const eleve = eleves[0];
+            const niveau = eleve.classe; // مثلاً "8ème année"
+
+            console.log("Élève:", eleve);
+            console.log("Niveau:", niveau);
+
+            // 3. نجيبوا الدروس
+            const { data: cours, error: errCours } = await window.supabaseClient
+                .from("cours")
+                .select("*")
+                .eq("niveau", niveau)
+                .eq("statut", "publie")
+                .order("trimestre", { ascending: true })
+                .order("numero", { ascending: true });
+
+            if (errCours) {
+                console.error("Erreur chargement cours:", errCours);
+                mesCoursContent.innerHTML = `
+                    <div class="mes-cours-empty">
+                        Erreur de chargement.
+                    </div>
+                `;
+                return;
+            }
+
+            console.log("Cours trouvés:", cours.length);
+
+            // إذا ما فيهاش دروس
+            if (!cours || cours.length === 0) {
+                mesCoursContent.innerHTML = `
+                    <div class="mes-cours-empty">
+                        Aucun cours disponible pour le moment.
+                    </div>
+                `;
+                return;
+            }
+
+            // 4. نصّنفوا حسب trimestre
+            const byTrimestre = {};
+
+            cours.forEach(function (c) {
+                const t = c.trimestre || 1;
+                if (!byTrimestre[t]) {
+                    byTrimestre[t] = [];
+                }
+                byTrimestre[t].push(c);
+            });
+
+            // 5. نبنيوا HTML
+            let html = "";
+
+            const trimestres = Object.keys(byTrimestre).sort(function (a, b) {
+                return a - b;
+            });
+
+            trimestres.forEach(function (t) {
+
+                html += `<div class="mes-cours-trimestre">`;
+
+                html += `<div class="mes-cours-trimestre-title">
+                    📖 Trimestre ${t}
+                </div>`;
+
+                // نصّنفوا حسب categorie
+                const byCategorie = {};
+
+                byTrimestre[t].forEach(function (c) {
+                    const cat = c.categorie || "Autres";
+                    if (!byCategorie[cat]) {
+                        byCategorie[cat] = [];
+                    }
+                    byCategorie[cat].push(c);
+                });
+
+                Object.keys(byCategorie).forEach(function (cat) {
+
+                    html += `<div class="mes-cours-categorie">`;
+
+                    html += `<div class="mes-cours-categorie-title">
+                        ${cat}
+                    </div>`;
+
+                    html += `<div class="mes-cours-list">`;
+
+                    byCategorie[cat].forEach(function (c) {
+
+                        html += `
+                            <a href="#" class="mes-cours-lecon">
+                                <div class="mes-cours-lecon-number">
+                                    ${c.numero || "—"}
+                                </div>
+                                <div class="mes-cours-lecon-content">
+                                    <h4>${c.titre}</h4>
+                                    <p>${c.matiere} · ${c.niveau}</p>
+                                </div>
+                                <div class="mes-cours-lecon-arrow">
+                                    →
+                                </div>
+                            </a>
+                        `;
+
+                    });
+
+                    html += `</div>`;
+                    html += `</div>`;
+
+                });
+
+                html += `</div>`;
+
+            });
+
+            // 6. إذا Trimestre 2 و 3 فارغين، نضيفوهم
+            if (!byTrimestre[2]) {
+                html += `
+                    <div class="mes-cours-trimestre">
+                        <div class="mes-cours-trimestre-title">
+                            📖 Trimestre 2
+                        </div>
+                        <div class="mes-cours-empty">
+                            En cours...
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (!byTrimestre[3]) {
+                html += `
+                    <div class="mes-cours-trimestre">
+                        <div class="mes-cours-trimestre-title">
+                            📖 Trimestre 3
+                        </div>
+                        <div class="mes-cours-empty">
+                            En cours...
+                        </div>
+                    </div>
+                `;
+            }
+
+            mesCoursContent.innerHTML = html;
+
+        }
+
+        loadMesCours();
+
+    }
+
+
+
+
+
+
 });
