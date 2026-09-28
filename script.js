@@ -618,8 +618,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     };
 
-    const currentPage = window.location.pathname.split("/").pop();
+let currentPage = window.location.pathname.split("/").pop();
 
+// إذا فارغة (الصفحة الرئيسية)
+if (!currentPage || currentPage === "") {
+    currentPage = "index.html";
+}
+
+// إذا مافيهاش .html (Netlify يحذفها)
+if (!currentPage.includes(".")) {
+    currentPage = currentPage + ".html";
+}
+
+console.log("Page actuelle:", currentPage);
     if (pageRoles[currentPage]) {
 
         function checkAuth() {
