@@ -5956,3 +5956,64 @@ body > .footer:not(:has(.container)) p {
 
     line-height: 1.9;
 }
+
+
+/* =========================================================
+   ONGLETS PRÉSENTIEL / À DISTANCE + TITRES DE CLASSE
+========================================================= */
+
+.mode-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    margin-bottom: 26px;
+}
+
+.mode-tab {
+    padding: 12px 20px;
+
+    border: 1px solid var(--border);
+    border-radius: 999px;
+
+    background: var(--white);
+    color: var(--text);
+
+    font-size: 0.95rem;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.mode-tab.active {
+    border-color: var(--primary);
+
+    background: var(--primary);
+    color: var(--white);
+}
+
+.mode-count {
+    font-weight: 600;
+    opacity: 0.8;
+}
+
+.classe-titre {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+
+    margin: 34px 0 16px;
+
+    color: var(--dark);
+    font-size: 1.4rem;
+}
+
+.classe-titre:first-child {
+    margin-top: 0;
+}
+
+.classe-titre span {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    font-weight: 600;
+}

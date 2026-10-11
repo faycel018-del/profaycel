@@ -352,6 +352,86 @@ function suiviEleve(eleve) {
 
 }
 
+// Ordre d'affichage des classes
+const ORDRE_CLASSES = ["7 أساسي", "8 أساسي", "9 أساسي", "1 ثانوي", "2 ثانوي", "3 ثانوي", "باكالوريا"];
+
+function trierClasses(a, b) {
+
+    const ia = ORDRE_CLASSES.indexOf(a);
+    const ib = ORDRE_CLASSES.indexOf(b);
+
+    if (ia === -1 && ib === -1) return a.localeCompare(b);
+    if (ia === -1) return 1;
+    if (ib === -1) return -1;
+
+    return ia - ib;
+
+}
+
+// Regroupe une liste par classe, dans l'ordre des classes
+function grouperParClasse(liste, classeDe) {
+
+    const groupes = {};
+
+    liste.forEach(function (item) {
+        const classe = classeDe(item) || "Sans classe";
+        groupes[classe] = groupes[classe] || [];
+        groupes[classe].push(item);
+    });
+
+    return Object.keys(groupes).sort(trierClasses).map(function (classe) {
+        return { classe: classe, items: groupes[classe] };
+    });
+
+}
+
+// Onglets « Présentiel / À distance » (élèves et parents)
+function setupModeTabs(onChange) {
+
+    let mode = "presentiel";
+
+    try {
+        mode = localStorage.getItem("profaycel_mode_admin") || "presentiel";
+    } catch (e) {
+        mode = "presentiel";
+    }
+
+    const tabs = document.querySelectorAll(".mode-tab");
+
+    function activer(nouveau) {
+
+        mode = nouveau;
+
+        tabs.forEach(function (tab) {
+            tab.classList.toggle("active", tab.dataset.mode === mode);
+            tab.setAttribute("aria-selected", tab.dataset.mode === mode ? "true" : "false");
+        });
+
+        try {
+            localStorage.setItem("profaycel_mode_admin", mode);
+        } catch (e) {
+            // ignoré
+        }
+
+        onChange(mode);
+
+    }
+
+    tabs.forEach(function (tab) {
+        tab.addEventListener("click", function () {
+            activer(tab.dataset.mode);
+        });
+    });
+
+    activer(mode);
+
+    return function () {
+        return mode;
+    };
+
+}
+
+
 // Lien WhatsApp vers le parent, avec le code d'accès de l'élève
 function lienWhatsAppCode(eleve) {
 
@@ -1068,35 +1148,9 @@ console.log("Page actuelle:", currentPage);
         getUserRole();
 
 
-        function loadEleves() {
+        let elevesCharges = null;
 
-            if (!window.supabaseClient) {
-                setTimeout(loadEleves, 200);
-                return;
-            }
-
-            window.supabaseClient
-                .from("eleves")
-                .select("*, parents(prenom, nom, telephone, lien_parente), presences(present), paiements(id)")
-                .order("classe", { ascending: true })
-                .order("prenom", { ascending: true })
-                .then(function (result) {
-
-                    if (result.error) {
-                        console.error("Erreur chargement élèves:", result.error);
-                        return;
-                    }
-
-                    const eleves = result.data;
-
-                    console.log("Élèves chargés:", eleves.length);
-
-                    if (eleves.length === 0) {
-                        elevesGrid.innerHTML = "<p>Aucun élève enregistré.</p>";
-                        return;
-                    }
-
-                    elevesGrid.innerHTML = eleves.map(function (eleve) {
+        function carteEleve(eleve) {
 
                         const actionsHTML = currentUserRole === "admin"
                             ? `
@@ -1138,9 +1192,13 @@ console.log("Page actuelle:", currentPage);
                                 <p>
                                     <strong>Classe :</strong> <bdi>${eleve.classe || "—"}</bdi>
                                     <br>
-                                    <strong>Parent :</strong> <span dir="auto">${parent ? parent.prenom + (parent.lien_parente ? " (" + parent.lien_parente + ")" : "") : "—"}</span>
+                                    ${eleve.mode === "distance"
+                                        ? `<strong>Email :</strong> ${eleve.email || "—"}
                                     <br>
-                                    <strong>Téléphone :</strong> ${parent && parent.telephone ? parent.telephone : (eleve.telephone || "—")}
+                                    <strong>Inscrit le :</strong> ${eleve.created_at ? eleve.created_at.slice(0, 10) : "—"}`
+                                        : `<strong>Parent :</strong> <span dir="auto">${parent ? parent.prenom + (parent.lien_parente ? " (" + parent.lien_parente + ")" : "") : "—"}</span>
+                                    <br>
+                                    <strong>Téléphone :</strong> ${parent && parent.telephone ? parent.telephone : (eleve.telephone || "—")}`}
                                     <br>
                                     <strong>Séances :</strong> ${suivi.total} (ce mois : ${suivi.periode} / ${SEANCES_PAR_MOIS})
                                     <br>
@@ -1153,9 +1211,73 @@ console.log("Page actuelle:", currentPage);
                             </article>
                         `;
 
-                    }).join("");
+                    }
 
-                    attachCardEvents(eleves);
+
+        function afficherEleves() {
+
+            if (!elevesCharges) {
+                elevesGrid.innerHTML = "<p>Chargement...</p>";
+                return;
+            }
+
+            const mode = modeEleves ? modeEleves() : "presentiel";
+
+            const presentiels = elevesCharges.filter(function (e) { return e.mode !== "distance"; });
+            const distances = elevesCharges.filter(function (e) { return e.mode === "distance"; });
+
+            document.querySelector("#eleves-count-presentiel").textContent = `(${presentiels.length})`;
+            document.querySelector("#eleves-count-distance").textContent = `(${distances.length})`;
+
+            const liste = mode === "distance" ? distances : presentiels;
+
+            if (liste.length === 0) {
+                elevesGrid.innerHTML = mode === "distance"
+                    ? "<p>Aucun élève inscrit à distance pour le moment.</p>"
+                    : "<p>Aucun élève en présentiel.</p>";
+                return;
+            }
+
+            elevesGrid.innerHTML = grouperParClasse(liste, function (e) { return e.classe; }).map(function (groupe) {
+                return `
+                    <h2 class="classe-titre"><bdi>${groupe.classe}</bdi> <span>${groupe.items.length} élève(s)</span></h2>
+                    <div class="student-dashboard-grid">${groupe.items.map(carteEleve).join("")}</div>
+                `;
+            }).join("");
+
+            attachCardEvents(elevesCharges);
+
+        }
+
+
+        let modeEleves = null;
+
+
+        function loadEleves() {
+
+            if (!window.supabaseClient) {
+                setTimeout(loadEleves, 200);
+                return;
+            }
+
+            window.supabaseClient
+                .from("eleves")
+                .select("*, parents(prenom, nom, telephone, lien_parente), presences(present), paiements(id)")
+                .neq("statut", "archive")
+                .order("prenom", { ascending: true })
+                .then(function (result) {
+
+                    if (result.error) {
+                        console.error("Erreur chargement élèves:", result.error);
+                        return;
+                    }
+
+                    const eleves = result.data;
+
+                    console.log("Élèves chargés:", eleves.length);
+
+                    elevesCharges = eleves;
+                    afficherEleves();
 
                 });
 
@@ -1213,7 +1335,8 @@ console.log("Page actuelle:", currentPage);
                     document.querySelector("#eleve-prenom").value = eleve.prenom;
                     document.querySelector("#eleve-email").value = eleve.email || "";
                     document.querySelector("#eleve-telephone").value = eleve.telephone || "";
-                    document.querySelector("#eleve-classe").value = eleve.classe || "";
+                    choisirClasse(eleve.classe || "");
+                    document.querySelector("#eleve-mode").value = eleve.mode || "presentiel";
                     document.querySelector("#eleve-statut").value = eleve.statut || "actif";
 
                     modalTitle.textContent = "Modifier un élève";
@@ -1272,6 +1395,7 @@ console.log("Page actuelle:", currentPage);
 
                 eleveForm.reset();
                 document.querySelector("#eleve-id").value = "";
+                document.querySelector("#eleve-mode").value = modeEleves ? modeEleves() : "presentiel";
 
                 modalTitle.textContent = "Ajouter un élève";
 
@@ -1320,7 +1444,8 @@ console.log("Page actuelle:", currentPage);
                 prenom: document.querySelector("#eleve-prenom").value.trim(),
                 email: document.querySelector("#eleve-email").value.trim(),
                 telephone: document.querySelector("#eleve-telephone").value.trim(),
-                classe: document.querySelector("#eleve-classe").value.trim(),
+                classe: document.querySelector("#eleve-classe").value,
+                mode: document.querySelector("#eleve-mode").value,
                 statut: document.querySelector("#eleve-statut").value
             };
 
@@ -1368,6 +1493,49 @@ console.log("Page actuelle:", currentPage);
         });
 
 
+        const eleveClasseSelect = document.querySelector("#eleve-classe");
+
+        // Sélectionne une classe, en l'ajoutant à la liste si elle n'y est pas
+        function choisirClasse(classe) {
+
+            if (classe && !Array.from(eleveClasseSelect.options).some(function (o) { return o.value === classe; })) {
+                const option = document.createElement("option");
+                option.value = classe;
+                option.textContent = classe;
+                eleveClasseSelect.appendChild(option);
+            }
+
+            eleveClasseSelect.value = classe;
+
+        }
+
+        function loadClassesEleve() {
+
+            if (!window.supabaseClient) {
+                setTimeout(loadClassesEleve, 200);
+                return;
+            }
+
+            window.supabaseClient
+                .from("classes")
+                .select("nom")
+                .then(function (result) {
+
+                    (result.data || []).map(function (c) { return c.nom; }).sort(trierClasses).forEach(function (nom) {
+                        const option = document.createElement("option");
+                        option.value = nom;
+                        option.textContent = nom;
+                        eleveClasseSelect.appendChild(option);
+                    });
+
+                });
+
+        }
+
+        loadClassesEleve();
+
+        modeEleves = setupModeTabs(afficherEleves);
+
         loadEleves();
 
     }
@@ -1388,6 +1556,102 @@ console.log("Page actuelle:", currentPage);
 
     if (parentsGrid) {
 
+        let parentsCharges = null;
+        let modeParents = null;
+
+        function carteParent(parent) {
+
+            const enfants = (parent.eleves || []).map(function (e) {
+                return `<bdi>${e.prenom} ${e.nom}</bdi>${e.classe ? " (" + e.classe + ")" : ""}`;
+            }).join(", ");
+
+            return `
+                <article class="student-dashboard-card">
+                    <div class="dashboard-card-icon">
+                        👪
+                    </div>
+                    <h3 dir="auto">
+                        ${parent.prenom} ${parent.nom}${parent.lien_parente ? " (" + parent.lien_parente + ")" : ""}
+                    </h3>
+                    <p>
+                        <strong>Enfant(s) :</strong> ${enfants || "—"}
+                        <br>
+                        <strong>Téléphone :</strong> ${parent.telephone || "—"}
+                        <br>
+                        <strong>Email :</strong> ${parent.email || "—"}
+                        <br>
+                        <strong>Compte sur le site :</strong> ${parent.user_id ? "✅ Inscrit" : "⏳ Pas encore inscrit"}
+                    </p>
+                    <div class="card-actions">
+                        <button
+                            type="button"
+                            class="btn-edit"
+                            data-id="${parent.id}">
+                            ✏️ Modifier
+                        </button>
+                        <button
+                            type="button"
+                            class="btn-delete"
+                            data-id="${parent.id}">
+                            🗑️ Supprimer
+                        </button>
+                    </div>
+                </article>
+            `;
+
+        }
+
+
+        function afficherParents() {
+
+            if (!parentsCharges) {
+                parentsGrid.innerHTML = "<p>Chargement...</p>";
+                return;
+            }
+
+            const mode = modeParents ? modeParents() : "presentiel";
+
+            // Présentiel : parent d'au moins un élève du cours en salle
+            const estPresentiel = function (parent) {
+                return (parent.eleves || []).some(function (e) { return e.mode !== "distance"; });
+            };
+
+            const presentiels = parentsCharges.filter(estPresentiel);
+            const enLigne = parentsCharges.filter(function (p) { return !estPresentiel(p); });
+
+            document.querySelector("#parents-count-presentiel").textContent = `(${presentiels.length})`;
+            document.querySelector("#parents-count-distance").textContent = `(${enLigne.length})`;
+
+            const liste = mode === "distance" ? enLigne : presentiels;
+
+            if (liste.length === 0) {
+                parentsGrid.innerHTML = mode === "distance"
+                    ? "<p>Aucun parent inscrit en ligne pour le moment.</p>"
+                    : "<p>Aucun parent en présentiel.</p>";
+                return;
+            }
+
+            const classeDe = function (parent) {
+                const enfant = (parent.eleves || []).find(function (e) { return e.mode !== "distance"; }) || (parent.eleves || [])[0];
+                return enfant ? enfant.classe : "";
+            };
+
+            const groupes = grouperParClasse(liste, mode === "distance"
+                ? function () { return "Inscrits en ligne"; }
+                : classeDe);
+
+            parentsGrid.innerHTML = groupes.map(function (groupe) {
+                return `
+                    <h2 class="classe-titre"><bdi>${groupe.classe}</bdi> <span>${groupe.items.length} parent(s)</span></h2>
+                    <div class="student-dashboard-grid">${groupe.items.map(carteParent).join("")}</div>
+                `;
+            }).join("");
+
+            attachParentEvents(parentsCharges);
+
+        }
+
+
         function loadParents() {
 
             if (!window.supabaseClient) {
@@ -1397,8 +1661,8 @@ console.log("Page actuelle:", currentPage);
 
             window.supabaseClient
                 .from("parents")
-                .select("*")
-                .order("created_at", { ascending: false })
+                .select("*, eleves(prenom, nom, classe, mode)")
+                .order("prenom", { ascending: true })
                 .then(function (result) {
 
                     if (result.error) {
@@ -1406,52 +1670,8 @@ console.log("Page actuelle:", currentPage);
                         return;
                     }
 
-                    const parents = result.data;
-
-                    console.log("Parents chargés:", parents.length);
-
-                    if (parents.length === 0) {
-                        parentsGrid.innerHTML = "<p>Aucun parent enregistré.</p>";
-                        return;
-                    }
-
-                    parentsGrid.innerHTML = parents.map(function (parent) {
-
-                        return `
-                            <article class="student-dashboard-card">
-                                <div class="dashboard-card-icon">
-                                    👨
-                                </div>
-                                <h3>
-                                    ${parent.prenom} ${parent.nom}
-                                </h3>
-                                <p>
-                                    <strong>Email :</strong> ${parent.email || "—"}
-                                    <br>
-                                    <strong>Téléphone :</strong> ${parent.telephone || "—"}
-                                    <br>
-                                    <strong>Statut :</strong> ${parent.statut || "—"}
-                                </p>
-                                <div class="card-actions">
-                                    <button
-                                        type="button"
-                                        class="btn-edit"
-                                        data-id="${parent.id}">
-                                        ✏️ Modifier
-                                    </button>
-                                    <button
-                                        type="button"
-                                        class="btn-delete"
-                                        data-id="${parent.id}">
-                                        🗑️ Supprimer
-                                    </button>
-                                </div>
-                            </article>
-                        `;
-
-                    }).join("");
-
-                    attachParentEvents(parents);
+                    parentsCharges = result.data;
+                    afficherParents();
 
                 });
 
@@ -1684,6 +1904,8 @@ console.log("Page actuelle:", currentPage);
 
         });
 
+
+        modeParents = setupModeTabs(afficherParents);
 
         loadParents();
         loadEnfantsSelect();
@@ -3180,8 +3402,10 @@ console.log("Page actuelle:", currentPage);
             console.log("Élève:", eleve);
 
             eleveNameEl.textContent = `${eleve.prenom} ${eleve.nom}`;
-            eleveClasseEl.textContent = `Classe : ${eleve.classe || "—"}`;
-            eleveStatutEl.textContent = eleve.statut || "—";
+            eleveClasseEl.textContent = eleve.classe
+                ? `Classe : ${eleve.classe}`
+                : "Classe : à définir avec le professeur";
+            eleveStatutEl.textContent = eleve.mode === "distance" ? "💻 À distance" : "🏫 Présentiel";
 
             loadEleveSeances(eleve.classe);
             loadEleveDocuments(eleve.classe);
