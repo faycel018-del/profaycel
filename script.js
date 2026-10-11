@@ -216,6 +216,99 @@ if ("serviceWorker" in navigator) {
 })();
 
 
+// iPhone / iPad : Safari ne propose pas d'installation automatique,
+// on affiche donc les étapes « Partager → Sur l'écran d'accueil »
+(function setupInstallIOS() {
+
+    const ua = window.navigator.userAgent;
+    const isIOS = /iPhone|iPad|iPod/.test(ua) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    const dejaInstallee = window.navigator.standalone === true ||
+        window.matchMedia("(display-mode: standalone)").matches;
+
+    if (!isIOS || dejaInstallee) {
+        return;
+    }
+
+    const isSafari = !/CriOS|FxiOS|EdgiOS|OPiOS|GSA|FBAN|FBAV|Instagram/.test(ua);
+
+    function ouvrirAide() {
+
+        const overlay = document.createElement("div");
+        overlay.className = "modal-overlay active";
+
+        const etapes = isSafari
+            ? `
+                <ol class="ios-etapes">
+                    <li>Touchez <strong>Partager</strong> <span aria-hidden="true">⬆️</span> en bas de l'écran.</li>
+                    <li>Choisissez <strong>« Sur l'écran d'accueil »</strong> <span aria-hidden="true">➕</span>.</li>
+                    <li>Touchez <strong>Ajouter</strong> en haut à droite.</li>
+                </ol>
+            `
+            : `
+                <p>Sur iPhone, l'installation se fait depuis <strong>Safari</strong>.</p>
+                <ol class="ios-etapes">
+                    <li>Copiez cette adresse : <strong>${SITE_URL}</strong></li>
+                    <li>Ouvrez-la dans <strong>Safari</strong>.</li>
+                    <li>Touchez <strong>Partager</strong> ⬆️, puis <strong>« Sur l'écran d'accueil »</strong>.</li>
+                </ol>
+            `;
+
+        overlay.innerHTML = `
+            <div class="modal-box">
+                <div class="modal-header">
+                    <h2>Installer Profaycel</h2>
+                    <button type="button" class="modal-close" aria-label="Fermer">✕</button>
+                </div>
+                ${etapes}
+                <p dir="rtl" class="ios-etapes-ar">
+                    من <strong>Safari</strong>: اضغط ⬆️ <strong>Partager</strong>،
+                    ومن بعد <strong>Sur l'écran d'accueil</strong>، ومن بعد <strong>Ajouter</strong>.
+                </p>
+            </div>
+        `;
+
+        function fermer() {
+            overlay.remove();
+        }
+
+        overlay.querySelector(".modal-close").addEventListener("click", fermer);
+
+        overlay.addEventListener("click", function (event) {
+            if (event.target === overlay) {
+                fermer();
+            }
+        });
+
+        document.body.appendChild(overlay);
+
+    }
+
+    function ajouterBouton() {
+
+        if (document.querySelector(".install-app-button")) {
+            return;
+        }
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "install-app-button";
+        button.textContent = "📲 Installer l'application";
+        button.addEventListener("click", ouvrirAide);
+
+        document.body.appendChild(button);
+
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", ajouterBouton);
+    } else {
+        ajouterBouton();
+    }
+
+})();
+
+
 // Compte administrateur (la base de données vérifie aussi cet email)
 const ADMIN_EMAIL = "faycel.khlifiii@gmail.com";
 

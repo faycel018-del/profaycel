@@ -5938,3 +5938,21 @@ body > .footer:not(:has(.container)) p {
 
     line-height: 1.9;
 }
+
+
+/* Aide installation iPhone */
+
+.ios-etapes {
+    margin: 0 0 18px;
+    padding-left: 20px;
+
+    line-height: 2;
+}
+
+.ios-etapes-ar {
+    padding-top: 14px;
+
+    border-top: 1px solid var(--border);
+
+    line-height: 1.9;
+}
