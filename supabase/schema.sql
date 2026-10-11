@@ -411,6 +411,11 @@ begin
             raise exception 'Ce code est déjà utilisé par un autre compte élève';
         end if;
 
+        -- La fiche « à distance » créée automatiquement pour ce compte est archivée
+        update public.eleves
+            set user_id = null, statut = 'archive'
+            where user_id = uid and id <> e.id;
+
         update public.eleves set user_id = uid where id = e.id;
 
     end if;
@@ -421,3 +426,48 @@ $$;
 
 revoke execute on function public.utiliser_code(text) from anon, public;
 grant execute on function public.utiliser_code(text) to authenticated;
+
+
+-- -----------------------------------------------------
+-- 6. PRÉSENTIEL / À DISTANCE
+-- -----------------------------------------------------
+
+alter table public.eleves add column if not exists mode text not null default 'distance'
+    check (mode in ('presentiel', 'distance'));
+
+-- Un compte « élève » créé en ligne reçoit automatiquement sa fiche « à distance »
+-- (à la création, ou quand le rôle est choisi après une connexion Google)
+create or replace function prive.creer_fiche_distance()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+    if coalesce(new.raw_user_meta_data ->> 'role', '') = 'eleve'
+       and not exists (select 1 from public.eleves where user_id = new.id) then
+
+        insert into public.eleves (nom, prenom, email, user_id, mode, statut)
+        values (
+            '',
+            coalesce(
+                nullif(new.raw_user_meta_data ->> 'nom', ''),
+                nullif(new.raw_user_meta_data ->> 'full_name', ''),
+                nullif(new.raw_user_meta_data ->> 'name', ''),
+                split_part(new.email, '@', 1)
+            ),
+            new.email,
+            new.id,
+            'distance',
+            'actif'
+        );
+
+    end if;
+
+    return new;
+end;
+$$;
+
+create trigger on_auth_user_zz_fiche_distance
+    after insert or update of raw_user_meta_data on auth.users
+    for each row execute function prive.creer_fiche_distance();

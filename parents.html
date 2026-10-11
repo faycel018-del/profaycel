@@ -317,7 +317,19 @@
                  LISTE DES PARENTS
             ================================================== -->
 
-            <section class="student-dashboard-grid" id="parents-grid"></section>
+            <div class="mode-tabs" role="tablist">
+
+                <button type="button" class="mode-tab active" data-mode="presentiel" role="tab">
+                    🏫 Présentiel <span class="mode-count" id="parents-count-presentiel"></span>
+                </button>
+
+                <button type="button" class="mode-tab" data-mode="distance" role="tab">
+                    💻 En ligne <span class="mode-count" id="parents-count-distance"></span>
+                </button>
+
+            </div>
+
+            <div id="parents-grid"></div>
 
 
 

@@ -200,8 +200,8 @@
                     </h2>
 
                     <p>
-                        Cette page permettra de gérer les profils,
-                        les classes, les parents et le statut des élèves.
+                        Présentiel : les élèves du cours en salle, classe par classe, avec leurs parents.
+                        À distance : les élèves inscrits eux-mêmes en ligne.
                     </p>
 
                 </div>
@@ -223,7 +223,19 @@
                  ÉLÈVES
             ================================================== -->
 
-            <section class="student-dashboard-grid" id="eleves-grid"></section>
+            <div class="mode-tabs" role="tablist">
+
+                <button type="button" class="mode-tab active" data-mode="presentiel" role="tab">
+                    🏫 Présentiel <span class="mode-count" id="eleves-count-presentiel"></span>
+                </button>
+
+                <button type="button" class="mode-tab" data-mode="distance" role="tab">
+                    💻 À distance <span class="mode-count" id="eleves-count-distance"></span>
+                </button>
+
+            </div>
+
+            <div id="eleves-grid"></div>
 
 
 
@@ -357,11 +369,31 @@
                                 Classe
                             </label>
 
-                            <input
-                                type="text"
+                            <select
                                 id="eleve-classe"
-                                name="eleve-classe"
-                                placeholder="8ème année">
+                                name="eleve-classe">
+
+                                <option value="">— Aucune classe —</option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="modal-form-group">
+
+                            <label for="eleve-mode">
+                                Type
+                            </label>
+
+                            <select
+                                id="eleve-mode"
+                                name="eleve-mode">
+
+                                <option value="presentiel">🏫 Présentiel</option>
+                                <option value="distance">💻 À distance</option>
+
+                            </select>
 
                         </div>
 
