@@ -537,12 +537,12 @@ document.addEventListener("DOMContentLoaded", function () {
             event.preventDefault();
 
             const name = document.getElementById("name").value.trim();
-            const email = document.getElementById("email").value.trim();
+            const email = document.getElementById("email").value.trim().toLowerCase();
             const password = document.getElementById("password").value;
             const passwordConfirm = document.getElementById("password-confirm").value;
             let role = document.getElementById("role").value;
 
-            const ADMIN_EMAIL = "faycel018@gmail.com";
+            const ADMIN_EMAIL = "faycel.khlifiii@gmail.com";
 
             if (role === "admin" && email !== ADMIN_EMAIL) {
                 showToast("Vous n'êtes pas autorisé à créer un compte Admin.", "error");

@@ -16,7 +16,7 @@ returns boolean
 language sql
 stable
 as $$
-    select coalesce(auth.jwt() ->> 'email', '') = 'faycel018@gmail.com';
+    select lower(coalesce(auth.jwt() ->> 'email', '')) = 'faycel.khlifiii@gmail.com';
 $$;
 
 
