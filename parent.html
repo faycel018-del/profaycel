@@ -224,41 +224,49 @@
 
 
 
-                <!-- INFORMATIONS ENFANT -->
+                <!-- MES ENFANTS (rempli par script.js) -->
 
-                <section class="student-welcome-card">
+                <div id="parent-enfants">
+                    <p>Chargement...</p>
+                </div>
 
-                    <div>
 
-                        <span class="student-label">
-                            MON ENFANT
-                        </span>
 
-                        <h2 id="parent-child-name">
-                            Chargement...
-                        </h2>
+                <!-- CODE D'ACCÈS -->
 
-                        <p id="parent-child-classe">
-                            ...
-                        </p>
+                <section class="student-welcome-card is-stacked code-card" id="parent-code-card" hidden>
 
-                    </div>
+                    <span class="student-label">
+                        CODE D'ACCÈS
+                    </span>
 
-                    <div class="student-status">
+                    <h2>
+                        Lier mon enfant
+                    </h2>
 
-                        <span class="status-dot"></span>
+                    <p>
+                        Entrez le code reçu par WhatsApp de la part du professeur (exemple : PF-AB12CD).
+                    </p>
 
-                        <div>
-                            <span>
-                                Suivi
-                            </span>
+                    <form class="code-form">
 
-                            <strong>
-                                Actif
-                            </strong>
-                        </div>
+                        <input
+                            type="text"
+                            class="code-input"
+                            placeholder="PF-XXXXXX"
+                            autocomplete="off"
+                            autocapitalize="characters"
+                            required>
 
-                    </div>
+                        <button
+                            type="submit"
+                            class="button button-primary">
+
+                            Valider
+
+                        </button>
+
+                    </form>
 
                 </section>
 
