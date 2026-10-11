@@ -773,6 +773,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (registerForm) {
 
+        const roleSelectInscription = document.getElementById("role");
+        const niveauGroup = document.getElementById("niveau-group");
+
+        function majChoixNiveau() {
+            const estEleve = roleSelectInscription.value === "eleve";
+            niveauGroup.hidden = !estEleve;
+            document.getElementById("niveau").required = estEleve;
+        }
+
+        roleSelectInscription.addEventListener("change", majChoixNiveau);
+        majChoixNiveau();
+
         registerForm.addEventListener("submit", async function (event) {
 
             event.preventDefault();
@@ -782,6 +794,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const password = document.getElementById("password").value;
             const passwordConfirm = document.getElementById("password-confirm").value;
             let role = document.getElementById("role").value;
+            const niveau = document.getElementById("niveau").value;
 
             if (role === "admin" && email !== ADMIN_EMAIL) {
                 showToast("Vous n'êtes pas autorisé à créer un compte Admin.", "error");
@@ -794,6 +807,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!name || !email || !password || !passwordConfirm || !role) {
                 showToast("Veuillez remplir tous les champs.", "warning");
+                return;
+            }
+
+            if (role === "eleve" && !niveau) {
+                showToast("Choisissez votre niveau.", "warning");
                 return;
             }
 
@@ -818,7 +836,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 options: {
                     data: {
                         nom: name,
-                        role: role
+                        role: role,
+                        niveau: role === "eleve" ? niveau : ""
                     }
                 }
             });
@@ -940,8 +959,18 @@ document.addEventListener("DOMContentLoaded", function () {
                     return;
                 }
 
+                const niveauSelect = document.getElementById("niveau");
+
+                if (roleSelect.value === "eleve" && niveauSelect && !niveauSelect.value) {
+                    showToast("Choisissez votre niveau.", "warning");
+                    niveauSelect.focus();
+                    return;
+                }
+
                 try {
                     localStorage.setItem("profaycel_role_google", roleSelect.value);
+                    localStorage.setItem("profaycel_niveau_google",
+                        roleSelect.value === "eleve" && niveauSelect ? niveauSelect.value : "");
                 } catch (e) {
                     console.warn("localStorage indisponible:", e);
                 }
@@ -988,9 +1017,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!role) {
 
+                let niveau = "";
+
                 try {
                     role = localStorage.getItem("profaycel_role_google");
+                    niveau = localStorage.getItem("profaycel_niveau_google") || "";
                     localStorage.removeItem("profaycel_role_google");
+                    localStorage.removeItem("profaycel_niveau_google");
                 } catch (e) {
                     role = null;
                 }
@@ -1004,7 +1037,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
                 const { error } = await window.supabaseClient.auth.updateUser({
-                    data: { role: role }
+                    data: { role: role, niveau: role === "eleve" ? niveau : "" }
                 });
 
                 if (error) {
@@ -3118,7 +3151,7 @@ console.log("Page actuelle:", currentPage);
 
 
     // Formulaire « code d'accès » (espace parent et espace élève)
-    document.querySelectorAll(".code-form").forEach(function (form) {
+    document.querySelectorAll(".code-form:not(#niveau-form)").forEach(function (form) {
 
         form.addEventListener("submit", async function (event) {
 
@@ -3160,9 +3193,9 @@ console.log("Page actuelle:", currentPage);
             .eq("statut", "publie")
             .order("created_at", { ascending: true });
 
-        if (classe) {
-            query = query.or(`classe.eq."${classe}",classe.is.null,classe.eq.""`);
-        }
+        query = classe
+            ? query.or(`classe.eq."${classe}",classe.is.null,classe.eq.""`)
+            : query.or(`classe.is.null,classe.eq.""`);
 
         return query;
 
@@ -3357,6 +3390,40 @@ console.log("Page actuelle:", currentPage);
 
     if (eleveNameEl && eleveClasseEl && eleveStatutEl) {
 
+        const niveauForm = document.querySelector("#niveau-form");
+
+        if (niveauForm) {
+
+            niveauForm.addEventListener("submit", async function (event) {
+
+                event.preventDefault();
+
+                const niveau = document.querySelector("#niveau-choix").value;
+
+                if (!niveau) {
+                    return;
+                }
+
+                const { error } = await window.supabaseClient
+                    .rpc("choisir_niveau", { niveau: niveau });
+
+                if (error) {
+                    console.error("Erreur niveau:", error);
+                    showToast(error.message, "error");
+                    return;
+                }
+
+                showToast("Niveau enregistré ✅", "success");
+
+                setTimeout(function () {
+                    window.location.reload();
+                }, 1000);
+
+            });
+
+        }
+
+
         async function loadEleveSpace() {
 
             if (!window.supabaseClient) {
@@ -3388,10 +3455,13 @@ console.log("Page actuelle:", currentPage);
 
             if (!eleves || eleves.length === 0) {
                 console.log("Aucun élève associé à cet utilisateur.");
-                eleveNameEl.textContent = "Bienvenue";
-                eleveClasseEl.textContent = "Aucune classe associée";
+                const meta = session.user.user_metadata || {};
+                eleveNameEl.textContent = meta.nom || meta.full_name || "Bienvenue";
+                eleveClasseEl.textContent = "Niveau : —";
                 eleveStatutEl.textContent = "—";
                 document.querySelector("#eleve-code-card").hidden = false;
+                document.querySelector("#eleve-documents-intro").textContent =
+                    "Tes documents apparaîtront ici dès que ton niveau sera connu.";
                 loadEleveSeances(null);
                 loadEleveDocuments(null);
                 return;
@@ -3401,11 +3471,24 @@ console.log("Page actuelle:", currentPage);
 
             console.log("Élève:", eleve);
 
-            eleveNameEl.textContent = `${eleve.prenom} ${eleve.nom}`;
-            eleveClasseEl.textContent = eleve.classe
-                ? `Classe : ${eleve.classe}`
-                : "Classe : à définir avec le professeur";
+            eleveNameEl.textContent = `${eleve.prenom} ${eleve.nom}`.trim();
+            eleveClasseEl.innerHTML = eleve.classe
+                ? `Niveau : <bdi>${eleve.classe}</bdi>`
+                : "Niveau : à choisir";
             eleveStatutEl.textContent = eleve.mode === "distance" ? "💻 À distance" : "🏫 Présentiel";
+
+            if (eleve.mode === "distance") {
+
+                // Un élève inscrit en ligne qui suit aussi les cours en salle peut entrer son code
+                document.querySelector("#eleve-code-card").hidden = false;
+
+                if (!eleve.classe) {
+                    document.querySelector("#eleve-niveau-card").hidden = false;
+                    document.querySelector("#eleve-documents-intro").textContent =
+                        "Choisis ton niveau ci-dessus pour voir tes documents.";
+                }
+
+            }
 
             loadEleveSeances(eleve.classe);
             loadEleveDocuments(eleve.classe);
@@ -3505,9 +3588,9 @@ console.log("Page actuelle:", currentPage);
                 .order("date_seance", { ascending: true })
                 .order("heure_debut", { ascending: true });
 
-            if (classe) {
-                query = query.or(`classe.eq."${classe}",classe.is.null,classe.eq.""`);
-            }
+            query = classe
+                ? query.or(`classe.eq."${classe}",classe.is.null,classe.eq.""`)
+                : query.or(`classe.is.null,classe.eq.""`);
 
             const { data: seances, error } = await query;
 

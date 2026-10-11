@@ -447,7 +447,7 @@ begin
     if coalesce(new.raw_user_meta_data ->> 'role', '') = 'eleve'
        and not exists (select 1 from public.eleves where user_id = new.id) then
 
-        insert into public.eleves (nom, prenom, email, user_id, mode, statut)
+        insert into public.eleves (nom, prenom, email, user_id, mode, statut, classe)
         values (
             '',
             coalesce(
@@ -459,7 +459,8 @@ begin
             new.email,
             new.id,
             'distance',
-            'actif'
+            'actif',
+            nullif(new.raw_user_meta_data ->> 'niveau', '')
         );
 
     end if;
@@ -471,3 +472,40 @@ $$;
 create trigger on_auth_user_zz_fiche_distance
     after insert or update of raw_user_meta_data on auth.users
     for each row execute function prive.creer_fiche_distance();
+
+
+-- Un élève à distance sans niveau le choisit une seule fois depuis son espace
+create or replace function public.choisir_niveau(niveau text)
+returns json
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+    uid uuid := auth.uid();
+    n int;
+begin
+    if uid is null then
+        raise exception 'Non connecté';
+    end if;
+
+    if niveau not in ('7 أساسي', '8 أساسي', '9 أساسي', '1 ثانوي', '2 ثانوي', '3 ثانوي', 'باكالوريا') then
+        raise exception 'Niveau inconnu';
+    end if;
+
+    update public.eleves
+        set classe = niveau
+        where user_id = uid and mode = 'distance' and coalesce(classe, '') = '';
+
+    get diagnostics n = row_count;
+
+    if n = 0 then
+        raise exception 'Niveau déjà choisi : demandez au professeur pour le changer';
+    end if;
+
+    return json_build_object('classe', niveau);
+end;
+$$;
+
+revoke execute on function public.choisir_niveau(text) from anon, public;
+grant execute on function public.choisir_niveau(text) to authenticated;

@@ -200,6 +200,51 @@
 
 
 
+                <!-- CHOIX DU NIVEAU (élèves à distance sans niveau) -->
+
+                <section class="student-welcome-card is-stacked code-card" id="eleve-niveau-card" hidden>
+
+                    <span class="student-label">
+                        MON NIVEAU
+                    </span>
+
+                    <h2>
+                        Choisis ton niveau
+                    </h2>
+
+                    <p>
+                        Tu verras ensuite uniquement les séances et les documents de ton niveau.
+                    </p>
+
+                    <form class="code-form" id="niveau-form">
+
+                        <select class="code-input" id="niveau-choix" required>
+
+                            <option value="">-- Choisir --</option>
+                            <option value="7 أساسي">7 أساسي</option>
+                            <option value="8 أساسي">8 أساسي</option>
+                            <option value="9 أساسي">9 أساسي</option>
+                            <option value="1 ثانوي">1 ثانوي</option>
+                            <option value="2 ثانوي">2 ثانوي</option>
+                            <option value="3 ثانوي">3 ثانوي</option>
+                            <option value="باكالوريا">باكالوريا</option>
+
+                        </select>
+
+                        <button
+                            type="submit"
+                            class="button button-primary">
+
+                            Valider
+
+                        </button>
+
+                    </form>
+
+                </section>
+
+
+
                 <!-- CODE D'ACCÈS -->
 
                 <section class="student-welcome-card is-stacked code-card" id="eleve-code-card" hidden>
@@ -209,11 +254,14 @@
                     </span>
 
                     <h2>
-                        Lier mon compte
+                        🏫 Élèves en présentiel uniquement
                     </h2>
 
                     <p>
-                        Entrez le code reçu par WhatsApp de la part du professeur (exemple : PF-AB12CD).
+                        Vous suivez les cours en salle avec le professeur ?
+                        Entrez le code reçu par WhatsApp (exemple : PF-AB12CD).
+                        <br>
+                        Les élèves inscrits en ligne n'ont pas besoin de code.
                     </p>
 
                     <form class="code-form">
@@ -274,11 +322,11 @@
                     </span>
 
                     <h2>
-                        Mes séries d'exercices
+                        📁 Mes documents
                     </h2>
 
-                    <p>
-                        Ouvrez une série pour la lire ou la télécharger.
+                    <p id="eleve-documents-intro">
+                        Les séries d'exercices de ton niveau.
                     </p>
 
                     <div id="eleve-documents">
