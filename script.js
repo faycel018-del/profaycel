@@ -2659,6 +2659,7 @@ console.log("Page actuelle:", currentPage);
                 eleveClasseEl.textContent = "Aucune classe associée";
                 eleveStatutEl.textContent = "—";
                 loadEleveSeances(null);
+                loadEleveDocuments();
                 return;
             }
 
@@ -2671,6 +2672,81 @@ console.log("Page actuelle:", currentPage);
             eleveStatutEl.textContent = eleve.statut || "—";
 
             loadEleveSeances(eleve.classe);
+            loadEleveDocuments();
+
+        }
+
+
+        // Séries d'exercices publiées, regroupées par niveau
+        async function loadEleveDocuments() {
+
+            const container = document.querySelector("#eleve-documents");
+
+            if (!container) {
+                return;
+            }
+
+            const { data: documents, error } = await window.supabaseClient
+                .from("documents")
+                .select("*")
+                .eq("statut", "publie")
+                .order("niveau", { ascending: true })
+                .order("created_at", { ascending: true });
+
+            if (error) {
+                console.error("Erreur chargement documents:", error);
+                container.innerHTML = "<p>Impossible de charger les documents.</p>";
+                return;
+            }
+
+            if (!documents || documents.length === 0) {
+                container.innerHTML = "<p>Aucun document pour le moment.</p>";
+                return;
+            }
+
+            const byNiveau = {};
+
+            documents.forEach(function (doc) {
+                const niveau = doc.niveau || "Tous les niveaux";
+                byNiveau[niveau] = byNiveau[niveau] || [];
+                byNiveau[niveau].push(doc);
+            });
+
+            container.innerHTML = Object.keys(byNiveau).map(function (niveau) {
+
+                const cartes = byNiveau[niveau].map(function (doc) {
+
+                    const bouton = doc.lien
+                        ? `<a href="${doc.lien}" target="_blank" rel="noopener" class="button button-primary seance-join">
+                               📄 Ouvrir
+                           </a>`
+                        : "";
+
+                    return `
+                        <article class="student-dashboard-card">
+                            <div class="dashboard-card-icon">
+                                📄
+                            </div>
+                            <div>
+                                <h3 dir="auto">
+                                    ${doc.nom}
+                                </h3>
+                                <p>
+                                    ${doc.type_fichier || "Document"}
+                                </p>
+                                ${bouton}
+                            </div>
+                        </article>
+                    `;
+
+                }).join("");
+
+                return `
+                    <h3 class="documents-niveau">${niveau}</h3>
+                    <div class="student-dashboard-grid">${cartes}</div>
+                `;
+
+            }).join("");
 
         }
 
@@ -2684,7 +2760,10 @@ console.log("Page actuelle:", currentPage);
                 return;
             }
 
-            const today = new Date().toISOString().slice(0, 10);
+            const now = new Date();
+            const today = now.getFullYear() + "-" +
+                String(now.getMonth() + 1).padStart(2, "0") + "-" +
+                String(now.getDate()).padStart(2, "0");
 
             let query = window.supabaseClient
                 .from("seances")
@@ -2711,7 +2790,6 @@ console.log("Page actuelle:", currentPage);
                 return;
             }
 
-            const now = new Date();
             const heureActuelle = now.toTimeString().slice(0, 5);
 
             container.innerHTML = seances.map(function (seance) {

@@ -5840,3 +5840,10 @@ body > .footer:not(:has(.container)) p {
     height: 20px;
     flex-shrink: 0;
 }
+
+.documents-niveau {
+    margin: 24px 0 14px;
+
+    color: var(--dark);
+    font-size: 1.05rem;
+}
