@@ -254,3 +254,170 @@ create policy resultats_eleve_parent on public.resultats
                or parent_id in (select id from public.parents where user_id = auth.uid())
         )
     );
+
+
+-- -----------------------------------------------------
+-- 5. SUIVI : CODE D'ACCÈS, PRÉSENCES, PAIEMENTS
+-- -----------------------------------------------------
+
+alter table public.eleves add column if not exists code_acces text unique;
+alter table public.eleves add column if not exists date_debut date;
+alter table public.eleves add column if not exists seances_anterieures int not null default 0;
+alter table public.eleves add column if not exists tarif_mensuel numeric not null default 100;
+alter table public.parents add column if not exists lien_parente text;
+
+-- Code lisible, sans caractères ambigus (0/O, 1/I/L)
+create or replace function prive.generer_code()
+returns text
+language plpgsql
+set search_path = ''
+as $$
+declare
+    alphabet text := 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+    code text;
+begin
+    loop
+        code := 'PF-';
+        for i in 1..6 loop
+            code := code || substr(alphabet, 1 + floor(random() * length(alphabet))::int, 1);
+        end loop;
+        exit when not exists (select 1 from public.eleves where code_acces = code);
+    end loop;
+    return code;
+end;
+$$;
+
+create or replace function prive.eleve_code_defaut()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+    if new.code_acces is null or new.code_acces = '' then
+        new.code_acces := prive.generer_code();
+    end if;
+    return new;
+end;
+$$;
+
+create trigger eleves_code_defaut
+    before insert on public.eleves
+    for each row execute function prive.eleve_code_defaut();
+
+create table if not exists public.presences (
+    id          bigint generated always as identity primary key,
+    seance_id   bigint not null references public.seances (id) on delete cascade,
+    eleve_id    bigint not null references public.eleves (id) on delete cascade,
+    present     boolean not null default true,
+    created_at  timestamptz not null default now(),
+    unique (seance_id, eleve_id)
+);
+
+-- Une mensualité = 4 séances
+create table if not exists public.paiements (
+    id             bigint generated always as identity primary key,
+    eleve_id       bigint not null references public.eleves (id) on delete cascade,
+    date_paiement  date not null default current_date,
+    montant        numeric not null default 100,
+    note           text,
+    created_at     timestamptz not null default now()
+);
+
+alter table public.presences enable row level security;
+alter table public.paiements enable row level security;
+
+create policy admin_tout on public.presences for all to authenticated
+    using (public.is_admin()) with check (public.is_admin());
+create policy admin_tout on public.paiements for all to authenticated
+    using (public.is_admin()) with check (public.is_admin());
+
+create policy presences_eleve_parent on public.presences
+    for select to authenticated
+    using (
+        eleve_id in (
+            select id from public.eleves
+            where user_id = auth.uid()
+               or parent_id in (select id from public.parents where user_id = auth.uid())
+        )
+    );
+
+create policy paiements_eleve_parent on public.paiements
+    for select to authenticated
+    using (
+        eleve_id in (
+            select id from public.eleves
+            where user_id = auth.uid()
+               or parent_id in (select id from public.parents where user_id = auth.uid())
+        )
+    );
+
+-- Lier son compte (parent ou élève) à une fiche élève avec le code reçu par WhatsApp
+create or replace function public.utiliser_code(code text)
+returns json
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+    uid uuid := auth.uid();
+    role_utilisateur text := coalesce(auth.jwt() -> 'user_metadata' ->> 'role', 'eleve');
+    nom_utilisateur text := coalesce(auth.jwt() -> 'user_metadata' ->> 'nom',
+                                     auth.jwt() -> 'user_metadata' ->> 'full_name',
+                                     auth.jwt() ->> 'email');
+    e public.eleves%rowtype;
+    p_id bigint;
+    ancien_parent public.parents%rowtype;
+begin
+    if uid is null then
+        raise exception 'Non connecté';
+    end if;
+
+    select * into e from public.eleves
+        where code_acces = upper(trim(code));
+
+    if not found then
+        raise exception 'Code invalide';
+    end if;
+
+    if role_utilisateur = 'parent' then
+
+        select id into p_id from public.parents where user_id = uid limit 1;
+
+        if e.parent_id is not null then
+            select * into ancien_parent from public.parents where id = e.parent_id;
+
+            if ancien_parent.user_id is not null and ancien_parent.user_id <> uid then
+                raise exception 'Cet élève est déjà lié à un autre compte parent';
+            end if;
+
+            -- La fiche parent créée par l'enseignant devient celle de ce compte
+            if p_id is null and ancien_parent.user_id is null then
+                update public.parents set user_id = uid where id = ancien_parent.id;
+                p_id := ancien_parent.id;
+            end if;
+        end if;
+
+        if p_id is null then
+            insert into public.parents (nom, prenom, user_id)
+                values ('', coalesce(nom_utilisateur, 'Parent'), uid)
+                returning id into p_id;
+        end if;
+
+        update public.eleves set parent_id = p_id where id = e.id;
+
+    else
+
+        if e.user_id is not null and e.user_id <> uid then
+            raise exception 'Ce code est déjà utilisé par un autre compte élève';
+        end if;
+
+        update public.eleves set user_id = uid where id = e.id;
+
+    end if;
+
+    return json_build_object('prenom', e.prenom, 'nom', e.nom, 'classe', e.classe);
+end;
+$$;
+
+revoke execute on function public.utiliser_code(text) from anon, public;
+grant execute on function public.utiliser_code(text) to authenticated;

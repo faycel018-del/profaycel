@@ -219,6 +219,70 @@ if ("serviceWorker" in navigator) {
 // Compte administrateur (la base de données vérifie aussi cet email)
 const ADMIN_EMAIL = "faycel.khlifiii@gmail.com";
 
+// Adresse publique du site (pour les messages WhatsApp)
+const SITE_URL = "https://faycel018-del.github.io/profaycel/";
+
+// Une mensualité couvre 4 séances
+const SEANCES_PAR_MOIS = 4;
+
+// Séances faites, période en cours et état du paiement d'un élève
+// (eleve.presences et eleve.paiements viennent de la requête Supabase)
+function suiviEleve(eleve) {
+
+    const presents = (eleve.presences || []).filter(function (p) {
+        return p.present;
+    }).length;
+
+    const total = (eleve.seances_anterieures || 0) + presents;
+    const moisPayes = (eleve.paiements || []).length;
+    const periode = total === 0 ? 0 : ((total - 1) % SEANCES_PAR_MOIS) + 1;
+    const paye = moisPayes * SEANCES_PAR_MOIS >= total;
+
+    let paiement;
+
+    if (total === 0 && moisPayes === 0) {
+        paiement = "—";
+    } else if (paye) {
+        paiement = "✅ Payé";
+    } else {
+        paiement = "⚠️ Paiement attendu";
+    }
+
+    return {
+        total: total,
+        periode: periode,
+        moisPayes: moisPayes,
+        paye: paye,
+        paiement: paiement,
+        seancesCouvertes: moisPayes * SEANCES_PAR_MOIS
+    };
+
+}
+
+// Lien WhatsApp vers le parent, avec le code d'accès de l'élève
+function lienWhatsAppCode(eleve) {
+
+    const parent = eleve.parents;
+
+    if (!parent || !parent.telephone || !eleve.code_acces) {
+        return null;
+    }
+
+    const telephone = parent.telephone.replace(/\D/g, "");
+
+    const message =
+        "السلام عليكم " + parent.prenom + " 🌸\n" +
+        "هذا الأستاذ فيصل. ولّات عندنا منصة باش تتبّع قراية " + eleve.prenom +
+        ": الحصص، الحضور، الخلاص والسلاسل.\n\n" +
+        "1️⃣ ادخل هنا: " + SITE_URL + "register.html\n" +
+        "2️⃣ اختار « Parent » وسجّل (بـ Google ولا بالإيميل)\n" +
+        "3️⃣ في فضاء الولي، اكتب الكود هذا: " + eleve.code_acces + "\n\n" +
+        "وكان عندك أي سؤال أنا موجود 🙏";
+
+    return "https://wa.me/" + telephone + "?text=" + encodeURIComponent(message);
+
+}
+
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -920,8 +984,9 @@ console.log("Page actuelle:", currentPage);
 
             window.supabaseClient
                 .from("eleves")
-                .select("*")
-                .order("created_at", { ascending: false })
+                .select("*, parents(prenom, nom, telephone, lien_parente), presences(present), paiements(id)")
+                .order("classe", { ascending: true })
+                .order("prenom", { ascending: true })
                 .then(function (result) {
 
                     if (result.error) {
@@ -945,37 +1010,52 @@ console.log("Page actuelle:", currentPage);
                                 <div class="card-actions">
                                     <button
                                         type="button"
+                                        class="btn-edit btn-paiement"
+                                        data-id="${eleve.id}">
+                                        💰 + Paiement
+                                    </button>
+                                    <button
+                                        type="button"
                                         class="btn-edit"
                                         data-id="${eleve.id}">
-                                        ✏️ Modifier
+                                        ✏️
                                     </button>
                                     <button
                                         type="button"
                                         class="btn-delete"
                                         data-id="${eleve.id}">
-                                        🗑️ Supprimer
+                                        🗑️
                                     </button>
                                 </div>
                             `
                             : "";
+
+                        const suivi = suiviEleve(eleve);
+                        const parent = eleve.parents;
+                        const whatsapp = lienWhatsAppCode(eleve);
 
                         return `
                             <article class="student-dashboard-card">
                                 <div class="dashboard-card-icon">
                                     👨‍🎓
                                 </div>
-                                <h3>
+                                <h3 dir="auto">
                                     ${eleve.prenom} ${eleve.nom}
                                 </h3>
                                 <p>
-                                    <strong>Classe :</strong> ${eleve.classe || "—"}
+                                    <strong>Classe :</strong> <bdi>${eleve.classe || "—"}</bdi>
                                     <br>
-                                    <strong>Email :</strong> ${eleve.email || "—"}
+                                    <strong>Parent :</strong> <span dir="auto">${parent ? parent.prenom + (parent.lien_parente ? " (" + parent.lien_parente + ")" : "") : "—"}</span>
                                     <br>
-                                    <strong>Téléphone :</strong> ${eleve.telephone || "—"}
+                                    <strong>Téléphone :</strong> ${parent && parent.telephone ? parent.telephone : (eleve.telephone || "—")}
                                     <br>
-                                    <strong>Statut :</strong> ${eleve.statut || "—"}
+                                    <strong>Séances :</strong> ${suivi.total} (ce mois : ${suivi.periode} / ${SEANCES_PAR_MOIS})
+                                    <br>
+                                    <strong>Paiement :</strong> ${suivi.paiement} · ${suivi.moisPayes} mois
+                                    <br>
+                                    <strong>Code :</strong> <code>${eleve.code_acces || "—"}</code>
                                 </p>
+                                ${whatsapp ? `<a href="${whatsapp}" target="_blank" rel="noopener" class="button whatsapp-button">💬 Envoyer le code au parent</a>` : ""}
                                 ${actionsHTML}
                             </article>
                         `;
@@ -991,7 +1071,40 @@ console.log("Page actuelle:", currentPage);
 
         function attachCardEvents(eleves) {
 
-            document.querySelectorAll(".btn-edit").forEach(function (btn) {
+            document.querySelectorAll("#eleves-grid .btn-paiement").forEach(function (btn) {
+
+                btn.addEventListener("click", async function () {
+
+                    const eleve = eleves.find(function (e) {
+                        return e.id == btn.dataset.id;
+                    });
+
+                    if (!eleve) return;
+
+                    const montant = eleve.tarif_mensuel || 100;
+
+                    if (!confirm(`Enregistrer un paiement de ${montant} DT pour ${eleve.prenom} (${eleve.classe || ""}) ?`)) {
+                        return;
+                    }
+
+                    const { error } = await window.supabaseClient
+                        .from("paiements")
+                        .insert([{ eleve_id: eleve.id, montant: montant }]);
+
+                    if (error) {
+                        console.error("Erreur paiement:", error);
+                        showToast("Erreur : " + error.message, "error");
+                        return;
+                    }
+
+                    showToast("Paiement enregistré !", "success");
+                    loadEleves();
+
+                });
+
+            });
+
+            document.querySelectorAll("#eleves-grid .btn-edit:not(.btn-paiement)").forEach(function (btn) {
 
                 btn.addEventListener("click", function () {
 
@@ -1018,7 +1131,7 @@ console.log("Page actuelle:", currentPage);
 
             });
 
-            document.querySelectorAll(".btn-delete").forEach(function (btn) {
+            document.querySelectorAll("#eleves-grid .btn-delete").forEach(function (btn) {
 
                 btn.addEventListener("click", async function () {
 
@@ -1118,8 +1231,8 @@ console.log("Page actuelle:", currentPage);
                 statut: document.querySelector("#eleve-statut").value
             };
 
-            if (!data.nom || !data.prenom) {
-                showToast("Veuillez remplir le nom et le prénom.", "warning");
+            if (!data.prenom) {
+                showToast("Veuillez remplir le prénom.", "warning");
                 return;
             }
 
@@ -2244,8 +2357,13 @@ console.log("Page actuelle:", currentPage);
     // =================================================
 
     const presenceGrid = document.querySelector("#presence-grid");
+    const appelModal = document.querySelector("#appel-modal");
+    const appelForm = document.querySelector("#appel-form");
+    const appelListe = document.querySelector("#appel-liste");
 
     if (presenceGrid) {
+
+        let seanceAppel = null;
 
         function loadPresenceSeances() {
 
@@ -2256,8 +2374,8 @@ console.log("Page actuelle:", currentPage);
 
             window.supabaseClient
                 .from("seances")
-                .select("*")
-                .order("date_seance", { ascending: true })
+                .select("*, presences(present)")
+                .order("date_seance", { ascending: false })
                 .then(function (result) {
 
                     if (result.error) {
@@ -2276,34 +2394,179 @@ console.log("Page actuelle:", currentPage);
 
                     presenceGrid.innerHTML = seances.map(function (seance) {
 
+                        const appel = seance.presences || [];
+                        const presents = appel.filter(function (p) { return p.present; }).length;
+
+                        const resume = appel.length > 0
+                            ? `✅ ${presents} présent(s) · ❌ ${appel.length - presents} absent(s)`
+                            : "Appel pas encore fait";
+
                         return `
                             <article class="student-dashboard-card">
                                 <div class="dashboard-card-icon">
                                     📅
                                 </div>
                                 <div>
-                                    <h3>
-                                        ${seance.matiere} — ${seance.classe || "—"}
+                                    <h3 dir="auto">
+                                        ${seance.matiere} — ${seance.classe || "Toutes les classes"}
                                     </h3>
                                     <p>
                                         <strong>Date :</strong> ${seance.date_seance || "—"}
                                     </p>
                                     <p>
-                                        <strong>Heure :</strong> ${seance.heure_debut || "—"} – ${seance.heure_fin || "—"}
+                                        <strong>Heure :</strong> ${seance.heure_debut ? seance.heure_debut.slice(0, 5) : "—"} – ${seance.heure_fin ? seance.heure_fin.slice(0, 5) : "—"}
                                     </p>
                                     <p>
-                                        <strong>Salle :</strong> ${seance.salle || "—"}
+                                        <strong>Appel :</strong> ${resume}
                                     </p>
-                                    <a href="#">
-                                        Faire l'appel →
-                                    </a>
+                                    <button
+                                        type="button"
+                                        class="button button-primary seance-join btn-appel"
+                                        data-id="${seance.id}">
+                                        ${appel.length > 0 ? "✏️ Modifier l'appel" : "📋 Faire l'appel"}
+                                    </button>
                                 </div>
                             </article>
                         `;
 
                     }).join("");
 
+                    document.querySelectorAll(".btn-appel").forEach(function (btn) {
+
+                        btn.addEventListener("click", function () {
+
+                            const seance = seances.find(function (s) {
+                                return String(s.id) === btn.dataset.id;
+                            });
+
+                            if (seance) {
+                                ouvrirAppel(seance);
+                            }
+
+                        });
+
+                    });
+
                 });
+
+        }
+
+
+        async function ouvrirAppel(seance) {
+
+            seanceAppel = seance;
+
+            document.querySelector("#appel-title").textContent =
+                `Appel — ${seance.matiere} (${seance.date_seance || ""})`;
+
+            appelListe.innerHTML = "<p>Chargement...</p>";
+            appelModal.classList.add("active");
+
+            let query = window.supabaseClient
+                .from("eleves")
+                .select("id, prenom, nom, classe")
+                .eq("statut", "actif")
+                .order("classe", { ascending: true })
+                .order("prenom", { ascending: true });
+
+            if (seance.classe) {
+                query = query.eq("classe", seance.classe);
+            }
+
+            const [{ data: eleves, error }, { data: appel }] = await Promise.all([
+                query,
+                window.supabaseClient
+                    .from("presences")
+                    .select("eleve_id, present")
+                    .eq("seance_id", seance.id)
+            ]);
+
+            if (error) {
+                console.error("Erreur chargement élèves:", error);
+                appelListe.innerHTML = "<p>Impossible de charger les élèves.</p>";
+                return;
+            }
+
+            if (!eleves || eleves.length === 0) {
+                appelListe.innerHTML = "<p>Aucun élève dans cette classe.</p>";
+                return;
+            }
+
+            const dejaFait = {};
+
+            (appel || []).forEach(function (p) {
+                dejaFait[p.eleve_id] = p.present;
+            });
+
+            appelListe.innerHTML = eleves.map(function (eleve) {
+
+                const coche = dejaFait[eleve.id] === undefined ? true : dejaFait[eleve.id];
+
+                return `
+                    <label class="appel-eleve">
+                        <input type="checkbox" value="${eleve.id}" ${coche ? "checked" : ""}>
+                        <span dir="auto">${eleve.prenom} ${eleve.nom}</span>
+                        <small>${seance.classe ? "" : eleve.classe || ""}</small>
+                    </label>
+                `;
+
+            }).join("");
+
+        }
+
+
+        function fermerAppel() {
+            appelModal.classList.remove("active");
+            seanceAppel = null;
+        }
+
+        if (appelModal) {
+
+            document.querySelector("#appel-close").addEventListener("click", fermerAppel);
+            document.querySelector("#appel-cancel").addEventListener("click", fermerAppel);
+
+            appelModal.addEventListener("click", function (event) {
+                if (event.target === appelModal) {
+                    fermerAppel();
+                }
+            });
+
+            appelForm.addEventListener("submit", async function (event) {
+
+                event.preventDefault();
+
+                if (!seanceAppel) {
+                    return;
+                }
+
+                const lignes = Array.from(appelListe.querySelectorAll("input[type=checkbox]")).map(function (box) {
+                    return {
+                        seance_id: seanceAppel.id,
+                        eleve_id: Number(box.value),
+                        present: box.checked
+                    };
+                });
+
+                if (lignes.length === 0) {
+                    fermerAppel();
+                    return;
+                }
+
+                const { error } = await window.supabaseClient
+                    .from("presences")
+                    .upsert(lignes, { onConflict: "seance_id,eleve_id" });
+
+                if (error) {
+                    console.error("Erreur appel:", error);
+                    showToast("Erreur : " + error.message, "error");
+                    return;
+                }
+
+                showToast("Appel enregistré !", "success");
+                fermerAppel();
+                loadPresenceSeances();
+
+            });
 
         }
 
@@ -2536,10 +2799,84 @@ console.log("Page actuelle:", currentPage);
     // =================================================
 
     const parentNameEl = document.querySelector("#parent-name");
-    const parentChildNameEl = document.querySelector("#parent-child-name");
-    const parentChildClasseEl = document.querySelector("#parent-child-classe");
+    const parentEnfantsEl = document.querySelector("#parent-enfants");
 
-    if (parentNameEl && parentChildNameEl && parentChildClasseEl) {
+
+    // Formulaire « code d'accès » (espace parent et espace élève)
+    document.querySelectorAll(".code-form").forEach(function (form) {
+
+        form.addEventListener("submit", async function (event) {
+
+            event.preventDefault();
+
+            const input = form.querySelector(".code-input");
+            const code = input.value.trim();
+
+            if (!code) {
+                return;
+            }
+
+            const { data, error } = await window.supabaseClient
+                .rpc("utiliser_code", { code: code });
+
+            if (error) {
+                console.error("Erreur code:", error);
+                showToast(error.message || "Code invalide", "error");
+                return;
+            }
+
+            showToast(`Compte lié à ${data.prenom} ✅`, "success");
+
+            setTimeout(function () {
+                window.location.reload();
+            }, 1200);
+
+        });
+
+    });
+
+
+    // Séries publiées pour une classe (et celles sans classe)
+    function requeteDocuments(classe) {
+
+        let query = window.supabaseClient
+            .from("documents")
+            .select("*")
+            .eq("statut", "publie")
+            .order("created_at", { ascending: true });
+
+        if (classe) {
+            query = query.or(`classe.eq."${classe}",classe.is.null,classe.eq.""`);
+        }
+
+        return query;
+
+    }
+
+
+    function htmlDocuments(documents) {
+
+        if (!documents || documents.length === 0) {
+            return "<p>Aucune série pour le moment.</p>";
+        }
+
+        return `<div class="student-dashboard-grid">${documents.map(function (doc) {
+            return `
+                <article class="student-dashboard-card">
+                    <div class="dashboard-card-icon">📄</div>
+                    <div>
+                        <h3 dir="auto">${doc.nom}</h3>
+                        <p>${doc.type_fichier || "Document"}</p>
+                        ${doc.lien ? `<a href="${doc.lien}" target="_blank" rel="noopener" class="button button-primary seance-join">📄 Ouvrir</a>` : ""}
+                    </div>
+                </article>
+            `;
+        }).join("")}</div>`;
+
+    }
+
+
+    if (parentNameEl && parentEnfantsEl) {
 
         async function loadParentSpace() {
 
@@ -2556,14 +2893,12 @@ console.log("Page actuelle:", currentPage);
                 return;
             }
 
-            const userId = session.user.id;
-
-            console.log("User ID:", userId);
+            const codeCard = document.querySelector("#parent-code-card");
 
             const { data: parents, error: errParent } = await window.supabaseClient
                 .from("parents")
                 .select("*")
-                .eq("user_id", userId);
+                .eq("user_id", session.user.id);
 
             if (errParent) {
                 console.error("Erreur chargement parent:", errParent);
@@ -2571,41 +2906,124 @@ console.log("Page actuelle:", currentPage);
             }
 
             if (!parents || parents.length === 0) {
-                console.log("Aucun parent associé à cet utilisateur.");
-                parentNameEl.textContent = "Bienvenue dans votre espace";
-                parentChildNameEl.textContent = "Aucun enfant associé";
-                parentChildClasseEl.textContent = "—";
+                parentEnfantsEl.innerHTML = "";
+                codeCard.hidden = false;
                 return;
             }
 
             const parent = parents[0];
 
-            console.log("Parent:", parent);
-
-            parentNameEl.textContent = `Bienvenue, ${parent.prenom} ${parent.nom}`;
+            parentNameEl.textContent = `Bienvenue, ${parent.prenom} ${parent.nom}`.trim();
 
             const { data: enfants, error: errEnfants } = await window.supabaseClient
                 .from("eleves")
-                .select("*")
-                .eq("parent_id", parent.id);
+                .select("*, presences(present, seances(date_seance, matiere)), paiements(date_paiement, montant)")
+                .eq("parent_id", parent.id)
+                .order("prenom", { ascending: true });
 
             if (errEnfants) {
                 console.error("Erreur chargement enfants:", errEnfants);
                 return;
             }
 
-            console.log("Enfants:", enfants);
+            // Toujours possible de lier un autre enfant
+            codeCard.hidden = false;
+            codeCard.querySelector("h2").textContent =
+                enfants && enfants.length > 0 ? "Lier un autre enfant" : "Lier mon enfant";
 
             if (!enfants || enfants.length === 0) {
-                parentChildNameEl.textContent = "Aucun enfant associé";
-                parentChildClasseEl.textContent = "—";
+                parentEnfantsEl.innerHTML = "";
                 return;
             }
 
-            const enfant = enfants[0];
+            const now = new Date();
+            const today = now.getFullYear() + "-" +
+                String(now.getMonth() + 1).padStart(2, "0") + "-" +
+                String(now.getDate()).padStart(2, "0");
 
-            parentChildNameEl.textContent = `${enfant.prenom} ${enfant.nom}`;
-            parentChildClasseEl.textContent = `Classe : ${enfant.classe || "—"}`;
+            const blocs = await Promise.all(enfants.map(async function (enfant) {
+
+                const [{ data: seances }, { data: documents }] = await Promise.all([
+                    window.supabaseClient
+                        .from("seances")
+                        .select("*")
+                        .gte("date_seance", today)
+                        .neq("statut", "annulée")
+                        .or(`classe.eq."${enfant.classe}",classe.is.null,classe.eq.""`)
+                        .order("date_seance", { ascending: true })
+                        .order("heure_debut", { ascending: true })
+                        .limit(1),
+                    requeteDocuments(enfant.classe)
+                ]);
+
+                const suivi = suiviEleve(enfant);
+                const prochaine = seances && seances[0];
+
+                const historique = (enfant.presences || [])
+                    .filter(function (p) { return p.seances; })
+                    .sort(function (a, b) {
+                        return (b.seances.date_seance || "").localeCompare(a.seances.date_seance || "");
+                    })
+                    .slice(0, 8);
+
+                const historiqueHTML = historique.length > 0
+                    ? `<ul class="historique-presences">${historique.map(function (p) {
+                        return `<li>${p.present ? "✅ Présent(e)" : "❌ Absent(e)"} — ${p.seances.date_seance} · <span dir="auto">${p.seances.matiere}</span></li>`;
+                    }).join("")}</ul>`
+                    : "<p>Les présences apparaîtront ici après chaque séance.</p>";
+
+                return `
+                    <section class="student-welcome-card is-stacked">
+
+                        <span class="student-label">MON ENFANT</span>
+
+                        <h2 dir="auto">${enfant.prenom} ${enfant.nom}</h2>
+
+                        <p>Classe : <bdi>${enfant.classe || "—"}</bdi></p>
+
+                        <div class="student-dashboard-grid">
+
+                            <article class="student-dashboard-card">
+                                <div class="dashboard-card-icon">📅</div>
+                                <div>
+                                    <h3>${suivi.total} séance(s)</h3>
+                                    <p>Ce mois : ${suivi.periode} / ${SEANCES_PAR_MOIS}</p>
+                                </div>
+                            </article>
+
+                            <article class="student-dashboard-card">
+                                <div class="dashboard-card-icon">💰</div>
+                                <div>
+                                    <h3>${suivi.paiement}</h3>
+                                    <p>${suivi.moisPayes} mois payé(s) · ${enfant.tarif_mensuel || 100} DT / mois</p>
+                                </div>
+                            </article>
+
+                            <article class="student-dashboard-card">
+                                <div class="dashboard-card-icon">🔜</div>
+                                <div>
+                                    <h3>Prochaine séance</h3>
+                                    <p>${prochaine
+                                        ? `${prochaine.date_seance} à ${prochaine.heure_debut ? prochaine.heure_debut.slice(0, 5) : "—"}<br><span dir="auto">${prochaine.matiere}</span>`
+                                        : "Pas encore programmée"}</p>
+                                    ${prochaine && prochaine.lien_visio ? `<a href="${prochaine.lien_visio}" target="_blank" rel="noopener" class="button button-primary seance-join">🎥 Lien du cours</a>` : ""}
+                                </div>
+                            </article>
+
+                        </div>
+
+                        <h3 class="documents-niveau">Présences</h3>
+                        ${historiqueHTML}
+
+                        <h3 class="documents-niveau">Séries d'exercices</h3>
+                        ${htmlDocuments(documents)}
+
+                    </section>
+                `;
+
+            }));
+
+            parentEnfantsEl.innerHTML = blocs.join("");
 
         }
 
@@ -2658,8 +3076,9 @@ console.log("Page actuelle:", currentPage);
                 eleveNameEl.textContent = "Bienvenue";
                 eleveClasseEl.textContent = "Aucune classe associée";
                 eleveStatutEl.textContent = "—";
+                document.querySelector("#eleve-code-card").hidden = false;
                 loadEleveSeances(null);
-                loadEleveDocuments();
+                loadEleveDocuments(null);
                 return;
             }
 
@@ -2672,13 +3091,13 @@ console.log("Page actuelle:", currentPage);
             eleveStatutEl.textContent = eleve.statut || "—";
 
             loadEleveSeances(eleve.classe);
-            loadEleveDocuments();
+            loadEleveDocuments(eleve.classe);
 
         }
 
 
         // Séries d'exercices publiées, regroupées par niveau
-        async function loadEleveDocuments() {
+        async function loadEleveDocuments(classe) {
 
             const container = document.querySelector("#eleve-documents");
 
@@ -2686,12 +3105,8 @@ console.log("Page actuelle:", currentPage);
                 return;
             }
 
-            const { data: documents, error } = await window.supabaseClient
-                .from("documents")
-                .select("*")
-                .eq("statut", "publie")
-                .order("niveau", { ascending: true })
-                .order("created_at", { ascending: true });
+            const { data: documents, error } = await requeteDocuments(classe)
+                .order("niveau", { ascending: true });
 
             if (error) {
                 console.error("Erreur chargement documents:", error);
