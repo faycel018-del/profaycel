@@ -1,0 +1,66 @@
+// =====================================================
+// PROFAYCEL — Service Worker (application installable)
+// =====================================================
+
+const CACHE_NAME = "profaycel-v1";
+
+const PRECACHE = [
+    "./",
+    "index.html",
+    "404.html",
+    "style.css",
+    "script.js",
+    "supabase.js",
+    "manifest.json",
+    "icons/icon-192.png",
+    "icons/icon-512.png"
+];
+
+self.addEventListener("install", function (event) {
+    event.waitUntil(
+        caches.open(CACHE_NAME).then(function (cache) {
+            return cache.addAll(PRECACHE);
+        })
+    );
+    self.skipWaiting();
+});
+
+self.addEventListener("activate", function (event) {
+    event.waitUntil(
+        caches.keys().then(function (keys) {
+            return Promise.all(keys.filter(function (key) {
+                return key !== CACHE_NAME;
+            }).map(function (key) {
+                return caches.delete(key);
+            }));
+        })
+    );
+    self.clients.claim();
+});
+
+// Réseau d'abord (pour toujours avoir la dernière version),
+// cache en secours quand il n'y a pas de connexion.
+// Les requêtes vers Supabase et les autres domaines ne sont pas mises en cache.
+self.addEventListener("fetch", function (event) {
+
+    const request = event.request;
+
+    if (request.method !== "GET" || new URL(request.url).origin !== self.location.origin) {
+        return;
+    }
+
+    event.respondWith(
+        fetch(request).then(function (response) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then(function (cache) {
+                cache.put(request, copy);
+            });
+            return response;
+        }).catch(function () {
+            return caches.match(request).then(function (cached) {
+                return cached || caches.match("index.html");
+            });
+        })
+    );
+
+});

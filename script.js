@@ -152,6 +152,70 @@ function showToast(message, type = "info") {
 })();
 
 
+// =====================================================
+// APPLICATION INSTALLABLE (PWA)
+// =====================================================
+
+if ("serviceWorker" in navigator) {
+
+    window.addEventListener("load", function () {
+
+        navigator.serviceWorker.register("sw.js").catch(function (error) {
+            console.error("Erreur service worker:", error);
+        });
+
+    });
+
+}
+
+(function setupInstallButton() {
+
+    let deferredPrompt = null;
+
+    window.addEventListener("beforeinstallprompt", function (event) {
+
+        event.preventDefault();
+        deferredPrompt = event;
+
+        if (document.querySelector(".install-app-button")) {
+            return;
+        }
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "install-app-button";
+        button.textContent = "📲 Installer l'application";
+
+        button.addEventListener("click", async function () {
+
+            if (!deferredPrompt) {
+                return;
+            }
+
+            deferredPrompt.prompt();
+            await deferredPrompt.userChoice;
+            deferredPrompt = null;
+            button.remove();
+
+        });
+
+        document.body.appendChild(button);
+
+    });
+
+    window.addEventListener("appinstalled", function () {
+
+        const button = document.querySelector(".install-app-button");
+
+        if (button) {
+            button.remove();
+        }
+
+    });
+
+})();
+
+
 document.addEventListener("DOMContentLoaded", function () {
 
     // =================================================
@@ -1694,10 +1758,19 @@ console.log("Page actuelle:", currentPage);
 
 
     // =================================================
-    // 14. AFFICHER LES SÉANCES (seances-admin.html)
+    // 14. SÉANCES — AFFICHER + AJOUTER + MODIFIER + SUPPRIMER
+    //     (seances-admin.html, avec lien de cours en ligne)
     // =================================================
 
     const seancesGrid = document.querySelector("#seances-grid");
+    const seanceModal = document.querySelector("#seance-modal");
+    const seanceForm = document.querySelector("#seance-form");
+    const seanceModalTitle = document.querySelector("#seance-modal-title");
+    const btnAddSeance = document.querySelector("#btn-add-seance");
+    const seanceModalClose = document.querySelector("#seance-modal-close");
+    const seanceModalCancel = document.querySelector("#seance-modal-cancel");
+    const seanceClasseSelect = document.querySelector("#seance-classe");
+    const btnGenererLien = document.querySelector("#btn-generer-lien");
 
     if (seancesGrid) {
 
@@ -1723,6 +1796,8 @@ console.log("Page actuelle:", currentPage);
 
                     console.log("Séances chargées:", seances.length);
 
+                    updateSeancesStats(seances);
+
                     if (seances.length === 0) {
                         seancesGrid.innerHTML = "<p>Aucune séance planifiée.</p>";
                         return;
@@ -1730,10 +1805,16 @@ console.log("Page actuelle:", currentPage);
 
                     seancesGrid.innerHTML = seances.map(function (seance) {
 
+                        const lien = seance.lien_visio
+                            ? `<a href="${seance.lien_visio}" target="_blank" rel="noopener" class="button button-primary seance-join">
+                                   🎥 Démarrer le cours
+                               </a>`
+                            : "";
+
                         return `
                             <article class="student-dashboard-card">
                                 <div class="dashboard-card-icon">
-                                    📅
+                                    ${seance.lien_visio ? "🎥" : "📅"}
                                 </div>
                                 <div>
                                     <h3>
@@ -1750,16 +1831,283 @@ console.log("Page actuelle:", currentPage);
                                         <br>
                                         <strong>Statut :</strong> ${seance.statut || "—"}
                                     </p>
-                                    <a href="#">
-                                        Voir la séance →
-                                    </a>
+                                    ${lien}
+                                </div>
+                                <div class="card-actions">
+                                    <button
+                                        type="button"
+                                        class="btn-edit"
+                                        data-id="${seance.id}">
+                                        ✏️ Modifier
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="btn-delete"
+                                        data-id="${seance.id}">
+                                        🗑️ Supprimer
+                                    </button>
                                 </div>
                             </article>
                         `;
 
                     }).join("");
 
+                    attachSeanceEvents(seances);
+
                 });
+
+        }
+
+
+        function updateSeancesStats(seances) {
+
+            const today = new Date().toISOString().slice(0, 10);
+
+            const prevues = document.querySelector("#stats-seances-prevues");
+            const terminees = document.querySelector("#stats-seances-terminees");
+            const aVenir = document.querySelector("#stats-seances-a-venir");
+
+            if (prevues) {
+                prevues.textContent = seances.length;
+            }
+
+            if (terminees) {
+                terminees.textContent = seances.filter(function (s) {
+                    return s.statut === "terminée";
+                }).length;
+            }
+
+            if (aVenir) {
+                aVenir.textContent = seances.filter(function (s) {
+                    return s.date_seance && s.date_seance >= today && s.statut !== "annulée";
+                }).length;
+            }
+
+        }
+
+
+        function loadClassesSelect() {
+
+            if (!seanceClasseSelect) {
+                return;
+            }
+
+            if (!window.supabaseClient) {
+                setTimeout(loadClassesSelect, 200);
+                return;
+            }
+
+            window.supabaseClient
+                .from("classes")
+                .select("nom")
+                .order("nom", { ascending: true })
+                .then(function (result) {
+
+                    if (result.error) {
+                        console.error("Erreur chargement classes:", result.error);
+                        return;
+                    }
+
+                    result.data.forEach(function (classe) {
+
+                        const option = document.createElement("option");
+                        option.value = classe.nom;
+                        option.textContent = classe.nom;
+                        seanceClasseSelect.appendChild(option);
+
+                    });
+
+                });
+
+        }
+
+
+        // Lien Jitsi Meet : gratuit, sans compte pour les élèves
+        function genererLienJitsi() {
+
+            const random = Math.random().toString(36).slice(2, 10);
+
+            return "https://meet.jit.si/Profaycel-" + random;
+
+        }
+
+
+        function attachSeanceEvents(seances) {
+
+            document.querySelectorAll("#seances-grid .btn-edit").forEach(function (btn) {
+
+                btn.addEventListener("click", function () {
+
+                    const id = btn.dataset.id;
+
+                    const seance = seances.find(function (s) {
+                        return String(s.id) === String(id);
+                    });
+
+                    if (!seance) {
+                        return;
+                    }
+
+                    document.querySelector("#seance-id").value = seance.id;
+                    document.querySelector("#seance-matiere").value = seance.matiere || "";
+                    seanceClasseSelect.value = seance.classe || "";
+                    document.querySelector("#seance-date").value = seance.date_seance || "";
+                    document.querySelector("#seance-debut").value = seance.heure_debut || "";
+                    document.querySelector("#seance-fin").value = seance.heure_fin || "";
+                    document.querySelector("#seance-salle").value = seance.salle || "";
+                    document.querySelector("#seance-lien").value = seance.lien_visio || "";
+                    document.querySelector("#seance-statut").value = seance.statut || "prévue";
+
+                    seanceModalTitle.textContent = "Modifier une séance";
+
+                    seanceModal.classList.add("active");
+
+                });
+
+            });
+
+            document.querySelectorAll("#seances-grid .btn-delete").forEach(function (btn) {
+
+                btn.addEventListener("click", async function () {
+
+                    const id = btn.dataset.id;
+
+                    if (!confirm("Voulez-vous vraiment supprimer cette séance ?")) {
+                        return;
+                    }
+
+                    const { error } = await window.supabaseClient
+                        .from("seances")
+                        .delete()
+                        .eq("id", id);
+
+                    if (error) {
+                        console.error("Erreur suppression:", error);
+                        showToast("Erreur : " + error.message, "error");
+                        return;
+                    }
+
+                    console.log("Séance supprimée:", id);
+                    showToast("Séance supprimée !", "success");
+
+                    loadSeances();
+
+                });
+
+            });
+
+        }
+
+
+        if (btnAddSeance) {
+
+            btnAddSeance.addEventListener("click", function () {
+
+                seanceForm.reset();
+                document.querySelector("#seance-id").value = "";
+                document.querySelector("#seance-salle").value = "En ligne";
+                document.querySelector("#seance-lien").value = genererLienJitsi();
+
+                seanceModalTitle.textContent = "Nouvelle séance";
+
+                seanceModal.classList.add("active");
+
+            });
+
+        }
+
+
+        if (btnGenererLien) {
+
+            btnGenererLien.addEventListener("click", function () {
+                document.querySelector("#seance-lien").value = genererLienJitsi();
+            });
+
+        }
+
+
+        function closeSeanceModal() {
+            seanceModal.classList.remove("active");
+            seanceForm.reset();
+            document.querySelector("#seance-id").value = "";
+        }
+
+        if (seanceModal) {
+
+            if (seanceModalClose) {
+                seanceModalClose.addEventListener("click", closeSeanceModal);
+            }
+
+            if (seanceModalCancel) {
+                seanceModalCancel.addEventListener("click", closeSeanceModal);
+            }
+
+            seanceModal.addEventListener("click", function (event) {
+                if (event.target === seanceModal) {
+                    closeSeanceModal();
+                }
+            });
+
+            document.addEventListener("keydown", function (event) {
+                if (event.key === "Escape" && seanceModal.classList.contains("active")) {
+                    closeSeanceModal();
+                }
+            });
+
+
+            seanceForm.addEventListener("submit", async function (event) {
+
+                event.preventDefault();
+
+                const id = document.querySelector("#seance-id").value;
+
+                const data = {
+                    matiere: document.querySelector("#seance-matiere").value.trim(),
+                    classe: seanceClasseSelect.value,
+                    date_seance: document.querySelector("#seance-date").value || null,
+                    heure_debut: document.querySelector("#seance-debut").value || null,
+                    heure_fin: document.querySelector("#seance-fin").value || null,
+                    salle: document.querySelector("#seance-salle").value.trim(),
+                    lien_visio: document.querySelector("#seance-lien").value.trim() || null,
+                    statut: document.querySelector("#seance-statut").value
+                };
+
+                if (!data.matiere || !data.date_seance) {
+                    showToast("Veuillez remplir la matière et la date.", "warning");
+                    return;
+                }
+
+                let error;
+
+                if (id) {
+
+                    ({ error } = await window.supabaseClient
+                        .from("seances")
+                        .update(data)
+                        .eq("id", id));
+
+                } else {
+
+                    ({ error } = await window.supabaseClient
+                        .from("seances")
+                        .insert([data]));
+
+                }
+
+                if (error) {
+                    console.error("Erreur enregistrement séance:", error);
+                    showToast("Erreur : " + error.message, "error");
+                    return;
+                }
+
+                showToast(id ? "Séance modifiée !" : "Séance ajoutée !", "success");
+
+                closeSeanceModal();
+                loadSeances();
+
+            });
+
+            loadClassesSelect();
 
         }
 
@@ -2187,6 +2535,7 @@ console.log("Page actuelle:", currentPage);
                 eleveNameEl.textContent = "Bienvenue";
                 eleveClasseEl.textContent = "Aucune classe associée";
                 eleveStatutEl.textContent = "—";
+                loadEleveSeances(null);
                 return;
             }
 
@@ -2197,6 +2546,87 @@ console.log("Page actuelle:", currentPage);
             eleveNameEl.textContent = `${eleve.prenom} ${eleve.nom}`;
             eleveClasseEl.textContent = `Classe : ${eleve.classe || "—"}`;
             eleveStatutEl.textContent = eleve.statut || "—";
+
+            loadEleveSeances(eleve.classe);
+
+        }
+
+
+        // Séances à venir de la classe de l'élève (ou de toutes les classes)
+        async function loadEleveSeances(classe) {
+
+            const container = document.querySelector("#eleve-seances");
+
+            if (!container) {
+                return;
+            }
+
+            const today = new Date().toISOString().slice(0, 10);
+
+            let query = window.supabaseClient
+                .from("seances")
+                .select("*")
+                .gte("date_seance", today)
+                .neq("statut", "annulée")
+                .order("date_seance", { ascending: true })
+                .order("heure_debut", { ascending: true });
+
+            if (classe) {
+                query = query.or(`classe.eq."${classe}",classe.is.null,classe.eq.""`);
+            }
+
+            const { data: seances, error } = await query;
+
+            if (error) {
+                console.error("Erreur chargement séances élève:", error);
+                container.innerHTML = "<p>Impossible de charger les séances.</p>";
+                return;
+            }
+
+            if (!seances || seances.length === 0) {
+                container.innerHTML = "<p>Aucune séance prévue pour le moment.</p>";
+                return;
+            }
+
+            const now = new Date();
+            const heureActuelle = now.toTimeString().slice(0, 5);
+
+            container.innerHTML = seances.map(function (seance) {
+
+                const enDirect = seance.date_seance === today
+                    && seance.heure_debut && seance.heure_fin
+                    && seance.heure_debut.slice(0, 5) <= heureActuelle
+                    && heureActuelle <= seance.heure_fin.slice(0, 5);
+
+                const bouton = seance.lien_visio
+                    ? `<a href="${seance.lien_visio}" target="_blank" rel="noopener" class="button button-primary seance-join">
+                           🎥 Rejoindre le cours
+                       </a>`
+                    : "";
+
+                return `
+                    <article class="student-dashboard-card${enDirect ? " seance-live" : ""}">
+                        <div class="dashboard-card-icon">
+                            ${seance.lien_visio ? "🎥" : "📅"}
+                        </div>
+                        <div>
+                            ${enDirect ? '<span class="seance-live-badge">● En direct</span>' : ""}
+                            <h3>
+                                ${seance.matiere}
+                            </h3>
+                            <p>
+                                <strong>Date :</strong> ${seance.date_seance}
+                                <br>
+                                <strong>Heure :</strong> ${seance.heure_debut ? seance.heure_debut.slice(0, 5) : "—"} – ${seance.heure_fin ? seance.heure_fin.slice(0, 5) : "—"}
+                                <br>
+                                <strong>Lieu :</strong> ${seance.salle || "—"}
+                            </p>
+                            ${bouton}
+                        </div>
+                    </article>
+                `;
+
+            }).join("");
 
         }
 
