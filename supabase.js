@@ -2,8 +2,8 @@
 // PROFAYCEL — Supabase Configuration
 // =====================================================
 
-const SUPABASE_URL = "https://hlwuqvbrnluxtxsaiehp.supabase.co";
-const SUPABASE_KEY = "sb_publishable_PLdPtzyRgQ2Kc-x0lPVLoQ_NgCSuj47";
+const SUPABASE_URL = "https://dmykwuyivwcprhpghbxc.supabase.co";
+const SUPABASE_KEY = "sb_publishable_0-yL0Dmvh4TCHAQToVurhA_oQa_sQGY";
 
 // نستعملوا window باش يكون متاح في كل الملفات
 window.supabaseClient = null;

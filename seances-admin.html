@@ -7,6 +7,10 @@
     <title>Gestion des séances | Profaycel</title>
 
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
 </head>
 
 <body>
@@ -153,7 +157,7 @@
 
                     <div>
 
-                        <h3>
+                        <h3 id="stats-seances-prevues">
                             0
                         </h3>
 
@@ -174,7 +178,7 @@
 
                     <div>
 
-                        <h3>
+                        <h3 id="stats-seances-terminees">
                             0
                         </h3>
 
@@ -195,7 +199,7 @@
 
                     <div>
 
-                        <h3>
+                        <h3 id="stats-seances-a-venir">
                             0
                         </h3>
 
@@ -224,20 +228,26 @@
 
                 <p>
                     Créez une nouvelle séance en indiquant
-                    la date, l'heure, la classe, la matière
-                    et le contenu prévu.
+                    la date, l'heure, la classe et la matière.
+                    Un lien de cours en ligne (Jitsi Meet) est
+                    généré automatiquement pour les élèves à distance.
                 </p>
 
-                <a href="#" class="header-button">
+                <button
+                    type="button"
+                    class="header-button"
+                    id="btn-add-seance">
+
                     + Nouvelle séance
-                </a>
+
+                </button>
 
             </section>
 
 
             <!-- PLANNING -->
 
-            <section class="student-welcome-card">
+            <section class="student-welcome-card is-stacked">
 
                 <span class="student-label">
                     PLANNING
@@ -256,6 +266,204 @@
 
             </section>
 
+
+
+            <!-- ==================================================
+                 MODAL — AJOUTER / MODIFIER UNE SÉANCE
+            ================================================== -->
+
+            <div class="modal-overlay" id="seance-modal">
+
+                <div class="modal-box">
+
+                    <div class="modal-header">
+
+                        <h2 id="seance-modal-title">
+                            Nouvelle séance
+                        </h2>
+
+                        <button
+                            type="button"
+                            class="modal-close"
+                            id="seance-modal-close">
+
+                            ✕
+
+                        </button>
+
+                    </div>
+
+
+                    <form id="seance-form" class="modal-form">
+
+                        <input
+                            type="hidden"
+                            id="seance-id"
+                            name="seance-id">
+
+
+                        <div class="modal-form-group">
+
+                            <label for="seance-matiere">
+                                Matière
+                            </label>
+
+                            <input
+                                type="text"
+                                id="seance-matiere"
+                                name="seance-matiere"
+                                placeholder="Informatique, Robotique..."
+                                required>
+
+                        </div>
+
+
+                        <div class="modal-form-group">
+
+                            <label for="seance-classe">
+                                Classe
+                            </label>
+
+                            <select
+                                id="seance-classe"
+                                name="seance-classe">
+
+                                <option value="">Toutes les classes</option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="modal-form-group">
+
+                            <label for="seance-date">
+                                Date
+                            </label>
+
+                            <input
+                                type="date"
+                                id="seance-date"
+                                name="seance-date"
+                                required>
+
+                        </div>
+
+
+                        <div class="modal-form-group">
+
+                            <label for="seance-debut">
+                                Heure de début
+                            </label>
+
+                            <input
+                                type="time"
+                                id="seance-debut"
+                                name="seance-debut">
+
+                        </div>
+
+
+                        <div class="modal-form-group">
+
+                            <label for="seance-fin">
+                                Heure de fin
+                            </label>
+
+                            <input
+                                type="time"
+                                id="seance-fin"
+                                name="seance-fin">
+
+                        </div>
+
+
+                        <div class="modal-form-group">
+
+                            <label for="seance-salle">
+                                Salle ou lieu
+                            </label>
+
+                            <input
+                                type="text"
+                                id="seance-salle"
+                                name="seance-salle"
+                                placeholder="En ligne">
+
+                        </div>
+
+
+                        <div class="modal-form-group">
+
+                            <label for="seance-lien">
+                                Lien du cours en ligne
+                            </label>
+
+                            <input
+                                type="url"
+                                id="seance-lien"
+                                name="seance-lien"
+                                placeholder="https://meet.jit.si/... ou lien Google Meet / Zoom">
+
+                            <button
+                                type="button"
+                                class="btn-edit seance-generate"
+                                id="btn-generer-lien">
+
+                                🔄 Générer un nouveau lien Jitsi
+
+                            </button>
+
+                        </div>
+
+
+                        <div class="modal-form-group">
+
+                            <label for="seance-statut">
+                                Statut
+                            </label>
+
+                            <select
+                                id="seance-statut"
+                                name="seance-statut">
+
+                                <option value="prévue">Prévue</option>
+                                <option value="en cours">En cours</option>
+                                <option value="terminée">Terminée</option>
+                                <option value="annulée">Annulée</option>
+                                <option value="reportée">Reportée</option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="modal-actions">
+
+                            <button
+                                type="button"
+                                class="button button-secondary"
+                                id="seance-modal-cancel">
+
+                                Annuler
+
+                            </button>
+
+                            <button
+                                type="submit"
+                                class="button button-primary">
+
+                                Enregistrer
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
 
             <!-- STRUCTURE -->
 
