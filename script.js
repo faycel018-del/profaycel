@@ -216,6 +216,10 @@ if ("serviceWorker" in navigator) {
 })();
 
 
+// Compte administrateur (la base de données vérifie aussi cet email)
+const ADMIN_EMAIL = "faycel.khlifiii@gmail.com";
+
+
 document.addEventListener("DOMContentLoaded", function () {
 
     // =================================================
@@ -542,8 +546,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const passwordConfirm = document.getElementById("password-confirm").value;
             let role = document.getElementById("role").value;
 
-            const ADMIN_EMAIL = "faycel.khlifiii@gmail.com";
-
             if (role === "admin" && email !== ADMIN_EMAIL) {
                 showToast("Vous n'êtes pas autorisé à créer un compte Admin.", "error");
                 return;
@@ -658,6 +660,127 @@ document.addEventListener("DOMContentLoaded", function () {
             }, 800);
 
         });
+
+    }
+
+
+    // =================================================
+    // 7b. CONNEXION AVEC GOOGLE (login.html + register.html)
+    // =================================================
+
+    const btnGoogle = document.getElementById("btn-google");
+
+    function redirectByRole(role) {
+
+        if (role === "admin") {
+            window.location.href = "admin.html";
+        } else if (role === "parent") {
+            window.location.href = "parent.html";
+        } else {
+            window.location.href = "eleve.html";
+        }
+
+    }
+
+    if (btnGoogle) {
+
+        btnGoogle.addEventListener("click", async function () {
+
+            if (!window.supabaseClient) {
+                showToast("Erreur : Supabase non connecté.", "error");
+                return;
+            }
+
+            // Sur la page d'inscription, on garde le rôle choisi
+            // pour l'appliquer au retour de Google
+            const roleSelect = document.getElementById("role");
+
+            if (roleSelect) {
+
+                if (!roleSelect.value) {
+                    showToast("Choisissez d'abord : Élève, Parent ou Enseignant.", "warning");
+                    roleSelect.focus();
+                    return;
+                }
+
+                try {
+                    localStorage.setItem("profaycel_role_google", roleSelect.value);
+                } catch (e) {
+                    console.warn("localStorage indisponible:", e);
+                }
+
+            }
+
+            const { error } = await window.supabaseClient.auth.signInWithOAuth({
+                provider: "google",
+                options: {
+                    redirectTo: new URL("login.html", window.location.href).href
+                }
+            });
+
+            if (error) {
+                console.error("Erreur Google:", error);
+                showToast("Erreur : " + error.message, "error");
+            }
+
+        });
+
+    }
+
+
+    // Retour de Google sur login.html : on fixe le rôle puis on redirige
+    if (loginForm) {
+
+        async function finishGoogleLogin() {
+
+            if (!window.supabaseClient) {
+                setTimeout(finishGoogleLogin, 200);
+                return;
+            }
+
+            const { data } = await window.supabaseClient.auth.getSession();
+            const session = data.session;
+
+            if (!session) {
+                return;
+            }
+
+            const user = session.user;
+            const email = (user.email || "").toLowerCase();
+            let role = user.user_metadata.role;
+
+            if (!role) {
+
+                try {
+                    role = localStorage.getItem("profaycel_role_google");
+                    localStorage.removeItem("profaycel_role_google");
+                } catch (e) {
+                    role = null;
+                }
+
+                role = role || "eleve";
+
+                if (email === ADMIN_EMAIL) {
+                    role = "admin";
+                } else if (role === "admin") {
+                    role = "eleve";
+                }
+
+                const { error } = await window.supabaseClient.auth.updateUser({
+                    data: { role: role }
+                });
+
+                if (error) {
+                    console.error("Erreur enregistrement rôle:", error);
+                }
+
+            }
+
+            redirectByRole(role);
+
+        }
+
+        finishGoogleLogin();
 
     }
 
