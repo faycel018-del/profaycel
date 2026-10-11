@@ -15,6 +15,7 @@ create or replace function public.is_admin()
 returns boolean
 language sql
 stable
+set search_path = ''
 as $$
     select lower(coalesce(auth.jwt() ->> 'email', '')) = 'faycel.khlifiii@gmail.com';
 $$;
@@ -129,9 +130,12 @@ create table if not exists public.annonces (
 -- Quand un élève ou un parent crée son compte avec le même
 -- email que sa fiche, la fiche est liée automatiquement
 -- (et inversement quand l'admin crée la fiche après).
+-- Les fonctions sont dans le schéma "prive", non exposé par l'API.
 -- -----------------------------------------------------
 
-create or replace function public.lier_compte_nouvel_utilisateur()
+create schema if not exists prive;
+
+create or replace function prive.lier_compte_nouvel_utilisateur()
 returns trigger
 language plpgsql
 security definer
@@ -149,9 +153,9 @@ $$;
 drop trigger if exists on_auth_user_created_lier on auth.users;
 create trigger on_auth_user_created_lier
     after insert on auth.users
-    for each row execute function public.lier_compte_nouvel_utilisateur();
+    for each row execute function prive.lier_compte_nouvel_utilisateur();
 
-create or replace function public.lier_fiche_compte_existant()
+create or replace function prive.lier_fiche_compte_existant()
 returns trigger
 language plpgsql
 security definer
@@ -171,12 +175,12 @@ $$;
 drop trigger if exists eleves_lier_compte on public.eleves;
 create trigger eleves_lier_compte
     before insert or update of email on public.eleves
-    for each row execute function public.lier_fiche_compte_existant();
+    for each row execute function prive.lier_fiche_compte_existant();
 
 drop trigger if exists parents_lier_compte on public.parents;
 create trigger parents_lier_compte
     before insert or update of email on public.parents
-    for each row execute function public.lier_fiche_compte_existant();
+    for each row execute function prive.lier_fiche_compte_existant();
 
 
 -- -----------------------------------------------------
