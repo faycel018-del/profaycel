@@ -110,6 +110,8 @@ create table if not exists public.documents (
     id            bigint generated always as identity primary key,
     nom           text not null,
     type_fichier  text,
+    niveau        text,
+    lien          text,
     classe        text,
     statut        text,
     created_at    timestamptz not null default now()
