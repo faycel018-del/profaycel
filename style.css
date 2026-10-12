@@ -6020,3 +6020,42 @@ body > .footer:not(:has(.container)) p {
     font-size: 0.9rem;
     font-weight: 600;
 }
+
+
+/* =========================================================
+   MENU MOBILE — BOUTONS DANS LE MENU ☰
+========================================================= */
+
+@media (max-width: 800px) {
+
+    .navigation .header-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+
+        margin: 10px 0 0;
+        padding-top: 12px;
+
+        border-top: 1px solid var(--border);
+    }
+
+    .navigation .header-actions .header-button {
+        width: 100%;
+        min-height: 46px;
+
+        color: var(--white);
+
+        justify-content: center;
+
+        font-size: 0.95rem;
+    }
+
+    .navigation {
+        max-height: calc(100vh - 90px);
+        overflow-y: auto;
+
+        z-index: 1000;
+    }
+
+}

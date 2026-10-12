@@ -476,7 +476,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         menuButton.addEventListener("click", function () {
 
-            const isOpen = header.classList.toggle("menu-open");
+            const isOpen = navigation.classList.toggle("menu-open");
+            header.classList.toggle("menu-open", isOpen);
 
             menuButton.setAttribute(
                 "aria-expanded",
@@ -498,6 +499,7 @@ document.addEventListener("DOMContentLoaded", function () {
             link.addEventListener("click", function () {
 
                 header.classList.remove("menu-open");
+                navigation.classList.remove("menu-open");
 
                 menuButton.setAttribute(
                     "aria-expanded",
@@ -519,6 +521,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (event.key === "Escape") {
 
                 header.classList.remove("menu-open");
+                navigation.classList.remove("menu-open");
 
                 menuButton.setAttribute(
                     "aria-expanded",
@@ -540,6 +543,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (window.innerWidth > 800) {
 
                 header.classList.remove("menu-open");
+                navigation.classList.remove("menu-open");
 
                 menuButton.setAttribute(
                     "aria-expanded",
@@ -761,6 +765,37 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         updateAuthButton();
+
+    }
+
+
+    // =================================================
+    // 5b. MENU MOBILE — BOUTONS DANS LE MENU ☰
+    // =================================================
+
+    if (headerActions && navigation) {
+
+        const parentOrigine = headerActions.parentNode;
+        const suivantOrigine = headerActions.nextSibling;
+        const ecranMobile = window.matchMedia("(max-width: 800px)");
+
+        function placerActions() {
+
+            if (ecranMobile.matches) {
+                navigation.appendChild(headerActions);
+            } else if (headerActions.parentNode !== parentOrigine) {
+                parentOrigine.insertBefore(headerActions, suivantOrigine);
+            }
+
+        }
+
+        placerActions();
+
+        if (ecranMobile.addEventListener) {
+            ecranMobile.addEventListener("change", placerActions);
+        } else {
+            ecranMobile.addListener(placerActions);
+        }
 
     }
 
