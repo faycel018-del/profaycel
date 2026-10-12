@@ -2894,39 +2894,93 @@ console.log("Page actuelle:", currentPage);
             return document.querySelector(id).dataset.valeur;
         }
 
-        function titreParDefaut() {
+        const inputNumero = document.querySelector("#doc-numero");
+        let numeroModifie = false;
+
+        function memeRubrique(d) {
+            return (d.classe || "") === valeur("#doc-niveau") &&
+                String(d.trimestre || "") === valeur("#doc-trimestre") &&
+                (d.matiere || "") === valeur("#doc-matiere");
+        }
+
+        // Série : numéro suivant. Correction : la dernière série sans correction.
+        function numeroParDefaut() {
 
             const type = valeur("#doc-type");
-            const nombre = documentsCharges.filter(function (d) {
-                return d.type_fichier === type &&
-                    (d.classe || "") === valeur("#doc-niveau") &&
-                    String(d.trimestre || "") === valeur("#doc-trimestre") &&
-                    (d.matiere || "") === valeur("#doc-matiere");
-            }).length + 1;
-
-            const noms = {
-                "Série d'exercices": "Série",
-                "Correction": "Correction de la série",
-                "Cours": "Cours",
-                "Devoir": "Devoir"
+            const docs = documentsCharges.filter(memeRubrique);
+            const numeros = function (t) {
+                return docs.filter(function (d) { return d.type_fichier === t && d.numero; })
+                    .map(function (d) { return d.numero; });
             };
 
-            return `${noms[type] || type} n°${nombre}`;
+            if (type === "Correction") {
+                const corriges = numeros("Correction");
+                const series = numeros("Série d'exercices").filter(function (n) { return !corriges.includes(n); });
+                if (series.length > 0) {
+                    return Math.min.apply(null, series);
+                }
+                return Math.max.apply(null, [0].concat(numeros("Série d'exercices"))) || 1;
+            }
+
+            return Math.max.apply(null, [0].concat(numeros(type))) + 1;
+
+        }
+
+        function titreParDefaut() {
+
+            const n = inputNumero.value || 1;
+            const noms = {
+                "Série d'exercices": "Série n°",
+                "Correction": "Correction de la série n°",
+                "Cours": "Cours n°",
+                "Devoir": "Devoir n°"
+            };
+
+            return (noms[valeur("#doc-type")] || "Document n°") + n;
 
         }
 
         function majTitre() {
+            if (!numeroModifie) {
+                inputNumero.value = numeroParDefaut();
+            }
             if (!titreModifie) {
                 inputTitre.value = titreParDefaut();
             }
         }
+
+        function changerNumero(valeurNumero) {
+            inputNumero.value = Math.max(1, Math.min(50, valeurNumero || 1));
+            numeroModifie = true;
+            if (!titreModifie) {
+                inputTitre.value = titreParDefaut();
+            }
+        }
+
+        document.querySelector("#doc-numero-moins").addEventListener("click", function () {
+            changerNumero(Number(inputNumero.value) - 1);
+        });
+
+        document.querySelector("#doc-numero-plus").addEventListener("click", function () {
+            changerNumero(Number(inputNumero.value) + 1);
+        });
+
+        inputNumero.addEventListener("input", function () {
+            numeroModifie = true;
+            if (!titreModifie) {
+                inputTitre.value = titreParDefaut();
+            }
+        });
 
         inputTitre.addEventListener("input", function () {
             titreModifie = inputTitre.value.trim() !== "";
         });
 
         ["#doc-niveau", "#doc-trimestre", "#doc-matiere", "#doc-type"].forEach(function (id) {
-            activerChoix(document.querySelector(id), majTitre);
+            activerChoix(document.querySelector(id), function () {
+                numeroModifie = false;
+                majTitre();
+            });
         });
 
         activerChoix(document.querySelector("#doc-filtre"), afficherDocuments);
@@ -3152,6 +3206,7 @@ console.log("Page actuelle:", currentPage);
                         classe: valeur("#doc-niveau"),
                         niveau: valeur("#doc-niveau"),
                         trimestre: Number(valeur("#doc-trimestre")),
+                        numero: Number(inputNumero.value) || null,
                         matiere: valeur("#doc-matiere"),
                         statut: document.querySelector("#doc-visible").checked ? "publie" : "masque",
                         lien: lien || null,
@@ -3169,6 +3224,7 @@ console.log("Page actuelle:", currentPage);
                 inputLien.value = "";
                 inputLien.hidden = true;
                 titreModifie = false;
+                numeroModifie = false;
 
                 await chargerDocuments();
                 majTitre();
@@ -3206,6 +3262,7 @@ console.log("Page actuelle:", currentPage);
                 .from("documents")
                 .select("*")
                 .order("trimestre", { ascending: true })
+                .order("numero", { ascending: true, nullsFirst: false })
                 .order("created_at", { ascending: true });
 
             if (error) {
@@ -3276,7 +3333,7 @@ console.log("Page actuelle:", currentPage);
                     <a class="doc-vignette" href="${(fichiers[0] && fichiers[0].url) || d.lien || "#"}" target="_blank" rel="noopener">${vignette}</a>
                     <div class="doc-infos">
                         <strong dir="auto">${d.nom}</strong>
-                        <small>${d.type_fichier || "Document"} · ${d.matiere || "—"}${fichiers.length > 1 ? ` · ${fichiers.length} pages` : ""}</small>
+                        <small>${d.type_fichier || "Document"}${d.numero ? ` n°${d.numero}` : ""} · ${d.matiere || "—"}${fichiers.length > 1 ? ` · ${fichiers.length} pages` : ""}</small>
                         <small class="doc-etat">${visible ? "👁️ Visible par les élèves" : "🙈 Masqué"}</small>
                     </div>
                     <div class="doc-actions">
@@ -3434,64 +3491,195 @@ console.log("Page actuelle:", currentPage);
     }
 
 
-    // Documents publiés : regroupés par trimestre, puis par matière
-    function htmlDocuments(documents) {
+    // Documents publiés : matière → trimestre → série et sa correction
+    const MATIERES = [
+        { nom: "Mathématiques", icone: "📐" },
+        { nom: "Technologie", icone: "🔧" }
+    ];
 
-        if (!documents || documents.length === 0) {
-            return "<p>Aucun document pour le moment.</p>";
+    const ORDRE_TYPES = ["Série d'exercices", "Correction", "Cours", "Devoir"];
+    const ICONES_TYPES = { "Série d'exercices": "📝", "Correction": "✅", "Cours": "📘", "Devoir": "🧪" };
+
+    function boutonsDocument(doc) {
+
+        const fichiers = doc.fichiers || [];
+        const images = fichiers.filter(function (f) { return (f.type || "").startsWith("image/"); });
+        const autres = fichiers.filter(function (f) { return !(f.type || "").startsWith("image/"); });
+
+        let boutons = "";
+
+        if (images.length > 0) {
+            boutons += `<button type="button" class="button button-primary seance-join doc-voir" data-images="${encodeURIComponent(JSON.stringify(images.map(function (f) { return f.url; })))}">👁️ Voir${images.length > 1 ? ` (${images.length} pages)` : ""}</button>`;
         }
 
-        const parTrimestre = {};
-
-        documents.forEach(function (doc) {
-            const t = doc.trimestre ? `Trimestre ${doc.trimestre}` : "Autres documents";
-            (parTrimestre[t] = parTrimestre[t] || []).push(doc);
+        autres.forEach(function (f) {
+            boutons += `<a href="${f.url}" target="_blank" rel="noopener" class="button button-primary seance-join">📄 Ouvrir</a>`;
         });
 
-        return Object.keys(parTrimestre).sort().map(function (t) {
+        if (doc.lien) {
+            boutons += `<a href="${doc.lien}" target="_blank" rel="noopener" class="button button-primary seance-join">📄 Ouvrir</a>`;
+        }
 
-            const cartes = parTrimestre[t].map(function (doc) {
+        return boutons;
 
-                const fichiers = doc.fichiers || [];
-                const images = fichiers.filter(function (f) { return (f.type || "").startsWith("image/"); });
-                const autres = fichiers.filter(function (f) { return !(f.type || "").startsWith("image/"); });
-                const icones = { "Correction": "✅", "Cours": "📘", "Devoir": "📝" };
+    }
 
-                let boutons = "";
+    function htmlListeTrimestre(docs) {
 
-                if (images.length > 0) {
-                    boutons += `<button type="button" class="button button-primary seance-join doc-voir" data-images="${encodeURIComponent(JSON.stringify(images.map(function (f) { return f.url; })))}">👁️ Voir${images.length > 1 ? ` (${images.length} pages)` : ""}</button>`;
+        // une « paire » = la série n°X et sa correction (même numéro)
+        const paires = [];
+        const parNumero = {};
+
+        docs.forEach(function (doc) {
+            if (doc.numero) {
+                if (!parNumero[doc.numero]) {
+                    parNumero[doc.numero] = [];
+                    paires.push({ numero: doc.numero, docs: parNumero[doc.numero] });
                 }
+                parNumero[doc.numero].push(doc);
+            } else {
+                paires.push({ numero: 999, docs: [doc] });
+            }
+        });
 
-                autres.forEach(function (f) {
-                    boutons += `<a href="${f.url}" target="_blank" rel="noopener" class="button button-primary seance-join">📄 Ouvrir</a>`;
-                });
+        paires.sort(function (a, b) { return a.numero - b.numero; });
 
-                if (doc.lien) {
-                    boutons += `<a href="${doc.lien}" target="_blank" rel="noopener" class="button button-primary seance-join">📄 Ouvrir</a>`;
-                }
+        return paires.map(function (paire) {
 
+            paire.docs.sort(function (a, b) {
+                return ORDRE_TYPES.indexOf(a.type_fichier) - ORDRE_TYPES.indexOf(b.type_fichier);
+            });
+
+            return `<div class="docs-paire">${paire.docs.map(function (doc) {
                 return `
-                    <article class="student-dashboard-card">
-                        <div class="dashboard-card-icon">${icones[doc.type_fichier] || "📄"}</div>
-                        <div>
-                            <h3 dir="auto">${doc.nom}</h3>
-                            <p>${doc.type_fichier || "Document"}${doc.matiere ? ` · ${doc.matiere}` : ""}</p>
-                            <div class="doc-boutons">${boutons}</div>
+                    <div class="docs-item${doc.type_fichier === "Correction" ? " docs-item-correction" : ""}">
+                        <span class="docs-item-ic">${ICONES_TYPES[doc.type_fichier] || "📄"}</span>
+                        <div class="docs-item-texte">
+                            <strong dir="auto">${doc.nom}</strong>
+                            <small>${doc.type_fichier || "Document"}</small>
                         </div>
-                    </article>
+                        <div class="doc-boutons">${boutonsDocument(doc)}</div>
+                    </div>
                 `;
-
-            }).join("");
-
-            return `
-                <h4 class="doc-trimestre-titre">${t}</h4>
-                <div class="student-dashboard-grid">${cartes}</div>
-            `;
+            }).join("")}</div>`;
 
         }).join("");
 
     }
+
+    function htmlDocuments(documents) {
+
+        documents = documents || [];
+
+        // matières : les deux principales, puis celles qui ont des documents
+        const matieres = MATIERES.slice();
+
+        documents.forEach(function (doc) {
+            if (doc.matiere && !matieres.some(function (m) { return m.nom === doc.matiere; })) {
+                matieres.push({ nom: doc.matiere, icone: "📚" });
+            }
+        });
+
+        const docsDe = function (matiere) {
+            return documents.filter(function (doc) {
+                return (doc.matiere || "Mathématiques") === matiere;
+            });
+        };
+
+        const active = (matieres.find(function (m) { return docsDe(m.nom).length > 0; }) || matieres[0]).nom;
+
+        const onglets = matieres.map(function (m) {
+
+            const n = docsDe(m.nom).length;
+
+            return `
+                <button type="button" class="docs-matiere${m.nom === active ? " on" : ""}" data-matiere="${m.nom}"${n === 0 ? " disabled" : ""}>
+                    <span class="docs-matiere-ic">${m.icone}</span>
+                    <strong>${m.nom}</strong>
+                    <small>${n === 0 ? "Bientôt" : `${n} document(s)`}</small>
+                </button>
+            `;
+
+        }).join("") + `
+            <div class="docs-matiere docs-matiere-bientot">
+                <span class="docs-matiere-ic">📚</span>
+                <strong>Autres matières</strong>
+                <small>Bientôt</small>
+            </div>
+        `;
+
+        const panneaux = matieres.map(function (m) {
+
+            const docs = docsDe(m.nom);
+            const parTrimestre = { 1: [], 2: [], 3: [] };
+
+            docs.forEach(function (doc) {
+                (parTrimestre[doc.trimestre || 1] = parTrimestre[doc.trimestre || 1] || []).push(doc);
+            });
+
+            const premier = [1, 2, 3].find(function (t) { return parTrimestre[t].length > 0; }) || 1;
+
+            const boutons = [1, 2, 3].map(function (t) {
+                const vide = parTrimestre[t].length === 0;
+                return `
+                    <button type="button" class="docs-trimestre${t === premier ? " on" : ""}" data-trimestre="${t}"${vide ? " disabled" : ""}>
+                        <span>Trimestre ${t}</span>${vide ? ` <small>Bientôt</small>` : ""}
+                    </button>
+                `;
+            }).join("");
+
+            const listes = [1, 2, 3].map(function (t) {
+                return `<div class="docs-liste" data-trimestre="${t}"${t === premier ? "" : " hidden"}>${htmlListeTrimestre(parTrimestre[t])}</div>`;
+            }).join("");
+
+            return `
+                <div class="docs-panneau" data-matiere="${m.nom}"${m.nom === active ? "" : " hidden"}>
+                    <div class="docs-trimestres">${boutons}</div>
+                    ${docs.length === 0 ? "<p>Aucun document pour le moment.</p>" : listes}
+                </div>
+            `;
+
+        }).join("");
+
+        return `<div class="docs-bloc"><div class="docs-matieres">${onglets}</div>${panneaux}</div>`;
+
+    }
+
+    // onglets matière / trimestre (espace élève et parent)
+    document.addEventListener("click", function (event) {
+
+        const matiere = event.target.closest(".docs-matiere[data-matiere]");
+        const trimestre = event.target.closest(".docs-trimestre");
+
+        if (matiere && !matiere.disabled) {
+
+            const bloc = matiere.closest(".docs-bloc");
+
+            bloc.querySelectorAll(".docs-matiere").forEach(function (b) {
+                b.classList.toggle("on", b === matiere);
+            });
+
+            bloc.querySelectorAll(".docs-panneau").forEach(function (p) {
+                p.hidden = p.dataset.matiere !== matiere.dataset.matiere;
+            });
+
+        }
+
+        if (trimestre && !trimestre.disabled) {
+
+            const panneau = trimestre.closest(".docs-panneau");
+
+            panneau.querySelectorAll(".docs-trimestre").forEach(function (b) {
+                b.classList.toggle("on", b === trimestre);
+            });
+
+            panneau.querySelectorAll(".docs-liste").forEach(function (l) {
+                l.hidden = l.dataset.trimestre !== trimestre.dataset.trimestre;
+            });
+
+        }
+
+    });
 
 
     // Visionneuse : photos des séries en plein écran (glisser ou flèches)
@@ -3730,26 +3918,34 @@ console.log("Page actuelle:", currentPage);
 
     if (eleveNameEl && eleveClasseEl && eleveStatutEl) {
 
-        const niveauForm = document.querySelector("#niveau-form");
+        const niveauChoix = document.querySelector("#niveau-choix");
 
-        if (niveauForm) {
+        if (niveauChoix) {
 
-            niveauForm.addEventListener("submit", async function (event) {
+            niveauChoix.addEventListener("click", async function (event) {
 
-                event.preventDefault();
+                const bouton = event.target.closest("button[data-niveau]");
 
-                const niveau = document.querySelector("#niveau-choix").value;
-
-                if (!niveau) {
+                if (!bouton) {
                     return;
                 }
 
+                niveauChoix.querySelectorAll("button").forEach(function (b) {
+                    b.disabled = true;
+                });
+
+                bouton.classList.add("on");
+
                 const { error } = await window.supabaseClient
-                    .rpc("choisir_niveau", { niveau: niveau });
+                    .rpc("choisir_niveau", { niveau: bouton.dataset.niveau });
 
                 if (error) {
                     console.error("Erreur niveau:", error);
                     showToast(error.message, "error");
+                    niveauChoix.querySelectorAll("button").forEach(function (b) {
+                        b.disabled = false;
+                    });
+                    bouton.classList.remove("on");
                     return;
                 }
 
@@ -3757,7 +3953,7 @@ console.log("Page actuelle:", currentPage);
 
                 setTimeout(function () {
                     window.location.reload();
-                }, 1000);
+                }, 800);
 
             });
 
@@ -3824,8 +4020,7 @@ console.log("Page actuelle:", currentPage);
 
                 if (!eleve.classe) {
                     document.querySelector("#eleve-niveau-card").hidden = false;
-                    document.querySelector("#eleve-documents-intro").textContent =
-                        "Choisis ton niveau ci-dessus pour voir tes documents.";
+                    document.body.classList.add("niveau-a-choisir");
                 }
 
             }
@@ -3853,24 +4048,7 @@ console.log("Page actuelle:", currentPage);
                 return;
             }
 
-            if (!documents || documents.length === 0) {
-                container.innerHTML = "<p>Aucun document pour le moment.</p>";
-                return;
-            }
-
-            const byNiveau = {};
-
-            documents.forEach(function (doc) {
-                const niveau = doc.niveau || "Tous les niveaux";
-                byNiveau[niveau] = byNiveau[niveau] || [];
-                byNiveau[niveau].push(doc);
-            });
-
-            const niveaux = Object.keys(byNiveau);
-
-            container.innerHTML = niveaux.map(function (niveau) {
-                return (niveaux.length > 1 ? `<h3 class="documents-niveau">${niveau}</h3>` : "") + htmlDocuments(byNiveau[niveau]);
-            }).join("");
+            container.innerHTML = htmlDocuments(documents);
 
         }
 

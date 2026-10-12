@@ -6,7 +6,7 @@
 
     <title>Gestion des documents | Profaycel</title>
 
-    <link rel="stylesheet" href="style.css?v=4">
+    <link rel="stylesheet" href="style.css?v=5">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2563eb">
     <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
@@ -180,6 +180,19 @@
                         </div>
 
 
+                        <!-- 5b. Numéro -->
+
+                        <div class="doc-champ">
+                            <label class="doc-champ-titre" for="doc-numero">Numéro</label>
+                            <div class="doc-numero">
+                                <button type="button" id="doc-numero-moins" aria-label="Moins">−</button>
+                                <input type="number" id="doc-numero" min="1" max="50" value="1" inputmode="numeric">
+                                <button type="button" id="doc-numero-plus" aria-label="Plus">+</button>
+                            </div>
+                            <small class="doc-aide">La correction prend le même numéro que sa série : elles s'affichent ensemble.</small>
+                        </div>
+
+
                         <!-- 6. Titre -->
 
                         <div class="doc-champ">
@@ -284,7 +297,7 @@
     </footer>
 
 
-<script src="script.js?v=4"></script>
+<script src="script.js?v=5"></script>
 
 </body>
 </html>

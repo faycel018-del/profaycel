@@ -12,7 +12,7 @@
         content="Espace personnel de l'élève sur Profaycel."
     >
 
-    <link rel="stylesheet" href="style.css?v=4">
+    <link rel="stylesheet" href="style.css?v=5">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2563eb">
     <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
@@ -96,9 +96,7 @@
                 </h1>
 
                 <p>
-                    Retrouvez ici vos cours, devoirs,
-                    résultats, documents et informations
-                    importantes.
+                    Tes séances et tes documents, au même endroit.
                 </p>
 
             </div>
@@ -151,92 +149,32 @@
 
 
 
-                <!-- CHOIX DU NIVEAU (élèves à distance sans niveau) -->
+                <!-- CHOIX DU NIVEAU : écran affiché une seule fois (inscription avec Google) -->
 
-                <section class="student-welcome-card is-stacked code-card" id="eleve-niveau-card" hidden>
+                <div class="niveau-ecran" id="eleve-niveau-card" hidden>
 
-                    <span class="student-label">
-                        MON NIVEAU
-                    </span>
+                    <div class="niveau-ecran-boite">
 
-                    <h2>
-                        Choisis ton niveau
-                    </h2>
+                        <span class="niveau-ecran-ic">🎓</span>
 
-                    <p>
-                        Tu verras ensuite uniquement les séances et les documents de ton niveau.
-                    </p>
+                        <h2>
+                            Choisis ton niveau
+                        </h2>
 
-                    <form class="code-form" id="niveau-form">
+                        <p>
+                            Ton espace sera préparé pour ton niveau : séances et documents.
+                        </p>
 
-                        <select class="code-input" id="niveau-choix" required>
+                        <div class="niveau-ecran-choix" id="niveau-choix">
+                            <button type="button" data-niveau="7 أساسي"><bdi>7 أساسي</bdi></button>
+                            <button type="button" data-niveau="8 أساسي"><bdi>8 أساسي</bdi></button>
+                            <button type="button" data-niveau="9 أساسي"><bdi>9 أساسي</bdi></button>
+                            <button type="button" data-niveau="1 ثانوي"><bdi>1 ثانوي</bdi></button>
+                        </div>
 
-                            <option value="">-- Choisir --</option>
-                            <option value="7 أساسي">7 أساسي</option>
-                            <option value="8 أساسي">8 أساسي</option>
-                            <option value="9 أساسي">9 أساسي</option>
-                            <option value="1 ثانوي">1 ثانوي</option>
-                            <option value="2 ثانوي">2 ثانوي</option>
-                            <option value="3 ثانوي">3 ثانوي</option>
-                            <option value="باكالوريا">باكالوريا</option>
+                    </div>
 
-                        </select>
-
-                        <button
-                            type="submit"
-                            class="button button-primary">
-
-                            Valider
-
-                        </button>
-
-                    </form>
-
-                </section>
-
-
-
-                <!-- CODE D'ACCÈS -->
-
-                <section class="student-welcome-card is-stacked code-card" id="eleve-code-card" hidden>
-
-                    <span class="student-label">
-                        CODE D'ACCÈS
-                    </span>
-
-                    <h2>
-                        🏫 Élèves en présentiel uniquement
-                    </h2>
-
-                    <p>
-                        Vous suivez les cours en salle avec le professeur ?
-                        Entrez le code reçu par WhatsApp (exemple : PF-AB12CD).
-                        <br>
-                        Les élèves inscrits en ligne n'ont pas besoin de code.
-                    </p>
-
-                    <form class="code-form">
-
-                        <input
-                            type="text"
-                            class="code-input"
-                            placeholder="PF-XXXXXX"
-                            autocomplete="off"
-                            autocapitalize="characters"
-                            required>
-
-                        <button
-                            type="submit"
-                            class="button button-primary">
-
-                            Valider
-
-                        </button>
-
-                    </form>
-
-                </section>
-
+                </div>
 
 
                 <!-- COURS EN LIGNE -->
@@ -277,7 +215,7 @@
                     </h2>
 
                     <p id="eleve-documents-intro">
-                        Les séries d'exercices de ton niveau.
+                        Choisis la matière, puis le trimestre.
                     </p>
 
                     <div id="eleve-documents">
@@ -285,6 +223,32 @@
                     </div>
 
                 </section>
+
+                <!-- CODE (élèves en présentiel) : replié -->
+
+                <details class="code-replie" id="eleve-code-card" hidden>
+
+                    <summary>
+                        🏫 Tu étudies en présentiel avec le professeur ? Entre ton code
+                    </summary>
+
+                    <form class="code-form">
+                        <input
+                            type="text"
+                            class="code-input"
+                            placeholder="PF-XXXXXX"
+                            autocomplete="off"
+                            autocapitalize="characters"
+                            required>
+                        <button
+                            type="submit"
+                            class="button button-primary">
+                            Valider
+                        </button>
+                    </form>
+
+                </details>
+
 
 
 
@@ -355,8 +319,8 @@
 
     <!-- JAVASCRIPT -->
 
-    <script src="i18n.js?v=4"></script>
-    <script src="script.js?v=4"></script>
+    <script src="i18n.js?v=5"></script>
+    <script src="script.js?v=5"></script>
 
 </body>
 

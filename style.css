@@ -6684,3 +6684,321 @@ a.admin-card:hover {
 .doc-viewer-nav[hidden] {
     display: none;
 }
+
+
+/* =========================================================
+   ESPACE ÉLÈVE — CHOIX DU NIVEAU (écran plein)
+========================================================= */
+
+.niveau-ecran {
+    position: fixed;
+    inset: 0;
+    z-index: 2500;
+    background: linear-gradient(160deg, #eff6ff, #ffffff 60%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 16px;
+    overflow-y: auto;
+}
+
+.niveau-ecran[hidden] {
+    display: none;
+}
+
+body.niveau-a-choisir {
+    overflow: hidden;
+}
+
+.niveau-ecran-boite {
+    width: 100%;
+    max-width: 460px;
+    text-align: center;
+}
+
+.niveau-ecran-ic {
+    font-size: 56px;
+}
+
+.niveau-ecran h2 {
+    font-size: 30px;
+    color: var(--dark);
+    margin: 8px 0;
+}
+
+.niveau-ecran p {
+    color: var(--text-light);
+    margin-bottom: 26px;
+}
+
+.niveau-ecran-choix {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.niveau-ecran-choix button {
+    padding: 26px 10px;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--border);
+    background: var(--white);
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--dark);
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.15s;
+}
+
+.niveau-ecran-choix button:hover,
+.niveau-ecran-choix button.on {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: var(--white);
+}
+
+.niveau-ecran-choix button:disabled:not(.on) {
+    opacity: 0.5;
+}
+
+
+/* =========================================================
+   ESPACE ÉLÈVE — CODE PRÉSENTIEL (replié)
+========================================================= */
+
+.code-replie {
+    margin-top: 10px;
+    padding: 14px 18px;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-md);
+    background: var(--white);
+}
+
+.code-replie summary {
+    cursor: pointer;
+    color: var(--text-light);
+    font-weight: 600;
+}
+
+.code-replie[open] summary {
+    margin-bottom: 12px;
+}
+
+
+/* =========================================================
+   DOCUMENTS — MATIÈRES, TRIMESTRES, SÉRIE + CORRECTION
+========================================================= */
+
+.docs-matieres {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin: 16px 0 20px;
+}
+
+.docs-matiere {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 18px 10px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--white);
+    font-family: inherit;
+    color: var(--dark);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.docs-matiere strong {
+    font-size: 16px;
+}
+
+.docs-matiere small {
+    color: var(--text-light);
+}
+
+.docs-matiere-ic {
+    font-size: 32px;
+}
+
+.docs-matiere.on {
+    border-color: var(--primary);
+    background: var(--primary-soft);
+}
+
+.docs-matiere:disabled,
+.docs-matiere-bientot {
+    cursor: default;
+    opacity: 0.55;
+    border-style: dashed;
+}
+
+.docs-trimestres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.docs-trimestre {
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--white);
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.docs-trimestre.on {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--white);
+}
+
+.docs-trimestre:disabled {
+    cursor: default;
+    opacity: 0.55;
+}
+
+.docs-trimestre small {
+    font-weight: 500;
+}
+
+.docs-liste {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.docs-liste[hidden] {
+    display: none;
+}
+
+.docs-paire {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--white);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.docs-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+}
+
+.docs-item + .docs-item {
+    border-top: 1px solid var(--border);
+}
+
+.docs-item-correction {
+    background: #f0fdf4;
+}
+
+.docs-item-ic {
+    font-size: 24px;
+}
+
+.docs-item-texte {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.docs-item-texte strong {
+    color: var(--dark);
+    overflow-wrap: anywhere;
+}
+
+.docs-item-texte small {
+    color: var(--text-light);
+}
+
+.docs-item .doc-boutons .button {
+    margin: 0;
+}
+
+@media (max-width: 560px) {
+
+    .docs-matieres {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .docs-trimestres {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .docs-trimestre {
+        padding: 10px 4px;
+        font-size: 14px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border-radius: var(--radius-md);
+    }
+
+    .docs-matiere-bientot {
+        grid-column: 1 / -1;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .docs-item {
+        flex-wrap: wrap;
+    }
+
+    .docs-item .doc-boutons {
+        flex: 1 1 100%;
+    }
+
+    .docs-item .doc-boutons .button {
+        flex: 1;
+        justify-content: center;
+    }
+
+}
+
+
+/* Numéro (page admin) */
+
+.doc-numero {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.doc-numero button {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--white);
+    font-size: 22px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.doc-numero input {
+    width: 80px;
+    padding: 10px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+}
+
+.doc-aide {
+    color: var(--text-light);
+}

@@ -534,3 +534,43 @@ create policy documents_admin_modif on storage.objects
     for update to authenticated using (bucket_id = 'documents' and public.is_admin());
 create policy documents_admin_retrait on storage.objects
     for delete to authenticated using (bucket_id = 'documents' and public.is_admin());
+
+
+-- =================================================
+-- 8. NUMÉRO DE SÉRIE + NIVEAUX : 7, 8, 9 أساسي et 1 ثانوي
+-- =================================================
+
+-- la correction prend le même numéro que sa série (affichées ensemble)
+alter table public.documents add column if not exists numero int check (numero between 1 and 50);
+
+create or replace function public.choisir_niveau(niveau text)
+ returns json
+ language plpgsql
+ security definer
+ set search_path to ''
+as $function$
+declare
+    uid uuid := auth.uid();
+    n int;
+begin
+    if uid is null then
+        raise exception 'Non connecté';
+    end if;
+
+    if niveau not in ('7 أساسي', '8 أساسي', '9 أساسي', '1 ثانوي') then
+        raise exception 'Niveau inconnu';
+    end if;
+
+    update public.eleves
+        set classe = niveau
+        where user_id = uid and mode = 'distance' and coalesce(classe, '') = '';
+
+    get diagnostics n = row_count;
+
+    if n = 0 then
+        raise exception 'Niveau déjà choisi : demandez au professeur pour le changer';
+    end if;
+
+    return json_build_object('classe', niveau);
+end;
+$function$;

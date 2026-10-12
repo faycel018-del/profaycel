@@ -395,6 +395,14 @@
         "Suivante": "التالية",
         "💬 Contacter sur WhatsApp": "💬 التواصل عبر واتساب",
 
+        // Espace élève (niveau, code, documents)
+        "Tes séances et tes documents, au même endroit.": "حصصك ووثائقك في مكان واحد.",
+        "Ton espace sera préparé pour ton niveau : séances et documents.": "سيُهيّأ فضاؤك حسب مستواك: الحصص والوثائق.",
+        "🏫 Tu étudies en présentiel avec le professeur ? Entre ton code": "🏫 هل تدرس حضوريًّا مع الأستاذ؟ أدخل رمزك",
+        "Choisis la matière, puis le trimestre.": "اختر المادّة ثمّ الثلاثي.",
+        "Bientôt": "قريبًا",
+        "Autres matières": "بقية المواد",
+
         // Choix de la langue
         "Choisissez votre langue": "اختر لغتك"
 
@@ -413,6 +421,14 @@
         [/^👁️ Voir \((\d+) pages\)$/, "👁️ عرض ($1 صفحات)"],
         [/^Page (\d+) \/ (\d+)$/, "الصفحة $1 / $2"],
         [/^(.+) · (Mathématiques|Technologie|Informatique)$/, function (tout, type, matiere) { return (AR[type] || type) + " · " + AR[matiere]; }],
+        [/^(\d+) document\(s\)$/, function (tout, n) {
+            n = Number(n);
+            return n === 1 ? "وثيقة واحدة" : n === 2 ? "وثيقتان" : n <= 10 ? n + " وثائق" : n + " وثيقة";
+        }],
+        [/^Série n°(\d+)$/, "سلسلة عدد $1"],
+        [/^Correction de la série n°(\d+)$/, "إصلاح سلسلة عدد $1"],
+        [/^Cours n°(\d+)$/, "درس عدد $1"],
+        [/^Devoir n°(\d+)$/, "فرض عدد $1"],
         [/^Erreur : (.+)$/, "خطأ: $1"]
     ];
 
