@@ -37,39 +37,17 @@
 
         <nav class="navigation">
 
-            <ul>
+                <ul>
+                    <li><a href="admin.html">Tableau de bord</a></li>
+                    <li><a href="eleves.html">Élèves</a></li>
+                    <li><a href="parents.html">Parents</a></li>
+                    <li><a href="classes.html">Classes</a></li>
+                    <li><a href="seances-admin.html">Séances</a></li>
+                    <li><a href="presence-admin.html" class="active">Présence</a></li>
+                    <li><a href="documents-admin.html">Documents</a></li>
+                </ul>
 
-                <li>
-                    <a href="index.html">Accueil</a>
-                </li>
-
-                <li>
-                    <a href="about.html">À propos</a>
-                </li>
-
-                <li>
-                    <a href="cours.html">Cours</a>
-                </li>
-
-                <li>
-                    <a href="robotique.html">Robotique</a>
-                </li>
-
-                <li>
-                    <a href="projets.html">Projets</a>
-                </li>
-
-                <li>
-                    <a href="ressources.html">Ressources</a>
-                </li>
-
-                <li>
-                    <a href="contact.html">Contact</a>
-                </li>
-
-            </ul>
-
-        </nav>
+            </nav>
 
         <div class="header-actions">
 
@@ -137,108 +115,13 @@
                 </h2>
 
                 <p>
-                    Cette interface permettra d'enregistrer la présence,
-                    l'absence, le retard ou l'absence justifiée de chaque
-                    élève pour chaque séance.
+                    Choisissez une séance, puis cochez les élèves présents. Les parents voient l'appel dans leur espace.
                 </p>
 
             </div>
 
 
-            <!-- STATISTIQUES -->
-
-            <div class="student-dashboard-grid">
-
-                <article class="student-dashboard-card">
-
-                    <div class="dashboard-card-icon">
-                        👥
-                    </div>
-
-                    <div>
-
-                        <h3>
-                            0
-                        </h3>
-
-                        <p>
-                            Présences
-                        </p>
-
-                    </div>
-
-                </article>
-
-
-                <article class="student-dashboard-card">
-
-                    <div class="dashboard-card-icon">
-                        ❌
-                    </div>
-
-                    <div>
-
-                        <h3>
-                            0
-                        </h3>
-
-                        <p>
-                            Absences
-                        </p>
-
-                    </div>
-
-                </article>
-
-
-                <article class="student-dashboard-card">
-
-                    <div class="dashboard-card-icon">
-                        ⏰
-                    </div>
-
-                    <div>
-
-                        <h3>
-                            0
-                        </h3>
-
-                        <p>
-                            Retards
-                        </p>
-
-                    </div>
-
-                </article>
-
-            </div>
-
-
-            <!-- CHOIX DE SEANCE -->
-
-            <section class="student-welcome-card">
-
-                <span class="student-label">
-                    ACTION RAPIDE
-                </span>
-
-                <h2>
-                    Faire l'appel
-                </h2>
-
-                <p>
-                    Sélectionnez une séance pour enregistrer
-                    la présence des élèves.
-                </p>
-
-                <a href="#" class="header-button">
-                    + Faire l'appel
-                </a>
-
-            </section>
-
-
-            <!-- SEANCES -->
+<!-- SEANCES -->
 
             <section class="student-welcome-card">
 
@@ -320,97 +203,7 @@
             </section>
 
 
-            <!-- STATUTS -->
-
-            <section class="student-welcome-card">
-
-                <span class="student-label">
-                    STATUTS
-                </span>
-
-                <h2>
-                    États possibles
-                </h2>
-
-                <p>
-                    Pour chaque élève et chaque séance,
-                    le système pourra enregistrer :
-                </p>
-
-                <ul>
-
-                    <li>
-                        Présent
-                    </li>
-
-                    <li>
-                        Absent
-                    </li>
-
-                    <li>
-                        Absent justifié
-                    </li>
-
-                    <li>
-                        En retard
-                    </li>
-
-                </ul>
-
-            </section>
-
-
-            <!-- SUIVI -->
-
-            <section class="student-welcome-card">
-
-                <span class="student-label">
-                    SUIVI
-                </span>
-
-                <h2>
-                    Historique de présence
-                </h2>
-
-                <p>
-                    Chaque élève pourra avoir un historique
-                    de ses présences et absences.
-                    Les parents pourront également consulter
-                    les informations concernant leur enfant.
-                </p>
-
-                <a href="#" class="header-button">
-                    Historique →
-                </a>
-
-            </section>
-
-
-            <!-- PROCHAINE ETAPE -->
-
-            <section class="student-welcome-card">
-
-                <span class="student-label">
-                    PROCHAINE ÉTAPE
-                </span>
-
-                <h2>
-                    Gestion des résultats
-                </h2>
-
-                <p>
-                    Ensuite, nous allons construire la gestion
-                    des notes, évaluations, moyennes et résultats
-                    des élèves.
-                </p>
-
-                <a href="resultats-admin.html" class="header-button">
-                    Résultats →
-                </a>
-
-            </section>
-
-        </div>
+</div>
 
     </section>
 
@@ -419,35 +212,51 @@
 
 <footer class="footer">
 
-    <div class="container">
+        <div class="container">
 
-        <div class="footer-content">
+            <div class="footer-content">
 
-            <div class="footer-logo">
+                <div>
 
-                <strong>
-                    Profaycel
-                </strong>
+                    <a href="index.html" class="footer-logo">
+                        Profaycel
+                    </a>
 
-                <p>
-                    Éducation • Technologie • Robotique
-                </p>
+                    <p>
+                        Professeur Faycel Khlifi — Maths & Technologie
+                    </p>
+
+                </div>
+
+                <div class="footer-links">
+
+                    <a href="index.html">
+                        Accueil
+                    </a>
+
+                    <a href="index.html#contact">
+                        Contact
+                    </a>
+
+                    <a href="confidentialite.html">
+                        Politique de confidentialité
+                    </a>
+
+                </div>
 
             </div>
 
             <div class="footer-bottom">
 
                 <p>
-                    © 2026 Profaycel — Tous droits réservés.
+                    © 2026 Profaycel. Tous droits réservés.
                 </p>
 
             </div>
 
         </div>
 
-    </div>
-
-</footer>
+    </footer>
 
 
 <script src="script.js"></script>

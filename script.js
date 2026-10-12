@@ -1133,13 +1133,9 @@ document.addEventListener("DOMContentLoaded", function () {
         "eleves.html": ["admin"],
         "parents.html": ["admin"],
         "classes.html": ["admin"],
-        "cours-admin.html": ["admin"],
-        "devoirs-admin.html": ["admin"],
         "seances-admin.html": ["admin"],
         "presence-admin.html": ["admin"],
-        "resultats-admin.html": ["admin"],
-        "documents-admin.html": ["admin"],
-        "annonces-admin.html": ["admin"]
+        "documents-admin.html": ["admin"]
 
     };
 
@@ -2265,148 +2261,6 @@ console.log("Page actuelle:", currentPage);
 
 
     // =================================================
-    // 12. AFFICHER LES COURS (cours-admin.html)
-    // =================================================
-
-    const coursGrid = document.querySelector("#cours-grid");
-
-    if (coursGrid) {
-
-        function loadCours() {
-
-            if (!window.supabaseClient) {
-                setTimeout(loadCours, 200);
-                return;
-            }
-
-            window.supabaseClient
-                .from("cours")
-                .select("*")
-                .order("created_at", { ascending: false })
-                .then(function (result) {
-
-                    if (result.error) {
-                        console.error("Erreur chargement cours:", result.error);
-                        return;
-                    }
-
-                    const cours = result.data;
-
-                    console.log("Cours chargés:", cours.length);
-
-                    if (cours.length === 0) {
-                        coursGrid.innerHTML = "<p>Aucun cours enregistré.</p>";
-                        return;
-                    }
-
-                    coursGrid.innerHTML = cours.map(function (cour) {
-
-                        return `
-                            <article class="student-dashboard-card">
-                                <div class="dashboard-card-icon">
-                                    📚
-                                </div>
-                                <h3>
-                                    ${cour.titre}
-                                </h3>
-                                <p>
-                                    <strong>Matière :</strong> ${cour.matiere || "—"}
-                                    <br>
-                                    <strong>Niveau :</strong> ${cour.niveau || "—"}
-                                    <br>
-                                    <strong>Classe :</strong> ${cour.classe || "—"}
-                                    <br>
-                                    <strong>Statut :</strong> ${cour.statut || "—"}
-                                </p>
-                                <a href="#">
-                                    Voir le cours →
-                                </a>
-                            </article>
-                        `;
-
-                    }).join("");
-
-                });
-
-        }
-
-        loadCours();
-
-    }
-
-
-    // =================================================
-    // 13. AFFICHER LES DEVOIRS (devoirs-admin.html)
-    // =================================================
-
-    const devoirsGrid = document.querySelector("#devoirs-grid");
-
-    if (devoirsGrid) {
-
-        function loadDevoirs() {
-
-            if (!window.supabaseClient) {
-                setTimeout(loadDevoirs, 200);
-                return;
-            }
-
-            window.supabaseClient
-                .from("devoirs")
-                .select("*")
-                .order("created_at", { ascending: false })
-                .then(function (result) {
-
-                    if (result.error) {
-                        console.error("Erreur chargement devoirs:", result.error);
-                        return;
-                    }
-
-                    const devoirs = result.data;
-
-                    console.log("Devoirs chargés:", devoirs.length);
-
-                    if (devoirs.length === 0) {
-                        devoirsGrid.innerHTML = "<p>Aucun devoir enregistré.</p>";
-                        return;
-                    }
-
-                    devoirsGrid.innerHTML = devoirs.map(function (devoir) {
-
-                        return `
-                            <article class="student-dashboard-card">
-                                <div class="dashboard-card-icon">
-                                    📝
-                                </div>
-                                <h3>
-                                    ${devoir.titre}
-                                </h3>
-                                <p>
-                                    <strong>Matière :</strong> ${devoir.matiere || "—"}
-                                    <br>
-                                    <strong>Classe :</strong> ${devoir.classe || "—"}
-                                    <br>
-                                    <strong>Date limite :</strong> ${devoir.date_limite || "—"}
-                                    <br>
-                                    <strong>Statut :</strong> ${devoir.statut || "—"}
-                                </p>
-                                <a href="#">
-                                    Voir le devoir →
-                                </a>
-                            </article>
-                        `;
-
-                    }).join("");
-
-                });
-
-        }
-
-        loadDevoirs();
-
-    }
-
-
-    // =================================================
     // 14. SÉANCES — AFFICHER + AJOUTER + MODIFIER + SUPPRIMER
     //     (seances-admin.html, avec lien de cours en ligne)
     // =================================================
@@ -2989,220 +2843,533 @@ console.log("Page actuelle:", currentPage);
 
 
     // =================================================
-    // 16. AFFICHER LES RÉSULTATS (resultats-admin.html)
+    // 17. DOCUMENTS — ENVOYER, PUBLIER / MASQUER, SUPPRIMER (documents-admin.html)
     // =================================================
 
-    const resultatsGrid = document.querySelector("#resultats-grid");
+    const docForm = document.querySelector("#doc-form");
 
-    if (resultatsGrid) {
+    if (docForm) {
 
-        function loadResultats() {
+        const BUCKET = "documents";
+        const inputFichiers = document.querySelector("#doc-fichiers");
+        const apercu = document.querySelector("#doc-apercu");
+        const inputLien = document.querySelector("#doc-lien");
+        const inputTitre = document.querySelector("#doc-titre");
+        const progression = document.querySelector("#doc-progression");
+        const boutonEnvoyer = document.querySelector("#doc-envoyer");
+        const liste = document.querySelector("#documents-liste");
+
+        let fichiersChoisis = [];
+        let titreModifie = false;
+        let documentsCharges = [];
+
+
+        // --- Groupes de boutons « choix » (niveau, trimestre, matière, type, filtre) ---
+
+        function activerChoix(groupe, onChange) {
+
+            groupe.addEventListener("click", function (event) {
+
+                const bouton = event.target.closest("button[data-v]");
+
+                if (!bouton) {
+                    return;
+                }
+
+                groupe.querySelectorAll("button").forEach(function (b) {
+                    b.classList.toggle("on", b === bouton);
+                });
+
+                groupe.dataset.valeur = bouton.dataset.v;
+
+                if (onChange) {
+                    onChange(bouton.dataset.v);
+                }
+
+            });
+
+        }
+
+        function valeur(id) {
+            return document.querySelector(id).dataset.valeur;
+        }
+
+        function titreParDefaut() {
+
+            const type = valeur("#doc-type");
+            const nombre = documentsCharges.filter(function (d) {
+                return d.type_fichier === type &&
+                    (d.classe || "") === valeur("#doc-niveau") &&
+                    String(d.trimestre || "") === valeur("#doc-trimestre") &&
+                    (d.matiere || "") === valeur("#doc-matiere");
+            }).length + 1;
+
+            const noms = {
+                "Série d'exercices": "Série",
+                "Correction": "Correction de la série",
+                "Cours": "Cours",
+                "Devoir": "Devoir"
+            };
+
+            return `${noms[type] || type} n°${nombre}`;
+
+        }
+
+        function majTitre() {
+            if (!titreModifie) {
+                inputTitre.value = titreParDefaut();
+            }
+        }
+
+        inputTitre.addEventListener("input", function () {
+            titreModifie = inputTitre.value.trim() !== "";
+        });
+
+        ["#doc-niveau", "#doc-trimestre", "#doc-matiere", "#doc-type"].forEach(function (id) {
+            activerChoix(document.querySelector(id), majTitre);
+        });
+
+        activerChoix(document.querySelector("#doc-filtre"), afficherDocuments);
+
+
+        // --- Niveaux : à partir des classes ---
+
+        function chargerNiveaux() {
 
             if (!window.supabaseClient) {
-                setTimeout(loadResultats, 200);
+                setTimeout(chargerNiveaux, 200);
                 return;
             }
 
             window.supabaseClient
-                .from("resultats")
-                .select("*")
-                .order("created_at", { ascending: false })
+                .from("classes")
+                .select("nom")
                 .then(function (result) {
 
-                    if (result.error) {
-                        console.error("Erreur chargement résultats:", result.error);
-                        return;
-                    }
+                    const noms = (result.data || []).map(function (c) { return c.nom; }).sort(trierClasses);
+                    const groupe = document.querySelector("#doc-niveau");
+                    const filtre = document.querySelector("#doc-filtre");
 
-                    const resultats = result.data;
+                    noms.forEach(function (nom, index) {
 
-                    console.log("Résultats chargés:", resultats.length);
+                        const b = document.createElement("button");
+                        b.type = "button";
+                        b.dataset.v = nom;
+                        b.textContent = nom;
+                        groupe.insertBefore(b, groupe.lastElementChild);
 
-                    if (resultats.length === 0) {
-                        resultatsGrid.innerHTML = "<p>Aucune évaluation enregistrée.</p>";
-                        return;
-                    }
+                        const f = b.cloneNode(true);
+                        filtre.appendChild(f);
 
-                    resultatsGrid.innerHTML = resultats.map(function (resultat) {
+                        // le premier niveau est choisi par défaut
+                        if (index === 0) {
+                            groupe.querySelectorAll("button").forEach(function (x) { x.classList.remove("on"); });
+                            b.classList.add("on");
+                            groupe.dataset.valeur = nom;
+                        }
 
-                        return `
-                            <article class="student-dashboard-card">
-                                <div class="dashboard-card-icon">
-                                    📊
-                                </div>
-                                <div>
-                                    <h3>
-                                        ${resultat.evaluation || "Évaluation"}
-                                    </h3>
-                                    <p>
-                                        <strong>Matière :</strong> ${resultat.matiere || "—"}
-                                    </p>
-                                    <p>
-                                        <strong>Note :</strong> ${resultat.note || "—"} / ${resultat.bareme || "—"}
-                                    </p>
-                                    <p>
-                                        <strong>Date :</strong> ${resultat.date_evaluation || "—"}
-                                    </p>
-                                    <a href="#">
-                                        Voir les résultats →
-                                    </a>
-                                </div>
-                            </article>
-                        `;
+                    });
 
-                    }).join("");
+                    majTitre();
 
                 });
 
         }
 
-        loadResultats();
 
-    }
+        // --- Fichiers choisis : aperçu ---
+
+        inputFichiers.addEventListener("change", function () {
+
+            Array.from(inputFichiers.files).forEach(function (f) {
+                fichiersChoisis.push(f);
+            });
+
+            inputFichiers.value = "";
+            afficherApercu();
+
+        });
+
+        function afficherApercu() {
+
+            apercu.innerHTML = "";
+
+            fichiersChoisis.forEach(function (f, index) {
+
+                const item = document.createElement("div");
+                item.className = "doc-apercu-item";
+
+                if (f.type.startsWith("image/")) {
+                    const img = document.createElement("img");
+                    img.src = URL.createObjectURL(f);
+                    img.alt = "";
+                    item.appendChild(img);
+                } else {
+                    const ic = document.createElement("span");
+                    ic.className = "doc-apercu-pdf";
+                    ic.textContent = "PDF";
+                    item.appendChild(ic);
+                }
+
+                const num = document.createElement("small");
+                num.textContent = fichiersChoisis.length > 1 ? `Page ${index + 1}` : f.name;
+                item.appendChild(num);
+
+                const retirer = document.createElement("button");
+                retirer.type = "button";
+                retirer.className = "doc-apercu-retirer";
+                retirer.setAttribute("aria-label", "Retirer");
+                retirer.textContent = "✕";
+                retirer.addEventListener("click", function () {
+                    fichiersChoisis.splice(index, 1);
+                    afficherApercu();
+                });
+                item.appendChild(retirer);
+
+                apercu.appendChild(item);
+
+            });
+
+        }
+
+        document.querySelector("#doc-lien-toggle").addEventListener("click", function () {
+            inputLien.hidden = !inputLien.hidden;
+            if (!inputLien.hidden) {
+                inputLien.focus();
+            }
+        });
 
 
-    // =================================================
-    // 17. AFFICHER LES DOCUMENTS (documents-admin.html)
-    // =================================================
+        // --- Photos : réduites avant l'envoi (plus rapide, moins de place) ---
 
-    const documentsGrid = document.querySelector("#documents-grid");
+        function reduireImage(fichier) {
 
-    if (documentsGrid) {
+            return new Promise(function (resolve) {
 
-        function loadDocuments() {
+                if (!fichier.type.startsWith("image/") || fichier.type === "image/gif") {
+                    resolve(fichier);
+                    return;
+                }
 
-            if (!window.supabaseClient) {
-                setTimeout(loadDocuments, 200);
+                const img = new Image();
+
+                img.onload = function () {
+
+                    const max = 2000;
+                    const ratio = Math.min(1, max / Math.max(img.width, img.height));
+
+                    if (ratio === 1 && fichier.size < 1500000) {
+                        resolve(fichier);
+                        return;
+                    }
+
+                    const canvas = document.createElement("canvas");
+                    canvas.width = Math.round(img.width * ratio);
+                    canvas.height = Math.round(img.height * ratio);
+                    canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                    canvas.toBlob(function (blob) {
+                        resolve(blob ? new File([blob], fichier.name.replace(/\.\w+$/, "") + ".jpg", { type: "image/jpeg" }) : fichier);
+                    }, "image/jpeg", 0.85);
+
+                };
+
+                // HEIC et autres formats illisibles : envoyés tels quels
+                img.onerror = function () {
+                    resolve(fichier);
+                };
+
+                img.src = URL.createObjectURL(fichier);
+
+            });
+
+        }
+
+        function nomFichier(fichier, index) {
+
+            const ext = (fichier.name.split(".").pop() || "bin").toLowerCase().replace(/[^a-z0-9]/g, "");
+            const hasard = Math.random().toString(36).slice(2, 8);
+
+            return `${Date.now()}-${hasard}-${index + 1}.${ext}`;
+
+        }
+
+
+        // --- Publier ---
+
+        docForm.addEventListener("submit", async function (event) {
+
+            event.preventDefault();
+
+            const lien = inputLien.value.trim();
+
+            if (fichiersChoisis.length === 0 && !lien) {
+                showToast("Choisissez une photo, un PDF ou collez un lien.", "warning");
                 return;
             }
 
-            window.supabaseClient
+            const titre = inputTitre.value.trim() || titreParDefaut();
+
+            boutonEnvoyer.disabled = true;
+            progression.hidden = false;
+
+            const fichiers = [];
+
+            try {
+
+                for (let i = 0; i < fichiersChoisis.length; i++) {
+
+                    progression.textContent = `Envoi ${i + 1} / ${fichiersChoisis.length}…`;
+
+                    const fichier = await reduireImage(fichiersChoisis[i]);
+                    // « 7ème année de base » → « 7eme-annee-de-base »
+                    const dossier = (valeur("#doc-niveau") || "tous")
+                        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                        .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "tous";
+                    const chemin = `${dossier}/${nomFichier(fichier, i)}`;
+
+                    const { error } = await window.supabaseClient.storage
+                        .from(BUCKET)
+                        .upload(chemin, fichier, { contentType: fichier.type || "application/octet-stream" });
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    const { data } = window.supabaseClient.storage.from(BUCKET).getPublicUrl(chemin);
+
+                    fichiers.push({ url: data.publicUrl, chemin: chemin, type: fichier.type });
+
+                }
+
+                progression.textContent = "Enregistrement…";
+
+                const { error } = await window.supabaseClient
+                    .from("documents")
+                    .insert([{
+                        nom: titre,
+                        type_fichier: valeur("#doc-type"),
+                        classe: valeur("#doc-niveau"),
+                        niveau: valeur("#doc-niveau"),
+                        trimestre: Number(valeur("#doc-trimestre")),
+                        matiere: valeur("#doc-matiere"),
+                        statut: document.querySelector("#doc-visible").checked ? "publie" : "masque",
+                        lien: lien || null,
+                        fichiers: fichiers
+                    }]);
+
+                if (error) {
+                    throw error;
+                }
+
+                showToast("Document publié ✅", "success");
+
+                fichiersChoisis = [];
+                afficherApercu();
+                inputLien.value = "";
+                inputLien.hidden = true;
+                titreModifie = false;
+
+                await chargerDocuments();
+                majTitre();
+
+            } catch (erreur) {
+
+                console.error("Erreur envoi document:", erreur);
+                showToast("Erreur : " + (erreur.message || erreur), "error");
+
+                // ne pas laisser de fichiers orphelins si l'enregistrement échoue
+                if (fichiers.length > 0) {
+                    await window.supabaseClient.storage.from(BUCKET).remove(fichiers.map(function (f) { return f.chemin; }));
+                }
+
+            } finally {
+
+                boutonEnvoyer.disabled = false;
+                progression.hidden = true;
+
+            }
+
+        });
+
+
+        // --- Liste des documents ---
+
+        async function chargerDocuments() {
+
+            if (!window.supabaseClient) {
+                setTimeout(chargerDocuments, 200);
+                return;
+            }
+
+            const { data, error } = await window.supabaseClient
                 .from("documents")
                 .select("*")
-                .order("created_at", { ascending: false })
-                .then(function (result) {
+                .order("trimestre", { ascending: true })
+                .order("created_at", { ascending: true });
 
-                    if (result.error) {
-                        console.error("Erreur chargement documents:", result.error);
-                        return;
-                    }
-
-                    const documents = result.data;
-
-                    console.log("Documents chargés:", documents.length);
-
-                    if (documents.length === 0) {
-                        documentsGrid.innerHTML = "<p>Aucun document enregistré.</p>";
-                        return;
-                    }
-
-                    documentsGrid.innerHTML = documents.map(function (doc) {
-
-                        return `
-                            <article class="student-dashboard-card">
-                                <div class="dashboard-card-icon">
-                                    📄
-                                </div>
-                                <div>
-                                    <h3>
-                                        ${doc.nom}
-                                    </h3>
-                                    <p>
-                                        <strong>Type :</strong> ${doc.type_fichier || "—"}
-                                    </p>
-                                    <p>
-                                        <strong>Classe :</strong> ${doc.classe || "—"}
-                                    </p>
-                                    <p>
-                                        <strong>Statut :</strong> ${doc.statut || "—"}
-                                    </p>
-                                    <a href="#">
-                                        Gérer le document →
-                                    </a>
-                                </div>
-                            </article>
-                        `;
-
-                    }).join("");
-
-                });
-
-        }
-
-        loadDocuments();
-
-    }
-
-
-    // =================================================
-    // 18. AFFICHER LES ANNONCES (annonces-admin.html)
-    // =================================================
-
-    const annoncesGrid = document.querySelector("#annonces-grid");
-
-    if (annoncesGrid) {
-
-        function loadAnnonces() {
-
-            if (!window.supabaseClient) {
-                setTimeout(loadAnnonces, 200);
+            if (error) {
+                console.error("Erreur chargement documents:", error);
+                liste.innerHTML = "<p>Impossible de charger les documents.</p>";
                 return;
             }
 
-            window.supabaseClient
-                .from("annonces")
-                .select("*")
-                .order("created_at", { ascending: false })
-                .then(function (result) {
+            documentsCharges = data || [];
 
-                    if (result.error) {
-                        console.error("Erreur chargement annonces:", result.error);
-                        return;
-                    }
+            const statsDocs = document.querySelector("#stats-documents");
+            if (statsDocs) {
+                statsDocs.textContent = documentsCharges.length;
+            }
 
-                    const annonces = result.data;
-
-                    console.log("Annonces chargées:", annonces.length);
-
-                    if (annonces.length === 0) {
-                        annoncesGrid.innerHTML = "<p>Aucune annonce enregistrée.</p>";
-                        return;
-                    }
-
-                    annoncesGrid.innerHTML = annonces.map(function (annonce) {
-
-                        return `
-                            <article class="student-dashboard-card">
-                                <div class="dashboard-card-icon">
-                                    📢
-                                </div>
-                                <div>
-                                    <h3>
-                                        ${annonce.titre}
-                                    </h3>
-                                    <p>
-                                        <strong>Type :</strong> ${annonce.type_annonce || "—"}
-                                    </p>
-                                    <p>
-                                        <strong>Destinataires :</strong> ${annonce.destinataires || "—"}
-                                    </p>
-                                    <p>
-                                        <strong>Statut :</strong> ${annonce.statut || "—"}
-                                    </p>
-                                    <a href="#">
-                                        Gérer l'annonce →
-                                    </a>
-                                </div>
-                            </article>
-                        `;
-
-                    }).join("");
-
-                });
+            afficherDocuments();
 
         }
 
-        loadAnnonces();
+        function afficherDocuments() {
+
+            const filtre = valeur("#doc-filtre");
+
+            const docs = documentsCharges.filter(function (d) {
+                return filtre === "*" || (d.classe || "") === filtre;
+            });
+
+            if (docs.length === 0) {
+                liste.innerHTML = "<p>Aucun document pour le moment.</p>";
+                return;
+            }
+
+            liste.innerHTML = grouperParClasse(docs, function (d) { return d.classe || "Tous les niveaux"; }).map(function (groupe) {
+
+                const parTrimestre = {};
+
+                groupe.items.forEach(function (d) {
+                    const t = d.trimestre ? `Trimestre ${d.trimestre}` : "Sans trimestre";
+                    (parTrimestre[t] = parTrimestre[t] || []).push(d);
+                });
+
+                return `
+                    <h3 class="classe-titre"><bdi>${groupe.classe}</bdi> <span>${groupe.items.length} document(s)</span></h3>
+                    ${Object.keys(parTrimestre).sort().map(function (t) {
+                        return `
+                            <h4 class="doc-trimestre-titre">${t}</h4>
+                            <div class="doc-liste">${parTrimestre[t].map(ligneDocument).join("")}</div>
+                        `;
+                    }).join("")}
+                `;
+
+            }).join("");
+
+        }
+
+        function ligneDocument(d) {
+
+            const fichiers = d.fichiers || [];
+            const image = fichiers.find(function (f) { return (f.type || "").startsWith("image/"); });
+            const visible = d.statut === "publie";
+
+            const vignette = image
+                ? `<img src="${image.url}" alt="" loading="lazy">`
+                : `<span>${fichiers.length > 0 ? "PDF" : "🔗"}</span>`;
+
+            return `
+                <div class="doc-ligne${visible ? "" : " doc-masque"}" data-id="${d.id}">
+                    <a class="doc-vignette" href="${(fichiers[0] && fichiers[0].url) || d.lien || "#"}" target="_blank" rel="noopener">${vignette}</a>
+                    <div class="doc-infos">
+                        <strong dir="auto">${d.nom}</strong>
+                        <small>${d.type_fichier || "Document"} · ${d.matiere || "—"}${fichiers.length > 1 ? ` · ${fichiers.length} pages` : ""}</small>
+                        <small class="doc-etat">${visible ? "👁️ Visible par les élèves" : "🙈 Masqué"}</small>
+                    </div>
+                    <div class="doc-actions">
+                        <button type="button" class="btn-edit" data-action="visible">${visible ? "🙈 Masquer" : "👁️ Publier"}</button>
+                        <button type="button" class="btn-edit" data-action="renommer">✏️</button>
+                        <button type="button" class="btn-delete" data-action="supprimer">🗑️</button>
+                    </div>
+                </div>
+            `;
+
+        }
+
+        liste.addEventListener("click", async function (event) {
+
+            const bouton = event.target.closest("button[data-action]");
+
+            if (!bouton) {
+                return;
+            }
+
+            const ligne = bouton.closest(".doc-ligne");
+            const doc = documentsCharges.find(function (d) { return String(d.id) === ligne.dataset.id; });
+
+            if (!doc) {
+                return;
+            }
+
+            const action = bouton.dataset.action;
+            let error = null;
+
+            if (action === "visible") {
+
+                ({ error } = await window.supabaseClient
+                    .from("documents")
+                    .update({ statut: doc.statut === "publie" ? "masque" : "publie" })
+                    .eq("id", doc.id));
+
+            } else if (action === "renommer") {
+
+                const nom = prompt("Nouveau titre :", doc.nom);
+
+                if (!nom || !nom.trim() || nom.trim() === doc.nom) {
+                    return;
+                }
+
+                ({ error } = await window.supabaseClient
+                    .from("documents")
+                    .update({ nom: nom.trim() })
+                    .eq("id", doc.id));
+
+            } else if (action === "supprimer") {
+
+                if (!confirm(`Supprimer « ${doc.nom} » ? Les élèves ne le verront plus.`)) {
+                    return;
+                }
+
+                const chemins = (doc.fichiers || []).map(function (f) { return f.chemin; }).filter(Boolean);
+
+                ({ error } = await window.supabaseClient
+                    .from("documents")
+                    .delete()
+                    .eq("id", doc.id));
+
+                if (!error && chemins.length > 0) {
+                    const retrait = await window.supabaseClient.storage.from(BUCKET).remove(chemins);
+                    if (retrait.error) {
+                        console.error("Fichiers non retirés:", retrait.error);
+                    }
+                }
+
+            }
+
+            if (error) {
+                console.error("Erreur document:", error);
+                showToast("Erreur : " + error.message, "error");
+                return;
+            }
+
+            showToast(action === "supprimer" ? "Document supprimé" : "Document mis à jour ✅", "success");
+            chargerDocuments();
+
+        });
+
+
+        // ouvrir directement le formulaire depuis le tableau de bord
+        if (window.location.hash === "#ajouter") {
+            setTimeout(function () {
+                document.querySelector("#doc-drop").scrollIntoView({ behavior: "smooth", block: "center" });
+            }, 300);
+        }
+
+        chargerNiveaux();
+        chargerDocuments();
 
     }
 
@@ -3267,26 +3434,134 @@ console.log("Page actuelle:", currentPage);
     }
 
 
+    // Documents publiés : regroupés par trimestre, puis par matière
     function htmlDocuments(documents) {
 
         if (!documents || documents.length === 0) {
-            return "<p>Aucune série pour le moment.</p>";
+            return "<p>Aucun document pour le moment.</p>";
         }
 
-        return `<div class="student-dashboard-grid">${documents.map(function (doc) {
+        const parTrimestre = {};
+
+        documents.forEach(function (doc) {
+            const t = doc.trimestre ? `Trimestre ${doc.trimestre}` : "Autres documents";
+            (parTrimestre[t] = parTrimestre[t] || []).push(doc);
+        });
+
+        return Object.keys(parTrimestre).sort().map(function (t) {
+
+            const cartes = parTrimestre[t].map(function (doc) {
+
+                const fichiers = doc.fichiers || [];
+                const images = fichiers.filter(function (f) { return (f.type || "").startsWith("image/"); });
+                const autres = fichiers.filter(function (f) { return !(f.type || "").startsWith("image/"); });
+                const icones = { "Correction": "✅", "Cours": "📘", "Devoir": "📝" };
+
+                let boutons = "";
+
+                if (images.length > 0) {
+                    boutons += `<button type="button" class="button button-primary seance-join doc-voir" data-images="${encodeURIComponent(JSON.stringify(images.map(function (f) { return f.url; })))}">👁️ Voir${images.length > 1 ? ` (${images.length} pages)` : ""}</button>`;
+                }
+
+                autres.forEach(function (f) {
+                    boutons += `<a href="${f.url}" target="_blank" rel="noopener" class="button button-primary seance-join">📄 Ouvrir</a>`;
+                });
+
+                if (doc.lien) {
+                    boutons += `<a href="${doc.lien}" target="_blank" rel="noopener" class="button button-primary seance-join">📄 Ouvrir</a>`;
+                }
+
+                return `
+                    <article class="student-dashboard-card">
+                        <div class="dashboard-card-icon">${icones[doc.type_fichier] || "📄"}</div>
+                        <div>
+                            <h3 dir="auto">${doc.nom}</h3>
+                            <p>${doc.type_fichier || "Document"}${doc.matiere ? ` · ${doc.matiere}` : ""}</p>
+                            <div class="doc-boutons">${boutons}</div>
+                        </div>
+                    </article>
+                `;
+
+            }).join("");
+
             return `
-                <article class="student-dashboard-card">
-                    <div class="dashboard-card-icon">📄</div>
-                    <div>
-                        <h3 dir="auto">${doc.nom}</h3>
-                        <p>${doc.type_fichier || "Document"}</p>
-                        ${doc.lien ? `<a href="${doc.lien}" target="_blank" rel="noopener" class="button button-primary seance-join">📄 Ouvrir</a>` : ""}
-                    </div>
-                </article>
+                <h4 class="doc-trimestre-titre">${t}</h4>
+                <div class="student-dashboard-grid">${cartes}</div>
             `;
-        }).join("")}</div>`;
+
+        }).join("");
 
     }
+
+
+    // Visionneuse : photos des séries en plein écran (glisser ou flèches)
+    document.addEventListener("click", function (event) {
+
+        const bouton = event.target.closest(".doc-voir");
+
+        if (!bouton) {
+            return;
+        }
+
+        const images = JSON.parse(decodeURIComponent(bouton.dataset.images));
+        let index = 0;
+
+        const fond = document.createElement("div");
+        fond.className = "doc-viewer";
+        fond.innerHTML = `
+            <div class="doc-viewer-barre">
+                <span class="doc-viewer-num"></span>
+                <a class="doc-viewer-telecharger" target="_blank" rel="noopener" download>⬇️ Télécharger</a>
+                <button type="button" class="doc-viewer-fermer" aria-label="Fermer">✕</button>
+            </div>
+            <div class="doc-viewer-zone">
+                <button type="button" class="doc-viewer-nav doc-viewer-prec" aria-label="Précédente">‹</button>
+                <img alt="">
+                <button type="button" class="doc-viewer-nav doc-viewer-suiv" aria-label="Suivante">›</button>
+            </div>
+        `;
+
+        const img = fond.querySelector("img");
+
+        function montrer(i) {
+            index = (i + images.length) % images.length;
+            img.src = images[index];
+            fond.querySelector(".doc-viewer-telecharger").href = images[index];
+            fond.querySelector(".doc-viewer-num").textContent = images.length > 1 ? `Page ${index + 1} / ${images.length}` : "";
+            fond.querySelectorAll(".doc-viewer-nav").forEach(function (n) { n.hidden = images.length < 2; });
+        }
+
+        function fermer() {
+            fond.remove();
+            document.removeEventListener("keydown", clavier);
+            document.body.style.overflow = "";
+        }
+
+        function clavier(e) {
+            if (e.key === "Escape") fermer();
+            if (e.key === "ArrowRight") montrer(index + 1);
+            if (e.key === "ArrowLeft") montrer(index - 1);
+        }
+
+        fond.querySelector(".doc-viewer-fermer").addEventListener("click", fermer);
+        fond.querySelector(".doc-viewer-prec").addEventListener("click", function () { montrer(index - 1); });
+        fond.querySelector(".doc-viewer-suiv").addEventListener("click", function () { montrer(index + 1); });
+
+        let departX = null;
+        img.addEventListener("touchstart", function (e) { departX = e.touches[0].clientX; }, { passive: true });
+        img.addEventListener("touchend", function (e) {
+            if (departX === null) return;
+            const dx = e.changedTouches[0].clientX - departX;
+            if (Math.abs(dx) > 50) montrer(index + (dx < 0 ? 1 : -1));
+            departX = null;
+        });
+
+        document.addEventListener("keydown", clavier);
+        document.body.style.overflow = "hidden";
+        document.body.appendChild(fond);
+        montrer(0);
+
+    });
 
 
     if (parentNameEl && parentEnfantsEl) {
@@ -3570,8 +3845,7 @@ console.log("Page actuelle:", currentPage);
                 return;
             }
 
-            const { data: documents, error } = await requeteDocuments(classe)
-                .order("niveau", { ascending: true });
+            const { data: documents, error } = await requeteDocuments(classe);
 
             if (error) {
                 console.error("Erreur chargement documents:", error);
@@ -3592,40 +3866,10 @@ console.log("Page actuelle:", currentPage);
                 byNiveau[niveau].push(doc);
             });
 
-            container.innerHTML = Object.keys(byNiveau).map(function (niveau) {
+            const niveaux = Object.keys(byNiveau);
 
-                const cartes = byNiveau[niveau].map(function (doc) {
-
-                    const bouton = doc.lien
-                        ? `<a href="${doc.lien}" target="_blank" rel="noopener" class="button button-primary seance-join">
-                               📄 Ouvrir
-                           </a>`
-                        : "";
-
-                    return `
-                        <article class="student-dashboard-card">
-                            <div class="dashboard-card-icon">
-                                📄
-                            </div>
-                            <div>
-                                <h3 dir="auto">
-                                    ${doc.nom}
-                                </h3>
-                                <p>
-                                    ${doc.type_fichier || "Document"}
-                                </p>
-                                ${bouton}
-                            </div>
-                        </article>
-                    `;
-
-                }).join("");
-
-                return `
-                    <h3 class="documents-niveau">${niveau}</h3>
-                    <div class="student-dashboard-grid">${cartes}</div>
-                `;
-
+            container.innerHTML = niveaux.map(function (niveau) {
+                return (niveaux.length > 1 ? `<h3 class="documents-niveau">${niveau}</h3>` : "") + htmlDocuments(byNiveau[niveau]);
             }).join("");
 
         }
@@ -3735,11 +3979,8 @@ console.log("Page actuelle:", currentPage);
                 { name: "eleves", element: "#stats-eleves" },
                 { name: "parents", element: "#stats-parents" },
                 { name: "classes", element: "#stats-classes" },
-                { name: "cours", element: "#stats-cours" },
-                { name: "devoirs", element: "#stats-devoirs" },
                 { name: "seances", element: "#stats-seances" },
-                { name: "documents", element: "#stats-documents" },
-                { name: "annonces", element: "#stats-annonces" }
+                { name: "documents", element: "#stats-documents" }
             ];
 
             for (const table of tables) {
@@ -3768,205 +4009,6 @@ console.log("Page actuelle:", currentPage);
         loadStats();
 
     }
-
-
-
-    // =================================================
-    // 22. MES COURS — AFFICHER LES COURS PERSONNALISÉS
-    // =================================================
-
-    const mesCoursContent = document.querySelector("#mes-cours-content");
-
-    if (mesCoursContent) {
-
-        async function loadMesCours() {
-
-            if (!window.supabaseClient) {
-                setTimeout(loadMesCours, 200);
-                return;
-            }
-
-            // 1. نجيبوا المستخدم الحالي
-            const { data: sessionData } = await window.supabaseClient.auth.getSession();
-            const session = sessionData.session;
-
-            // إذا ما مسجلش
-            if (!session) {
-                mesCoursContent.innerHTML = `
-                    <div class="mes-cours-login">
-                        <p>Connectez-vous pour voir vos cours personnalisés.</p>
-                        <a href="login.html">Se connecter →</a>
-                    </div>
-                `;
-                return;
-            }
-
-            const userId = session.user.id;
-
-            // 2. نجيبوا التلميذ
-            const { data: eleves, error: errEleve } = await window.supabaseClient
-                .from("eleves")
-                .select("*")
-                .eq("user_id", userId);
-
-            if (errEleve || !eleves || eleves.length === 0) {
-                mesCoursContent.innerHTML = `
-                    <div class="mes-cours-empty">
-                        Aucun élève associé à votre compte.
-                    </div>
-                `;
-                return;
-            }
-
-            const eleve = eleves[0];
-            const niveau = eleve.classe; // مثلاً "8ème année"
-
-            console.log("Élève:", eleve);
-            console.log("Niveau:", niveau);
-
-            // 3. نجيبوا الدروس
-            const { data: cours, error: errCours } = await window.supabaseClient
-                .from("cours")
-                .select("*")
-                .eq("niveau", niveau)
-                .eq("statut", "publie")
-                .order("trimestre", { ascending: true })
-                .order("numero", { ascending: true });
-
-            if (errCours) {
-                console.error("Erreur chargement cours:", errCours);
-                mesCoursContent.innerHTML = `
-                    <div class="mes-cours-empty">
-                        Erreur de chargement.
-                    </div>
-                `;
-                return;
-            }
-
-            console.log("Cours trouvés:", cours.length);
-
-            // إذا ما فيهاش دروس
-            if (!cours || cours.length === 0) {
-                mesCoursContent.innerHTML = `
-                    <div class="mes-cours-empty">
-                        Aucun cours disponible pour le moment.
-                    </div>
-                `;
-                return;
-            }
-
-            // 4. نصّنفوا حسب trimestre
-            const byTrimestre = {};
-
-            cours.forEach(function (c) {
-                const t = c.trimestre || 1;
-                if (!byTrimestre[t]) {
-                    byTrimestre[t] = [];
-                }
-                byTrimestre[t].push(c);
-            });
-
-            // 5. نبنيوا HTML
-            let html = "";
-
-            const trimestres = Object.keys(byTrimestre).sort(function (a, b) {
-                return a - b;
-            });
-
-            trimestres.forEach(function (t) {
-
-                html += `<div class="mes-cours-trimestre">`;
-
-                html += `<div class="mes-cours-trimestre-title">
-                    📖 Trimestre ${t}
-                </div>`;
-
-                // نصّنفوا حسب categorie
-                const byCategorie = {};
-
-                byTrimestre[t].forEach(function (c) {
-                    const cat = c.categorie || "Autres";
-                    if (!byCategorie[cat]) {
-                        byCategorie[cat] = [];
-                    }
-                    byCategorie[cat].push(c);
-                });
-
-                Object.keys(byCategorie).forEach(function (cat) {
-
-                    html += `<div class="mes-cours-categorie">`;
-
-                    html += `<div class="mes-cours-categorie-title">
-                        ${cat}
-                    </div>`;
-
-                    html += `<div class="mes-cours-list">`;
-
-                    byCategorie[cat].forEach(function (c) {
-
-                        html += `
-                            <a href="#" class="mes-cours-lecon">
-                                <div class="mes-cours-lecon-number">
-                                    ${c.numero || "—"}
-                                </div>
-                                <div class="mes-cours-lecon-content">
-                                    <h4>${c.titre}</h4>
-                                    <p>${c.matiere} · ${c.niveau}</p>
-                                </div>
-                                <div class="mes-cours-lecon-arrow">
-                                    →
-                                </div>
-                            </a>
-                        `;
-
-                    });
-
-                    html += `</div>`;
-                    html += `</div>`;
-
-                });
-
-                html += `</div>`;
-
-            });
-
-            // 6. إذا Trimestre 2 و 3 فارغين، نضيفوهم
-            if (!byTrimestre[2]) {
-                html += `
-                    <div class="mes-cours-trimestre">
-                        <div class="mes-cours-trimestre-title">
-                            📖 Trimestre 2
-                        </div>
-                        <div class="mes-cours-empty">
-                            En cours...
-                        </div>
-                    </div>
-                `;
-            }
-
-            if (!byTrimestre[3]) {
-                html += `
-                    <div class="mes-cours-trimestre">
-                        <div class="mes-cours-trimestre-title">
-                            📖 Trimestre 3
-                        </div>
-                        <div class="mes-cours-empty">
-                            En cours...
-                        </div>
-                    </div>
-                `;
-            }
-
-            mesCoursContent.innerHTML = html;
-
-        }
-
-        loadMesCours();
-
-    }
-
-
-
 
 
 

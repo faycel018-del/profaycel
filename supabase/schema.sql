@@ -509,3 +509,28 @@ $$;
 
 revoke execute on function public.choisir_niveau(text) from anon, public;
 grant execute on function public.choisir_niveau(text) to authenticated;
+
+
+-- =================================================
+-- 7. DOCUMENTS : TRIMESTRE, MATIÈRE, FICHIERS (photos / PDF)
+-- =================================================
+
+alter table public.documents add column if not exists trimestre int check (trimestre in (1, 2, 3));
+alter table public.documents add column if not exists matiere text;
+alter table public.documents add column if not exists fichiers jsonb not null default '[]'::jsonb;
+
+-- les élèves et parents ne voient que les documents publiés
+alter policy lecture_connectes on public.documents using (statut = 'publie');
+
+-- stockage des photos et PDF (lecture publique, envoi réservé au professeur)
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('documents', 'documents', true, 15728640,
+        array['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'application/pdf'])
+on conflict (id) do nothing;
+
+create policy documents_admin_envoi on storage.objects
+    for insert to authenticated with check (bucket_id = 'documents' and public.is_admin());
+create policy documents_admin_modif on storage.objects
+    for update to authenticated using (bucket_id = 'documents' and public.is_admin());
+create policy documents_admin_retrait on storage.objects
+    for delete to authenticated using (bucket_id = 'documents' and public.is_admin());

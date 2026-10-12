@@ -37,39 +37,17 @@
 
         <nav class="navigation">
 
-            <ul>
+                <ul>
+                    <li><a href="admin.html">Tableau de bord</a></li>
+                    <li><a href="eleves.html">Élèves</a></li>
+                    <li><a href="parents.html">Parents</a></li>
+                    <li><a href="classes.html">Classes</a></li>
+                    <li><a href="seances-admin.html" class="active">Séances</a></li>
+                    <li><a href="presence-admin.html">Présence</a></li>
+                    <li><a href="documents-admin.html">Documents</a></li>
+                </ul>
 
-                <li>
-                    <a href="index.html">Accueil</a>
-                </li>
-
-                <li>
-                    <a href="about.html">À propos</a>
-                </li>
-
-                <li>
-                    <a href="cours.html">Cours</a>
-                </li>
-
-                <li>
-                    <a href="robotique.html">Robotique</a>
-                </li>
-
-                <li>
-                    <a href="projets.html">Projets</a>
-                </li>
-
-                <li>
-                    <a href="ressources.html">Ressources</a>
-                </li>
-
-                <li>
-                    <a href="contact.html">Contact</a>
-                </li>
-
-            </ul>
-
-        </nav>
+            </nav>
 
         <div class="header-actions">
 
@@ -137,9 +115,7 @@
                 </h2>
 
                 <p>
-                    Cette interface permettra de planifier les séances,
-                    associer une séance à une classe et à une matière,
-                    puis enregistrer son contenu et son statut.
+                    Planifiez les séances par classe : date, heure, lieu et lien du cours en ligne.
                 </p>
 
             </div>
@@ -267,8 +243,7 @@
             </section>
 
 
-
-            <!-- ==================================================
+<!-- ==================================================
                  MODAL — AJOUTER / MODIFIER UNE SÉANCE
             ================================================== -->
 
@@ -465,137 +440,8 @@
 
             </div>
 
-            <!-- STRUCTURE -->
 
-            <section class="student-welcome-card">
-
-                <span class="student-label">
-                    STRUCTURE D'UNE SÉANCE
-                </span>
-
-                <h2>
-                    Informations prévues
-                </h2>
-
-                <p>
-                    Chaque séance pourra contenir :
-                </p>
-
-                <ul>
-
-                    <li>
-                        Date
-                    </li>
-
-                    <li>
-                        Heure de début
-                    </li>
-
-                    <li>
-                        Heure de fin
-                    </li>
-
-                    <li>
-                        Classe ou groupe
-                    </li>
-
-                    <li>
-                        Matière
-                    </li>
-
-                    <li>
-                        Cours associé
-                    </li>
-
-                    <li>
-                        Salle ou lieu
-                    </li>
-
-                    <li>
-                        Contenu prévu
-                    </li>
-
-                    <li>
-                        Remarques de l'enseignant
-                    </li>
-
-                    <li>
-                        Statut de la séance
-                    </li>
-
-                </ul>
-
-            </section>
-
-
-            <!-- STATUTS -->
-
-            <section class="student-welcome-card">
-
-                <span class="student-label">
-                    STATUT
-                </span>
-
-                <h2>
-                    Suivi des séances
-                </h2>
-
-                <p>
-                    Une séance pourra avoir différents statuts :
-                </p>
-
-                <ul>
-
-                    <li>
-                        Prévue
-                    </li>
-
-                    <li>
-                        En cours
-                    </li>
-
-                    <li>
-                        Terminée
-                    </li>
-
-                    <li>
-                        Annulée
-                    </li>
-
-                    <li>
-                        Reportée
-                    </li>
-
-                </ul>
-
-            </section>
-
-
-            <!-- PROCHAINE ETAPE -->
-
-            <section class="student-welcome-card">
-
-                <span class="student-label">
-                    PROCHAINE ÉTAPE
-                </span>
-
-                <h2>
-                    Gestion de la présence
-                </h2>
-
-                <p>
-                    Après les séances, nous allons construire
-                    le système de présence et d'absence des élèves,
-                    avec un suivi par séance et par élève.
-                </p>
-
-                <a href="presence-admin.html" class="header-button">
-                    Présence →
-                </a>
-
-            </section>
-
-        </div>
+</div>
 
     </section>
 
@@ -604,35 +450,51 @@
 
 <footer class="footer">
 
-    <div class="container">
+        <div class="container">
 
-        <div class="footer-content">
+            <div class="footer-content">
 
-            <div class="footer-logo">
+                <div>
 
-                <strong>
-                    Profaycel
-                </strong>
+                    <a href="index.html" class="footer-logo">
+                        Profaycel
+                    </a>
 
-                <p>
-                    Éducation • Technologie • Robotique
-                </p>
+                    <p>
+                        Professeur Faycel Khlifi — Maths & Technologie
+                    </p>
+
+                </div>
+
+                <div class="footer-links">
+
+                    <a href="index.html">
+                        Accueil
+                    </a>
+
+                    <a href="index.html#contact">
+                        Contact
+                    </a>
+
+                    <a href="confidentialite.html">
+                        Politique de confidentialité
+                    </a>
+
+                </div>
 
             </div>
 
             <div class="footer-bottom">
 
                 <p>
-                    © 2026 Profaycel — Tous droits réservés.
+                    © 2026 Profaycel. Tous droits réservés.
                 </p>
 
             </div>
 
         </div>
 
-    </div>
-
-</footer>
+    </footer>
 
 
 <script src="script.js"></script>
