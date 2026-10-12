@@ -1251,6 +1251,12 @@ console.log("Page actuelle:", currentPage);
                                 <div class="card-actions">
                                     <button
                                         type="button"
+                                        class="btn-edit btn-fiche"
+                                        data-id="${eleve.id}">
+                                        📄 Fiche
+                                    </button>
+                                    <button
+                                        type="button"
                                         class="btn-edit btn-paiement"
                                         data-id="${eleve.id}">
                                         💰 + Paiement
@@ -1378,6 +1384,193 @@ console.log("Page actuelle:", currentPage);
         }
 
 
+        // --- Fiche élève : séances suivies + paiements ---
+
+        const ficheModal = document.querySelector("#fiche-modal");
+        const ficheContenu = document.querySelector("#fiche-contenu");
+        let ficheEleveId = null;
+
+        function fermerFiche() {
+            ficheModal.classList.remove("active");
+            ficheEleveId = null;
+        }
+
+        if (ficheModal) {
+
+            document.querySelector("#fiche-close").addEventListener("click", fermerFiche);
+
+            ficheModal.addEventListener("click", function (event) {
+                if (event.target === ficheModal) {
+                    fermerFiche();
+                }
+            });
+
+            elevesGrid.addEventListener("click", function (event) {
+                const bouton = event.target.closest(".btn-fiche");
+                if (bouton) {
+                    ouvrirFiche(bouton.dataset.id);
+                }
+            });
+
+            ficheContenu.addEventListener("click", async function (event) {
+
+                const retirer = event.target.closest("[data-retirer-paiement]");
+
+                if (!retirer) {
+                    return;
+                }
+
+                if (!confirm("Supprimer ce paiement ?")) {
+                    return;
+                }
+
+                const { error } = await window.supabaseClient
+                    .from("paiements")
+                    .delete()
+                    .eq("id", retirer.dataset.retirerPaiement);
+
+                if (error) {
+                    showToast("Erreur : " + error.message, "error");
+                    return;
+                }
+
+                showToast("Paiement supprimé", "success");
+                ouvrirFiche(ficheEleveId);
+                loadEleves();
+
+            });
+
+            ficheContenu.addEventListener("submit", async function (event) {
+
+                if (!event.target.matches("#fiche-paiement")) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                const form = event.target;
+
+                const { error } = await window.supabaseClient
+                    .from("paiements")
+                    .insert([{
+                        eleve_id: Number(ficheEleveId),
+                        date_paiement: form.querySelector("[name=date]").value,
+                        montant: Number(form.querySelector("[name=montant]").value) || 0
+                    }]);
+
+                if (error) {
+                    showToast("Erreur : " + error.message, "error");
+                    return;
+                }
+
+                showToast("Paiement enregistré ✅", "success");
+                ouvrirFiche(ficheEleveId);
+                loadEleves();
+
+            });
+
+        }
+
+        function dateFr(iso) {
+            return iso ? iso.slice(8, 10) + "/" + iso.slice(5, 7) + "/" + iso.slice(0, 4) : "—";
+        }
+
+        async function ouvrirFiche(id) {
+
+            ficheEleveId = id;
+            ficheContenu.innerHTML = "<p>Chargement...</p>";
+            ficheModal.classList.add("active");
+
+            const { data: eleve, error } = await window.supabaseClient
+                .from("eleves")
+                .select("*, parents(prenom, nom, telephone, lien_parente), presences(present, seances(date_seance, matiere)), paiements(id, date_paiement, montant)")
+                .eq("id", id)
+                .single();
+
+            if (error || !eleve) {
+                console.error("Erreur fiche:", error);
+                ficheContenu.innerHTML = "<p>Impossible de charger la fiche.</p>";
+                return;
+            }
+
+            document.querySelector("#fiche-titre").textContent = `${eleve.prenom} ${eleve.nom}`.trim();
+
+            const presences = (eleve.presences || [])
+                .filter(function (p) { return p.seances && p.seances.date_seance; })
+                .sort(function (a, b) { return b.seances.date_seance.localeCompare(a.seances.date_seance); });
+
+            const presents = presences.filter(function (p) { return p.present; }).length;
+            const absences = presences.length - presents;
+            const anterieures = eleve.seances_anterieures || 0;
+            const total = anterieures + presents;
+
+            const paiements = (eleve.paiements || []).slice().sort(function (a, b) {
+                return (a.date_paiement || "").localeCompare(b.date_paiement || "") || a.id - b.id;
+            });
+
+            const couvertes = paiements.length * SEANCES_PAR_MOIS;
+            const reste = total - couvertes;
+            const tarif = eleve.tarif_mensuel || 100;
+            const parent = eleve.parents;
+
+            const bilan = reste > 0
+                ? `<div class="fiche-alerte">⚠️ ${reste} séance(s) à payer · ${Math.round(reste * tarif / SEANCES_PAR_MOIS)} DT</div>`
+                : reste < 0
+                    ? `<div class="fiche-ok">✅ Payé d'avance : ${-reste} séance(s)</div>`
+                    : (total > 0 ? `<div class="fiche-ok">✅ À jour</div>` : "");
+
+            const lignesPaiements = paiements.length === 0
+                ? "<p>Aucun paiement.</p>"
+                : paiements.map(function (p, i) {
+                    const de = i * SEANCES_PAR_MOIS + 1;
+                    return `
+                        <div class="fiche-paiement">
+                            <span>💰 <strong>${dateFr(p.date_paiement)}</strong> · ${p.montant} DT</span>
+                            <small>séances ${de} → ${de + SEANCES_PAR_MOIS - 1}</small>
+                            <button type="button" class="fiche-retirer" data-retirer-paiement="${p.id}" aria-label="Supprimer">✕</button>
+                        </div>
+                    `;
+                }).join("");
+
+            const lignesSeances = presences.length === 0
+                ? "<p>Aucune séance enregistrée.</p>"
+                : `<div class="fiche-seances">${presences.map(function (p) {
+                    return `<span class="${p.present ? "reg-p" : "reg-a"}">${p.present ? "✅" : "❌"} ${dateFr(p.seances.date_seance)}</span>`;
+                }).join("")}</div>`;
+
+            ficheContenu.innerHTML = `
+                <p class="fiche-infos">
+                    <bdi>${eleve.classe || "—"}</bdi> · ${eleve.mode === "distance" ? "💻 À distance" : "🏫 Présentiel"}
+                    ${parent ? `<br>👪 <span dir="auto">${parent.prenom} ${parent.nom || ""}</span>${parent.telephone ? ` · ${parent.telephone}` : ""}` : ""}
+                    ${eleve.code_acces ? `<br>🔑 Code : <code>${eleve.code_acces}</code>` : ""}
+                </p>
+
+                <div class="fiche-chiffres">
+                    <div><strong>${total}</strong><small>séance(s) suivie(s)</small></div>
+                    <div><strong>${absences}</strong><small>absence(s)</small></div>
+                    <div><strong>${paiements.length}</strong><small>mois payé(s)</small></div>
+                </div>
+
+                ${bilan}
+
+                <h3 class="fiche-titre">📅 Séances${eleve.date_debut ? ` (depuis le ${dateFr(eleve.date_debut)})` : ""}</h3>
+                ${anterieures > 0 ? `<p class="doc-aide">+ ${anterieures} séance(s) avant l'inscription sur le site.</p>` : ""}
+                ${lignesSeances}
+
+                <h3 class="fiche-titre">💰 Paiements <small>(${tarif} DT = ${SEANCES_PAR_MOIS} séances)</small></h3>
+                ${lignesPaiements}
+
+                <form id="fiche-paiement" class="fiche-ajout">
+                    <input type="date" name="date" value="${(function () { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); })()}" required>
+                    <input type="number" name="montant" value="${tarif}" min="0" step="5" required>
+                    <span>DT</span>
+                    <button type="submit" class="button button-primary">+ Ajouter</button>
+                </form>
+            `;
+
+        }
+
+
         function attachCardEvents(eleves) {
 
             document.querySelectorAll("#eleves-grid .btn-paiement").forEach(function (btn) {
@@ -1413,7 +1606,7 @@ console.log("Page actuelle:", currentPage);
 
             });
 
-            document.querySelectorAll("#eleves-grid .btn-edit:not(.btn-paiement)").forEach(function (btn) {
+            document.querySelectorAll("#eleves-grid .btn-edit:not(.btn-paiement):not(.btn-fiche)").forEach(function (btn) {
 
                 btn.addEventListener("click", function () {
 
@@ -2620,224 +2813,434 @@ console.log("Page actuelle:", currentPage);
 
 
     // =================================================
-    // 15. AFFICHER LES SÉANCES (presence-admin.html)
+    // 15. PRÉSENCE — APPEL PAR CLASSE + REGISTRE (presence-admin.html)
     // =================================================
 
-    const presenceGrid = document.querySelector("#presence-grid");
-    const appelModal = document.querySelector("#appel-modal");
-    const appelForm = document.querySelector("#appel-form");
-    const appelListe = document.querySelector("#appel-liste");
+    const appelClasses = document.querySelector("#appel-classes");
 
-    if (presenceGrid) {
+    if (appelClasses) {
 
-        let seanceAppel = null;
+        const appelDate = document.querySelector("#appel-date");
+        const appelDateTexte = document.querySelector("#appel-date-texte");
+        const appelListe = document.querySelector("#appel-liste");
+        const appelEtat = document.querySelector("#appel-etat");
+        const appelPied = document.querySelector("#appel-pied");
+        const appelResume = document.querySelector("#appel-resume");
+        const boutonEnregistrer = document.querySelector("#appel-enregistrer");
+        const registre = document.querySelector("#registre");
+        const registrePeriode = document.querySelector("#registre-periode");
 
-        function loadPresenceSeances() {
+        let classe = "";
+        let elevesClasse = [];
+        let seancesClasse = [];
+        let seanceDuJour = null;
+        let etat = {};
+        let modifie = false;
+
+        function aujourdhui() {
+            const d = new Date();
+            return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+        }
+
+        // l'année scolaire commence en septembre
+        function debutAnnee() {
+            const d = new Date();
+            const annee = d.getMonth() >= 8 ? d.getFullYear() : d.getFullYear() - 1;
+            return annee + "-09-01";
+        }
+
+        function dateLongue(iso) {
+            return new Date(iso + "T12:00:00").toLocaleDateString("fr-FR", {
+                weekday: "long", day: "numeric", month: "long", year: "numeric"
+            });
+        }
+
+        function dateCourte(iso) {
+            return iso.slice(8, 10) + "/" + iso.slice(5, 7);
+        }
+
+        appelDate.value = aujourdhui();
+        appelDateTexte.textContent = dateLongue(appelDate.value);
+
+
+        // --- Classes (élèves en présentiel uniquement) ---
+
+        async function chargerClasses() {
 
             if (!window.supabaseClient) {
-                setTimeout(loadPresenceSeances, 200);
+                setTimeout(chargerClasses, 200);
                 return;
             }
 
-            window.supabaseClient
-                .from("seances")
-                .select("*, presences(present)")
-                .order("date_seance", { ascending: false })
-                .then(function (result) {
+            const { data, error } = await window.supabaseClient
+                .from("eleves")
+                .select("classe")
+                .eq("mode", "presentiel")
+                .eq("statut", "actif");
 
-                    if (result.error) {
-                        console.error("Erreur chargement séances:", result.error);
-                        return;
-                    }
+            if (error) {
+                console.error("Erreur classes:", error);
+                appelClasses.innerHTML = "<p>Impossible de charger les classes.</p>";
+                return;
+            }
 
-                    const seances = result.data;
+            const compte = {};
 
-                    console.log("Séances (présence) chargées:", seances.length);
+            (data || []).forEach(function (e) {
+                if (e.classe) {
+                    compte[e.classe] = (compte[e.classe] || 0) + 1;
+                }
+            });
 
-                    if (seances.length === 0) {
-                        presenceGrid.innerHTML = "<p>Aucune séance disponible.</p>";
-                        return;
-                    }
+            const classes = Object.keys(compte).sort(trierClasses);
 
-                    presenceGrid.innerHTML = seances.map(function (seance) {
+            if (classes.length === 0) {
+                appelClasses.innerHTML = "<p>Aucun élève en présentiel pour le moment.</p>";
+                return;
+            }
 
-                        const appel = seance.presences || [];
-                        const presents = appel.filter(function (p) { return p.present; }).length;
+            appelClasses.innerHTML = classes.map(function (c) {
+                return `<button type="button" data-v="${c}"><bdi>${c}</bdi> <small>${compte[c]}</small></button>`;
+            }).join("");
 
-                        const resume = appel.length > 0
-                            ? `✅ ${presents} présent(s) · ❌ ${appel.length - presents} absent(s)`
-                            : "Appel pas encore fait";
+            let memoire = null;
 
-                        return `
-                            <article class="student-dashboard-card">
-                                <div class="dashboard-card-icon">
-                                    📅
-                                </div>
-                                <div>
-                                    <h3 dir="auto">
-                                        ${seance.matiere} — ${seance.classe || "Toutes les classes"}
-                                    </h3>
-                                    <p>
-                                        <strong>Date :</strong> ${seance.date_seance || "—"}
-                                    </p>
-                                    <p>
-                                        <strong>Heure :</strong> ${seance.heure_debut ? seance.heure_debut.slice(0, 5) : "—"} – ${seance.heure_fin ? seance.heure_fin.slice(0, 5) : "—"}
-                                    </p>
-                                    <p>
-                                        <strong>Appel :</strong> ${resume}
-                                    </p>
-                                    <button
-                                        type="button"
-                                        class="button button-primary seance-join btn-appel"
-                                        data-id="${seance.id}">
-                                        ${appel.length > 0 ? "✏️ Modifier l'appel" : "📋 Faire l'appel"}
-                                    </button>
-                                </div>
-                            </article>
-                        `;
+            try {
+                memoire = localStorage.getItem("profaycel_appel_classe");
+            } catch (e) {
+                memoire = null;
+            }
 
-                    }).join("");
+            choisirClasse(classes.includes(memoire) ? memoire : classes[0]);
 
-                    document.querySelectorAll(".btn-appel").forEach(function (btn) {
+        }
 
-                        btn.addEventListener("click", function () {
+        appelClasses.addEventListener("click", function (event) {
 
-                            const seance = seances.find(function (s) {
-                                return String(s.id) === btn.dataset.id;
-                            });
+            const bouton = event.target.closest("button[data-v]");
 
-                            if (seance) {
-                                ouvrirAppel(seance);
-                            }
+            if (!bouton || bouton.dataset.v === classe) {
+                return;
+            }
 
-                        });
+            if (modifie && !confirm("L'appel n'est pas enregistré. Changer de classe quand même ?")) {
+                return;
+            }
 
-                    });
+            choisirClasse(bouton.dataset.v);
 
-                });
+        });
+
+        async function choisirClasse(nouvelle) {
+
+            classe = nouvelle;
+            modifie = false;
+
+            try {
+                localStorage.setItem("profaycel_appel_classe", classe);
+            } catch (e) {
+                // sans importance
+            }
+
+            appelClasses.querySelectorAll("button").forEach(function (b) {
+                b.classList.toggle("on", b.dataset.v === classe);
+            });
+
+            appelListe.innerHTML = "<p>Chargement...</p>";
+            registre.innerHTML = "<p>Chargement...</p>";
+
+            const [resEleves, resSeances] = await Promise.all([
+                window.supabaseClient
+                    .from("eleves")
+                    .select("id, prenom, nom")
+                    .eq("classe", classe)
+                    .eq("mode", "presentiel")
+                    .eq("statut", "actif")
+                    .order("prenom", { ascending: true }),
+                window.supabaseClient
+                    .from("seances")
+                    .select("id, date_seance, matiere, statut, presences(eleve_id, present)")
+                    .eq("classe", classe)
+                    .gte("date_seance", debutAnnee())
+                    .order("date_seance", { ascending: true })
+            ]);
+
+            if (resEleves.error || resSeances.error) {
+                console.error("Erreur appel:", resEleves.error || resSeances.error);
+                appelListe.innerHTML = "<p>Impossible de charger la classe.</p>";
+                return;
+            }
+
+            elevesClasse = resEleves.data || [];
+            seancesClasse = (resSeances.data || []).filter(function (s) {
+                return s.statut !== "annulée";
+            });
+
+            preparerAppel();
+            afficherRegistre();
 
         }
 
 
-        async function ouvrirAppel(seance) {
+        // --- Appel du jour ---
 
-            seanceAppel = seance;
+        function preparerAppel() {
 
-            document.querySelector("#appel-title").textContent =
-                `Appel — ${seance.matiere} (${seance.date_seance || ""})`;
+            const date = appelDate.value;
 
-            appelListe.innerHTML = "<p>Chargement...</p>";
-            appelModal.classList.add("active");
+            appelDateTexte.textContent = dateLongue(date);
 
-            let query = window.supabaseClient
-                .from("eleves")
-                .select("id, prenom, nom, classe")
-                .eq("statut", "actif")
-                .order("classe", { ascending: true })
-                .order("prenom", { ascending: true });
-
-            if (seance.classe) {
-                query = query.eq("classe", seance.classe);
-            }
-
-            const [{ data: eleves, error }, { data: appel }] = await Promise.all([
-                query,
-                window.supabaseClient
-                    .from("presences")
-                    .select("eleve_id, present")
-                    .eq("seance_id", seance.id)
-            ]);
-
-            if (error) {
-                console.error("Erreur chargement élèves:", error);
-                appelListe.innerHTML = "<p>Impossible de charger les élèves.</p>";
-                return;
-            }
-
-            if (!eleves || eleves.length === 0) {
-                appelListe.innerHTML = "<p>Aucun élève dans cette classe.</p>";
-                return;
-            }
+            seanceDuJour = seancesClasse.find(function (s) {
+                return s.date_seance === date;
+            }) || null;
 
             const dejaFait = {};
 
-            (appel || []).forEach(function (p) {
+            ((seanceDuJour && seanceDuJour.presences) || []).forEach(function (p) {
                 dejaFait[p.eleve_id] = p.present;
             });
 
-            appelListe.innerHTML = eleves.map(function (eleve) {
+            const appelFait = seanceDuJour && seanceDuJour.presences && seanceDuJour.presences.length > 0;
 
-                const coche = dejaFait[eleve.id] === undefined ? true : dejaFait[eleve.id];
+            appelEtat.textContent = appelFait
+                ? "✏️ Appel déjà fait pour cette date : vous pouvez le corriger."
+                : "Tous les élèves sont présents par défaut : touchez les absents.";
+
+            etat = {};
+
+            elevesClasse.forEach(function (e) {
+                etat[e.id] = dejaFait[e.id] === undefined ? true : dejaFait[e.id];
+            });
+
+            modifie = false;
+            afficherAppel();
+
+        }
+
+        function afficherAppel() {
+
+            if (elevesClasse.length === 0) {
+                appelListe.innerHTML = "<p>Aucun élève dans cette classe.</p>";
+                appelPied.hidden = true;
+                return;
+            }
+
+            appelListe.innerHTML = elevesClasse.map(function (e) {
+
+                const present = etat[e.id];
 
                 return `
-                    <label class="appel-eleve">
-                        <input type="checkbox" value="${eleve.id}" ${coche ? "checked" : ""}>
-                        <span dir="auto">${eleve.prenom} ${eleve.nom}</span>
-                        <small>${seance.classe ? "" : eleve.classe || ""}</small>
-                    </label>
+                    <button type="button" class="appel-ligne ${present ? "est-present" : "est-absent"}" data-id="${e.id}">
+                        <span class="appel-ic">${present ? "✅" : "❌"}</span>
+                        <span class="appel-nom" dir="auto">${e.prenom} ${e.nom}</span>
+                        <span class="appel-statut">${present ? "Présent" : "Absent"}</span>
+                    </button>
                 `;
 
             }).join("");
 
+            const absents = elevesClasse.filter(function (e) { return !etat[e.id]; }).length;
+
+            appelResume.textContent = `${elevesClasse.length - absents} présent(s) · ${absents} absent(s)`;
+            appelPied.hidden = false;
+
         }
 
+        appelListe.addEventListener("click", function (event) {
 
-        function fermerAppel() {
-            appelModal.classList.remove("active");
-            seanceAppel = null;
-        }
+            const ligne = event.target.closest(".appel-ligne");
 
-        if (appelModal) {
+            if (!ligne) {
+                return;
+            }
 
-            document.querySelector("#appel-close").addEventListener("click", fermerAppel);
-            document.querySelector("#appel-cancel").addEventListener("click", fermerAppel);
+            etat[ligne.dataset.id] = !etat[ligne.dataset.id];
+            modifie = true;
+            afficherAppel();
 
-            appelModal.addEventListener("click", function (event) {
-                if (event.target === appelModal) {
-                    fermerAppel();
+        });
+
+        appelDate.addEventListener("change", function () {
+
+            if (!appelDate.value) {
+                appelDate.value = aujourdhui();
+            }
+
+            if (classe) {
+                preparerAppel();
+                afficherRegistre();
+            }
+
+        });
+
+        boutonEnregistrer.addEventListener("click", async function () {
+
+            if (!classe || elevesClasse.length === 0) {
+                return;
+            }
+
+            boutonEnregistrer.disabled = true;
+
+            try {
+
+                let seanceId = seanceDuJour && seanceDuJour.id;
+
+                // la séance du jour est créée automatiquement
+                if (!seanceId) {
+
+                    const { data, error } = await window.supabaseClient
+                        .from("seances")
+                        .insert([{
+                            matiere: "Séance en salle",
+                            classe: classe,
+                            date_seance: appelDate.value,
+                            salle: "Présentiel",
+                            statut: "terminée"
+                        }])
+                        .select("id")
+                        .single();
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    seanceId = data.id;
+
                 }
-            });
 
-            appelForm.addEventListener("submit", async function (event) {
-
-                event.preventDefault();
-
-                if (!seanceAppel) {
-                    return;
-                }
-
-                const lignes = Array.from(appelListe.querySelectorAll("input[type=checkbox]")).map(function (box) {
-                    return {
-                        seance_id: seanceAppel.id,
-                        eleve_id: Number(box.value),
-                        present: box.checked
-                    };
+                const lignes = elevesClasse.map(function (e) {
+                    return { seance_id: seanceId, eleve_id: e.id, present: !!etat[e.id] };
                 });
-
-                if (lignes.length === 0) {
-                    fermerAppel();
-                    return;
-                }
 
                 const { error } = await window.supabaseClient
                     .from("presences")
                     .upsert(lignes, { onConflict: "seance_id,eleve_id" });
 
                 if (error) {
-                    console.error("Erreur appel:", error);
-                    showToast("Erreur : " + error.message, "error");
-                    return;
+                    throw error;
                 }
 
-                showToast("Appel enregistré !", "success");
-                fermerAppel();
-                loadPresenceSeances();
+                showToast("Appel enregistré ✅", "success");
+                modifie = false;
+                await choisirClasse(classe);
 
+            } catch (erreur) {
+
+                console.error("Erreur appel:", erreur);
+                showToast("Erreur : " + (erreur.message || erreur), "error");
+
+            } finally {
+
+                boutonEnregistrer.disabled = false;
+
+            }
+
+        });
+
+
+        // --- Registre : élèves × dates ---
+
+        registrePeriode.addEventListener("click", function (event) {
+
+            const bouton = event.target.closest("button[data-v]");
+
+            if (!bouton) {
+                return;
+            }
+
+            registrePeriode.querySelectorAll("button").forEach(function (b) {
+                b.classList.toggle("on", b === bouton);
             });
+
+            registrePeriode.dataset.valeur = bouton.dataset.v;
+            afficherRegistre();
+
+        });
+
+        function afficherRegistre() {
+
+            document.querySelector("#registre-titre").innerHTML = `📚 Registre — <bdi>${classe}</bdi>`;
+
+            const mois = aujourdhui().slice(0, 7);
+
+            const seances = seancesClasse.filter(function (s) {
+                return (s.presences || []).length > 0 &&
+                    (registrePeriode.dataset.valeur === "annee" || s.date_seance.slice(0, 7) === mois);
+            });
+
+            if (seances.length === 0) {
+                registre.innerHTML = "<p>Aucun appel pour cette période.</p>";
+                return;
+            }
+
+            const tete = seances.map(function (s) {
+                const active = s.date_seance === appelDate.value ? " class=\"on\"" : "";
+                return `<th><button type="button" data-date="${s.date_seance}"${active}>${dateCourte(s.date_seance)}</button></th>`;
+            }).join("");
+
+            const lignes = elevesClasse.map(function (e) {
+
+                let presents = 0;
+
+                const cases = seances.map(function (s) {
+
+                    const p = (s.presences || []).find(function (x) { return x.eleve_id === e.id; });
+
+                    if (!p) {
+                        return "<td class=\"reg-vide\">·</td>";
+                    }
+
+                    if (p.present) {
+                        presents++;
+                    }
+
+                    return p.present ? "<td class=\"reg-p\">✅</td>" : "<td class=\"reg-a\">❌</td>";
+
+                }).join("");
+
+                return `<tr><th dir="auto">${e.prenom} ${e.nom}</th>${cases}<td class="reg-total">${presents}/${seances.length}</td></tr>`;
+
+            }).join("");
+
+            registre.innerHTML = `
+                <div class="registre-defile">
+                    <table>
+                        <thead><tr><th>Élève</th>${tete}<th>Total</th></tr></thead>
+                        <tbody>${lignes}</tbody>
+                    </table>
+                </div>
+                <p class="doc-aide">${seances.length} séance(s)</p>
+            `;
 
         }
 
-        loadPresenceSeances();
+        registre.addEventListener("click", function (event) {
+
+            const bouton = event.target.closest("button[data-date]");
+
+            if (!bouton) {
+                return;
+            }
+
+            if (modifie && !confirm("L'appel n'est pas enregistré. Ouvrir une autre date quand même ?")) {
+                return;
+            }
+
+            appelDate.value = bouton.dataset.date;
+            preparerAppel();
+            afficherRegistre();
+            document.querySelector("#appel").scrollIntoView({ behavior: "smooth", block: "start" });
+
+        });
+
+        window.addEventListener("beforeunload", function (event) {
+            if (modifie) {
+                event.preventDefault();
+                event.returnValue = "";
+            }
+        });
+
+        chargerClasses();
 
     }
 
@@ -3824,7 +4227,7 @@ console.log("Page actuelle:", currentPage);
                         .from("seances")
                         .select("*")
                         .gte("date_seance", today)
-                        .neq("statut", "annulée")
+                        .not("statut", "in", "(annulée,terminée)")
                         .or(`classe.eq."${enfant.classe}",classe.is.null,classe.eq.""`)
                         .order("date_seance", { ascending: true })
                         .order("heure_debut", { ascending: true })
@@ -4071,7 +4474,7 @@ console.log("Page actuelle:", currentPage);
                 .from("seances")
                 .select("*")
                 .gte("date_seance", today)
-                .neq("statut", "annulée")
+                .not("statut", "in", "(annulée,terminée)")
                 .order("date_seance", { ascending: true })
                 .order("heure_debut", { ascending: true });
 

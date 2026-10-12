@@ -17,8 +17,9 @@
         content="Gestion des élèves de la plateforme Profaycel."
     >
 
-    <link rel="stylesheet" href="style.css?v=5">
+    <link rel="stylesheet" href="style.css?v=6">
 
+    <meta name="robots" content="noindex">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2563eb">
     <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
@@ -376,6 +377,27 @@
             </div>
 
 
+
+
+            <!-- MODAL — FICHE ÉLÈVE -->
+
+            <div class="modal-overlay" id="fiche-modal">
+
+                <div class="modal-box fiche-box">
+
+                    <div class="modal-header">
+                        <h2 id="fiche-titre" dir="auto">Fiche élève</h2>
+                        <button type="button" class="modal-close" id="fiche-close">✕</button>
+                    </div>
+
+                    <div id="fiche-contenu">
+                        <p>Chargement...</p>
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
 
     </main>
@@ -434,7 +456,7 @@
     </footer>
 
 
-<script src="script.js?v=5"></script>
+<script src="script.js?v=6"></script>
 
 </body>
 

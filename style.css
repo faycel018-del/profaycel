@@ -7002,3 +7002,318 @@ body.niveau-a-choisir {
 .doc-aide {
     color: var(--text-light);
 }
+
+
+/* =========================================================
+   PRÉSENCE — APPEL PAR CLASSE
+========================================================= */
+
+.appel-classes {
+    margin: 16px 0 14px;
+}
+
+.appel-classes button small {
+    opacity: 0.7;
+    font-weight: 500;
+    margin-inline-start: 4px;
+}
+
+.appel-date {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    margin-bottom: 6px;
+}
+
+.appel-date input {
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 16px;
+    font-family: inherit;
+}
+
+.appel-date span {
+    font-weight: 700;
+    color: var(--dark);
+    text-transform: capitalize;
+}
+
+.appel-etat {
+    color: var(--text-light);
+    margin-bottom: 14px;
+}
+
+.appel-liste-v2 {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.appel-ligne {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: var(--radius-md);
+    border: 2px solid #bbf7d0;
+    background: #f0fdf4;
+    font-family: inherit;
+    font-size: 17px;
+    text-align: start;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.appel-ligne.est-absent {
+    border-color: #fecaca;
+    background: #fef2f2;
+}
+
+.appel-ic {
+    font-size: 22px;
+}
+
+.appel-nom {
+    flex: 1;
+    font-weight: 700;
+    color: var(--dark);
+}
+
+.appel-statut {
+    font-weight: 700;
+    font-size: 14px;
+    color: #15803d;
+}
+
+.est-absent .appel-statut {
+    color: #b91c1c;
+}
+
+.appel-pied {
+    position: sticky;
+    bottom: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: var(--radius-md);
+    background: var(--white);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+    z-index: 5;
+}
+
+.appel-pied[hidden] {
+    display: none;
+}
+
+.appel-pied .button:disabled {
+    opacity: 0.6;
+}
+
+
+/* Registre */
+
+.registre-defile {
+    overflow-x: auto;
+    margin-top: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+}
+
+.registre table {
+    border-collapse: collapse;
+    min-width: 100%;
+    font-size: 15px;
+}
+
+.registre th,
+.registre td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+    white-space: nowrap;
+}
+
+.registre tbody th {
+    text-align: start;
+    position: sticky;
+    inset-inline-start: 0;
+    background: var(--white);
+    font-weight: 700;
+    color: var(--dark);
+}
+
+.registre thead th {
+    background: var(--light-2);
+}
+
+.registre thead button {
+    border: none;
+    background: none;
+    font: inherit;
+    font-weight: 700;
+    color: var(--primary);
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 8px;
+}
+
+.registre thead button.on {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.reg-a {
+    background: #fef2f2;
+}
+
+.reg-vide {
+    color: var(--text-light);
+}
+
+.reg-total {
+    font-weight: 800;
+    color: var(--dark);
+}
+
+
+/* =========================================================
+   FICHE ÉLÈVE
+========================================================= */
+
+.fiche-box {
+    width: min(100%, 620px);
+}
+
+.fiche-infos {
+    line-height: 1.9;
+    margin-bottom: 16px;
+}
+
+.fiche-chiffres {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.fiche-chiffres div {
+    padding: 14px 8px;
+    border-radius: var(--radius-md);
+    background: var(--primary-soft);
+    text-align: center;
+}
+
+.fiche-chiffres strong {
+    display: block;
+    font-size: 28px;
+    color: var(--primary);
+}
+
+.fiche-chiffres small {
+    color: var(--text-light);
+}
+
+.fiche-alerte,
+.fiche-ok {
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.fiche-alerte {
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+}
+
+.fiche-ok {
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+.fiche-titre {
+    margin: 22px 0 10px;
+    font-size: 18px;
+    color: var(--dark);
+}
+
+.fiche-titre small {
+    font-weight: 500;
+    color: var(--text-light);
+    font-size: 14px;
+}
+
+.fiche-seances {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.fiche-seances span {
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #f0fdf4;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.fiche-seances span.reg-a {
+    background: #fef2f2;
+}
+
+.fiche-paiement {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 12px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.fiche-paiement span {
+    flex: 1;
+}
+
+.fiche-paiement small {
+    color: var(--text-light);
+}
+
+.fiche-retirer {
+    border: none;
+    background: none;
+    color: #b91c1c;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.fiche-ajout {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.fiche-ajout input {
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 16px;
+    font-family: inherit;
+}
+
+.fiche-ajout input[type=number] {
+    width: 100px;
+}
