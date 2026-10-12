@@ -12,9 +12,7 @@
 
     const PAGES_ADMIN = [
         "admin.html", "eleves.html", "parents.html", "classes.html",
-        "cours-admin.html", "devoirs-admin.html", "seances-admin.html",
-        "presence-admin.html", "resultats-admin.html",
-        "documents-admin.html", "annonces-admin.html"
+        "seances-admin.html", "presence-admin.html", "documents-admin.html"
     ];
 
     let page = window.location.pathname.split("/").pop() || "index.html";
@@ -378,6 +376,25 @@
         "Erreur : Email not confirmed": "خطأ: لم يتمّ تأكيد البريد الإلكتروني بعد",
         "Erreur : User already registered": "خطأ: هذا البريد الإلكتروني مسجّل مسبقًا",
 
+        // Documents (trimestres, matières, visionneuse)
+        "Trimestre 1": "الثلاثي الأوّل",
+        "Trimestre 2": "الثلاثي الثاني",
+        "Trimestre 3": "الثلاثي الثالث",
+        "Autres documents": "وثائق أخرى",
+        "Mathématiques": "الرياضيات",
+        "Technologie": "التكنولوجيا",
+        "Informatique": "الإعلامية",
+        "Correction": "إصلاح",
+        "Cours": "درس",
+        "Devoir": "فرض",
+        "Document": "وثيقة",
+        "👁️ Voir": "👁️ عرض",
+        "⬇️ Télécharger": "⬇️ تحميل",
+        "Fermer": "إغلاق",
+        "Précédente": "السابقة",
+        "Suivante": "التالية",
+        "💬 Contacter sur WhatsApp": "💬 التواصل عبر واتساب",
+
         // Choix de la langue
         "Choisissez votre langue": "اختر لغتك"
 
@@ -393,6 +410,9 @@
         [/^✅ Présent\(e\) — (.+?) ·$/, "✅ حاضر — $1 ·"],
         [/^❌ Absent\(e\) — (.+?) ·$/, "❌ غائب — $1 ·"],
         [/^Compte lié à (.+) ✅$/, "تمّ ربط الحساب بـ $1 ✅"],
+        [/^👁️ Voir \((\d+) pages\)$/, "👁️ عرض ($1 صفحات)"],
+        [/^Page (\d+) \/ (\d+)$/, "الصفحة $1 / $2"],
+        [/^(.+) · (Mathématiques|Technologie|Informatique)$/, function (tout, type, matiere) { return (AR[type] || type) + " · " + AR[matiere]; }],
         [/^Erreur : (.+)$/, "خطأ: $1"]
     ];
 
