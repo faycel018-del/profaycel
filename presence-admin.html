@@ -6,7 +6,7 @@
 
     <title>Gestion de la présence | Profaycel</title>
 
-    <link rel="stylesheet" href="style.css?v=5">
+    <link rel="stylesheet" href="style.css?v=6">
     <meta name="robots" content="noindex">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2563eb">
@@ -73,142 +73,101 @@
 
 <main>
 
-    <!-- HERO -->
+        <!-- HERO -->
 
-    <section class="student-dashboard-hero">
+        <section class="student-dashboard-hero">
 
-        <div class="container">
+            <div class="container">
 
-            <span class="section-label">
-                ADMINISTRATION
-            </span>
-
-            <h1>
-                Gestion de la présence
-            </h1>
-
-            <p>
-                Suivez la présence et les absences des élèves
-                séance par séance.
-            </p>
-
-        </div>
-
-    </section>
-
-
-    <!-- CONTENU -->
-
-    <section class="student-dashboard">
-
-        <div class="container">
-
-            <!-- INTRO -->
-
-            <div class="student-welcome-card">
-
-                <span class="student-label">
-                    PRÉSENCE
+                <span class="section-label">
+                    ADMINISTRATION
                 </span>
 
-                <h2>
-                    Suivi des élèves
-                </h2>
+                <h1>
+                    Présence
+                </h1>
 
                 <p>
-                    Choisissez une séance, puis cochez les élèves présents. Les parents voient l'appel dans leur espace.
+                    Choisissez la classe : tous les élèves sont présents par défaut, touchez les absents puis enregistrez.
                 </p>
 
             </div>
 
-
-<!-- SEANCES -->
-
-            <section class="student-welcome-card">
-
-                <span class="student-label">
-                    SÉANCES
-                </span>
-
-                <h2>
-                    Séances disponibles
-                </h2>
-
-                <p>
-                    Choisissez une séance pour consulter
-                    ou modifier les présences.
-                </p>
+        </section>
 
 
-                <div class="student-dashboard-grid" id="presence-grid"></div>
+        <section class="student-dashboard">
+
+            <div class="container">
 
 
-                <!-- MODAL — FAIRE L'APPEL -->
+                <!-- FAIRE L'APPEL -->
 
-                <div class="modal-overlay" id="appel-modal">
+                <section class="student-welcome-card is-stacked" id="appel">
 
-                    <div class="modal-box">
+                    <span class="student-label">
+                        APPEL
+                    </span>
 
-                        <div class="modal-header">
+                    <h2>
+                        📋 Faire l'appel
+                    </h2>
 
-                            <h2 id="appel-title">
-                                Faire l'appel
-                            </h2>
-
-                            <button
-                                type="button"
-                                class="modal-close"
-                                id="appel-close">
-
-                                ✕
-
-                            </button>
-
-                        </div>
-
-                        <p>
-                            Décochez les élèves absents, puis enregistrez.
-                        </p>
-
-                        <form id="appel-form" class="modal-form">
-
-                            <div id="appel-liste" class="appel-liste"></div>
-
-                            <div class="modal-actions">
-
-                                <button
-                                    type="button"
-                                    class="button button-secondary"
-                                    id="appel-cancel">
-
-                                    Annuler
-
-                                </button>
-
-                                <button
-                                    type="submit"
-                                    class="button button-primary">
-
-                                    Enregistrer
-
-                                </button>
-
-                            </div>
-
-                        </form>
-
+                    <div class="doc-choix appel-classes" id="appel-classes" data-valeur="">
+                        <p>Chargement...</p>
                     </div>
 
-                </div>
+                    <label class="appel-date">
+                        📅
+                        <input type="date" id="appel-date">
+                        <span id="appel-date-texte"></span>
+                    </label>
 
-            </section>
+                    <p class="appel-etat" id="appel-etat"></p>
+
+                    <div class="appel-liste-v2" id="appel-liste"></div>
+
+                    <div class="appel-pied" id="appel-pied" hidden>
+                        <strong id="appel-resume"></strong>
+                        <button type="button" class="button button-primary" id="appel-enregistrer">
+                            💾 Enregistrer l'appel
+                        </button>
+                    </div>
+
+                </section>
 
 
-</div>
+                <!-- REGISTRE -->
 
-    </section>
+                <section class="student-welcome-card is-stacked">
 
-</main>
+                    <span class="student-label">
+                        REGISTRE
+                    </span>
+
+                    <h2 id="registre-titre">
+                        📚 Registre de présence
+                    </h2>
+
+                    <div class="doc-choix" id="registre-periode" data-valeur="mois">
+                        <button type="button" data-v="mois" class="on">Ce mois</button>
+                        <button type="button" data-v="annee">Depuis le début de l'année</button>
+                    </div>
+
+                    <p class="doc-aide">Touchez une date pour revoir ou corriger l'appel de cette séance.</p>
+
+                    <div class="registre" id="registre">
+                        <p>Choisissez une classe.</p>
+                    </div>
+
+                </section>
+
+
+            </div>
+
+        </section>
+
+    </main>
 
 
 <footer class="footer">
@@ -260,7 +219,7 @@
     </footer>
 
 
-<script src="script.js?v=5"></script>
+<script src="script.js?v=6"></script>
 
 </body>
 </html>
