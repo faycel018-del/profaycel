@@ -2,7 +2,7 @@
 // PROFAYCEL — Service Worker (application installable)
 // =====================================================
 
-const CACHE_NAME = "profaycel-v3";
+const CACHE_NAME = "profaycel-v4";
 
 const PRECACHE = [
     "./",
@@ -52,14 +52,16 @@ self.addEventListener("fetch", function (event) {
     }
 
     event.respondWith(
-        fetch(request).then(function (response) {
+        // « no-cache » : le navigateur vérifie toujours auprès du serveur
+        // (sinon il peut montrer une ancienne page pendant 10 minutes)
+        fetch(request, { cache: "no-cache" }).then(function (response) {
             const copy = response.clone();
             caches.open(CACHE_NAME).then(function (cache) {
                 cache.put(request, copy);
             });
             return response;
         }).catch(function () {
-            return caches.match(request).then(function (cached) {
+            return caches.match(request, { ignoreSearch: true }).then(function (cached) {
                 return cached || caches.match("index.html");
             });
         })
