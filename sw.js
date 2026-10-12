@@ -61,7 +61,7 @@ self.addEventListener("fetch", function (event) {
             });
             return response;
         }).catch(function () {
-            return caches.match(request).then(function (cached) {
+            return caches.match(request, { ignoreSearch: true }).then(function (cached) {
                 return cached || caches.match("index.html");
             });
         })
