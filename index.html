@@ -5,14 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Profaycel | Éducation, Technologie & Robotique</title>
+    <title>Profaycel | Professeur Faycel Khlifi — Maths & Technologie</title>
 
     <meta
         name="description"
-        content="Profaycel - Éducation, technologie, électronique, programmation et robotique."
-    >
+        content="Professeur Faycel Khlifi, ingénieur et professeur de mathématiques et de technologie. Cours en salle et à distance, de la 7ème année de base à la 1ère année secondaire.">
 
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="home.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2563eb">
     <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
@@ -20,7 +20,7 @@
 </head>
 
 
-<body>
+<body class="home">
 
 
     <!-- =====================================================
@@ -31,15 +31,9 @@
 
         <div class="container header-container">
 
-
-            <!-- LOGO -->
-
             <a href="index.html" class="logo">
-                Profaycel
+                Pro<span class="hm-logo-accent">faycel</span>
             </a>
-
-
-            <!-- BOUTON MOBILE -->
 
             <button
                 class="mobile-menu-button"
@@ -53,104 +47,25 @@
 
             </button>
 
-
-            <!-- NAVIGATION -->
-
             <nav class="navigation">
 
                 <ul>
-
-                    <li>
-                        <a
-                            href="index.html"
-                            class="active">
-
-                            Accueil
-
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="about.html">
-                            À propos
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="cours.html">
-                            Cours
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="robotique.html">
-                            Robotique
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="projets.html">
-                            Projets
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="ressources.html">
-                            Ressources
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="contact.html">
-                            Contact
-                        </a>
-                    </li>
-
+                    <li><a href="#apropos">Qui suis-je</a></li>
+                    <li><a href="#offre">Mes cours</a></li>
+                    <li><a href="#espaces">Espaces</a></li>
+                    <li><a href="#livres">Mes livres</a></li>
+                    <li><a href="#contact">Contact</a></li>
                 </ul>
 
             </nav>
 
-
-            <!-- ACTIONS -->
-
-            <div class="header-actions">
-
-                <a
-                    href="eleve.html"
-                    class="header-button">
-
-                    Espace Élève
-
-                </a>
-
-                <a
-                    href="parent.html"
-                    class="header-button">
-
-                    Espace Parent
-
-                </a>
-
-                <a
-                    href="admin.html"
-                    class="header-button">
-
-                    Administration
-
-                </a>
-
-            </div>
-
+            <!-- Rempli par script.js : connexion / mon espace + langue -->
+            <div class="header-actions"></div>
 
         </div>
 
     </header>
 
-
-
-    <!-- =====================================================
-         CONTENU PRINCIPAL
-    ====================================================== -->
 
     <main>
 
@@ -159,166 +74,150 @@
              HERO
         ================================================== -->
 
-        <section class="hero">
+        <section class="hm-hero">
 
-            <div class="container hero-container">
+            <div class="container hm-hero-grid">
 
+                <div class="hm-hero-text">
 
-                <div class="hero-content">
+                    <span class="hm-badge"><i></i> <span>Inscriptions ouvertes · en salle et à distance</span></span>
 
-                    <p class="section-label">
-                        ÉDUCATION • TECHNOLOGIE • INNOVATION
-                    </p>
+                    <h1>Professeur Faycel Khlifi</h1>
 
-                    <h1>
-                        Apprendre.
-                        <br>
-                        Créer.
-                        <br>
-                        Innover.
-                    </h1>
+                    <p class="hm-role">Ingénieur · Professeur de mathématiques et de technologie</p>
 
-                    <p>
-                        Un espace dédié à l'apprentissage des
-                        mathématiques, de la technologie,
-                        de l'électronique, de la programmation
-                        et de la robotique.
-                    </p>
+                    <p class="hm-slogan">J'enseigne à votre enfant <mark>à comprendre</mark>,<br>pas à apprendre par cœur.</p>
 
-
-                    <div class="hero-buttons">
-
-                        <a
-                            href="cours.html"
-                            class="button button-primary">
-
-                            Découvrir les cours
-
-                        </a>
-
-                        <a
-                            href="robotique.html"
-                            class="button button-secondary">
-
-                            Découvrir la robotique
-
-                        </a>
-
+                    <div class="hm-buttons">
+                        <a class="hm-btn hm-btn-wa" data-wa="inscription" href="https://wa.me/21697699271" target="_blank" rel="noopener">💬 Inscrire mon enfant</a>
+                        <a class="hm-btn hm-btn-outline" href="register.html">🎥 Cours à distance</a>
                     </div>
 
                 </div>
 
-
-                <div class="hero-visual">
-
-                    <div class="hero-card">
-
-                        <span>
-                            PROFAYCEL
-                        </span>
-
-                        <strong>
-                            De consommateur
-                            à créateur.
-                        </strong>
-
-                    </div>
-
+                <div class="hm-hero-photo">
+                    <img src="img/faycel-hero.webp" alt="Professeur Faycel Khlifi" width="700" height="724">
                 </div>
-
 
             </div>
 
         </section>
 
 
+        <div class="container hm-stats">
+            <div class="hm-stat"><b>+7</b><span>ans d'enseignement</span></div>
+            <div class="hm-stat"><b>3</b><span>livres de mathématiques</span></div>
+            <div class="hm-stat"><b>4</b><span>niveaux : 7ème, 8ème, 9ème et 1ère secondaire</span></div>
+            <div class="hm-stat"><b>🏫 + 💻</b><span>en salle et à distance</span></div>
+        </div>
+
 
         <!-- =================================================
-             PRÉSENTATION
+             QUI SUIS-JE
         ================================================== -->
 
-        <section class="home-intro">
+        <section class="hm-section" id="apropos">
+
+            <div class="container hm-about">
+
+                <div class="hm-about-photo">
+                    <img src="img/faycel-portrait.webp" alt="Professeur Faycel Khlifi" loading="lazy" width="680" height="900">
+                </div>
+
+                <div>
+                    <span class="hm-label">Qui suis-je</span>
+                    <h2>Un ingénieur qui a choisi l'enseignement</h2>
+                    <p class="hm-lead">Je veux que l'élève comprenne pourquoi, pas seulement comment. Mon expérience d'ingénieur rend les mathématiques et la technologie simples et concrètes.</p>
+
+                    <ul class="hm-creds">
+                        <li><span class="hm-ic">🎓</span><span>Ingénieur d'État en génie électrique</span></li>
+                        <li><span class="hm-ic">🎓</span><span>Licence en électronique, électrotechnique et automatique</span></li>
+                        <li><span class="hm-ic">🏫</span><span>Fondateur de FH Academy Center, depuis 2019</span></li>
+                        <li><span class="hm-ic">🔧</span><span>Professeur de technologie : électronique, Arduino et robotique</span></li>
+                        <li><span class="hm-ic">📚</span><span>Auteur de la série « Le petit ingénieur en mathématiques »</span></li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             MES COURS
+        ================================================== -->
+
+        <section class="hm-section hm-grey" id="offre">
 
             <div class="container">
 
-                <div class="section-heading">
+                <span class="hm-label">Mes cours</span>
+                <h2>Cours de mathématiques par niveau</h2>
 
-                    <p class="section-label">
-                        BIENVENUE
-                    </p>
-
-                    <h2>
-                        Une éducation tournée vers la pratique
-                    </h2>
-
-                    <p>
-                        Profaycel associe les connaissances
-                        théoriques à la pratique afin d'aider
-                        les élèves à comprendre, expérimenter
-                        et créer.
-                    </p>
-
+                <div class="hm-levels">
+                    <div class="hm-level"><div class="hm-num">7</div><h3>7ème année de base</h3><p>Cours, exercices et devoirs</p></div>
+                    <div class="hm-level"><div class="hm-num">8</div><h3>8ème année de base</h3><p>Cours, exercices et devoirs</p></div>
+                    <div class="hm-level"><div class="hm-num">9</div><h3>9ème année de base</h3><p>Préparation au concours national</p></div>
+                    <div class="hm-level"><div class="hm-num">1</div><h3>1ère année secondaire</h3><p>Des bases solides pour le lycée</p></div>
                 </div>
 
+                <div class="hm-modes">
+                    <div class="hm-mode hm-mode-salle"><span class="hm-mode-ic">🏫</span><div><h3>En salle</h3><p>Petits groupes ; le parent suit les présences et les paiements sur le site.</p></div></div>
+                    <div class="hm-mode hm-mode-ligne"><span class="hm-mode-ic">💻</span><div><h3>À distance</h3><p>Séances en direct par vidéo, et les séries de ton niveau dans ton espace.</p></div></div>
+                </div>
 
-                <div class="home-features">
+            </div>
 
-
-                    <article class="feature-card">
-
-                        <span class="feature-number">
-                            01
-                        </span>
-
-                        <h3>
-                            Comprendre
-                        </h3>
-
-                        <p>
-                            Construire des bases solides
-                            grâce à une pédagogie claire
-                            et progressive.
-                        </p>
-
-                    </article>
+        </section>
 
 
-                    <article class="feature-card">
+        <!-- =================================================
+             ESPACES
+        ================================================== -->
 
-                        <span class="feature-number">
-                            02
-                        </span>
+        <section class="hm-section" id="espaces">
 
-                        <h3>
-                            Pratiquer
-                        </h3>
+            <div class="container">
 
-                        <p>
-                            Mettre les connaissances en
-                            pratique à travers des exercices
-                            et des activités.
-                        </p>
+                <span class="hm-label">La plateforme éducative</span>
+                <h2>Choisissez l'espace qui vous correspond</h2>
+                <p class="hm-lead">Une seule plateforme réunit l'élève, le parent et le professeur, pour un suivi précis et une communication continue.</p>
 
-                    </article>
+                <div class="hm-spaces">
 
+                    <div class="hm-space hm-space-eleve">
+                        <div class="hm-space-ic">👨‍🎓</div>
+                        <h3>Espace élève</h3>
+                        <ul>
+                            <li>Séances à venir et lien en direct</li>
+                            <li>Les séries d'exercices de ton niveau</li>
+                            <li>En salle ou à distance</li>
+                        </ul>
+                        <a class="hm-btn" href="login.html">Connexion élève</a>
+                    </div>
 
-                    <article class="feature-card">
+                    <div class="hm-space hm-space-parent">
+                        <div class="hm-space-ic">👪</div>
+                        <h3>Espace parent</h3>
+                        <ul>
+                            <li>Présences et absences de votre enfant</li>
+                            <li>Situation des paiements mensuels</li>
+                            <li>Séries et prochaine séance</li>
+                        </ul>
+                        <small>🔑 Le code d'accès vous est envoyé par le professeur sur WhatsApp</small>
+                        <a class="hm-btn" href="login.html">Connexion parent</a>
+                    </div>
 
-                        <span class="feature-number">
-                            03
-                        </span>
-
-                        <h3>
-                            Créer
-                        </h3>
-
-                        <p>
-                            Transformer les idées en projets
-                            concrets grâce à la technologie.
-                        </p>
-
-                    </article>
-
+                    <div class="hm-space hm-space-distance">
+                        <div class="hm-space-ic">🎥</div>
+                        <h3>Cours à distance</h3>
+                        <ul>
+                            <li>Inscris-toi et choisis ton niveau</li>
+                            <li>Séances en direct par vidéo</li>
+                            <li>Sur téléphone ou ordinateur</li>
+                        </ul>
+                        <a class="hm-btn" href="register.html">S'inscrire maintenant</a>
+                    </div>
 
                 </div>
 
@@ -327,147 +226,73 @@
         </section>
 
 
-
         <!-- =================================================
-             DOMAINES
+             MES LIVRES
         ================================================== -->
 
-        <section class="home-domains">
+        <section class="hm-section hm-grey" id="livres">
 
             <div class="container">
 
-                <div class="section-heading">
+                <span class="hm-label">Mes livres</span>
+                <h2>La série « Le petit ingénieur en mathématiques »</h2>
+                <p class="hm-lead">Recueil du professeur Faycel, avec corrigés, pour la 7ème, la 8ème et la 9ème année de base.</p>
 
-                    <p class="section-label">
-                        DOMAINES
-                    </p>
-
-                    <h2>
-                        Explorer plusieurs disciplines
-                    </h2>
-
+                <div class="hm-books">
+                    <div class="hm-book">
+                        <img src="img/livre-7.webp" alt="Le petit ingénieur en mathématiques — 7ème année" loading="lazy" width="500" height="708">
+                        <h3>7ème année de base</h3>
+                        <a class="hm-btn hm-btn-wa" data-wa="livre7" href="https://wa.me/21697699271" target="_blank" rel="noopener">🛒 Commander</a>
+                    </div>
+                    <div class="hm-book">
+                        <img src="img/livre-8.webp" alt="Le petit ingénieur en mathématiques — 8ème année" loading="lazy" width="500" height="708">
+                        <h3>8ème année de base</h3>
+                        <a class="hm-btn hm-btn-wa" data-wa="livre8" href="https://wa.me/21697699271" target="_blank" rel="noopener">🛒 Commander</a>
+                    </div>
+                    <div class="hm-book">
+                        <img src="img/livre-9.webp" alt="Le petit ingénieur en mathématiques — 9ème année" loading="lazy" width="500" height="708">
+                        <h3>9ème année de base</h3>
+                        <a class="hm-btn hm-btn-wa" data-wa="livre9" href="https://wa.me/21697699271" target="_blank" rel="noopener">🛒 Commander</a>
+                    </div>
                 </div>
 
+                <ul class="hm-chips">
+                    <li>Cours</li>
+                    <li>Exercices</li>
+                    <li>Devoirs de contrôle 3+4</li>
+                    <li>Devoirs de synthèse 2</li>
+                    <li>80 % modèles</li>
+                    <li class="hm-chip-red">✔ Avec corrigés</li>
+                </ul>
 
-                <div class="domain-grid">
+                <p class="hm-cities">Modèles : Sfax · Gabès · Mégrine · Ali Trad · Siliana · Lac · Le Kef</p>
 
+            </div>
 
-                    <a
-                        href="cours.html"
-                        class="domain-card">
-
-                        <span>
-                            ∑
-                        </span>
-
-                        <h3>
-                            Mathématiques
-                        </h3>
-
-                        <p>
-                            Comprendre et résoudre.
-                        </p>
-
-                    </a>
+        </section>
 
 
-                    <a
-                        href="cours.html"
-                        class="domain-card">
+        <!-- =================================================
+             MÉTHODE
+        ================================================== -->
 
-                        <span>
-                            ⚙
-                        </span>
+        <section class="hm-section">
 
-                        <h3>
-                            Technologie
-                        </h3>
+            <div class="container hm-method">
 
-                        <p>
-                            Observer, analyser et concevoir.
-                        </p>
+                <div>
+                    <span class="hm-label">Ma méthode</span>
+                    <h2>Ma méthode d'enseignement</h2>
 
-                    </a>
+                    <div class="hm-points">
+                        <div class="hm-point"><b>1</b><div><h3>Comprendre avant de mémoriser</h3><p>Chaque leçon part de l'idée, puis viennent les exercices.</p></div></div>
+                        <div class="hm-point"><b>2</b><div><h3>Un suivi pour chaque élève</h3><p>Petits groupes et devoirs de toute l'année, avec corrigés.</p></div></div>
+                        <div class="hm-point"><b>3</b><div><h3>Le parent toujours informé</h3><p>Présences, paiements et séries dans l'espace parent du site.</p></div></div>
+                    </div>
+                </div>
 
-
-                    <a
-                        href="cours.html"
-                        class="domain-card">
-
-                        <span>
-                            ⚡
-                        </span>
-
-                        <h3>
-                            Électronique
-                        </h3>
-
-                        <p>
-                            Comprendre les systèmes
-                            électroniques.
-                        </p>
-
-                    </a>
-
-
-                    <a
-                        href="cours.html"
-                        class="domain-card">
-
-                        <span>
-                            &lt;/&gt;
-                        </span>
-
-                        <h3>
-                            Programmation
-                        </h3>
-
-                        <p>
-                            Apprendre à coder et automatiser.
-                        </p>
-
-                    </a>
-
-
-                    <a
-                        href="robotique.html"
-                        class="domain-card">
-
-                        <span>
-                            🤖
-                        </span>
-
-                        <h3>
-                            Robotique
-                        </h3>
-
-                        <p>
-                            Construire et programmer.
-                        </p>
-
-                    </a>
-
-
-                    <a
-                        href="cours.html"
-                        class="domain-card">
-
-                        <span>
-                            AI
-                        </span>
-
-                        <h3>
-                            Intelligence artificielle
-                        </h3>
-
-                        <p>
-                            Découvrir les technologies
-                            de demain.
-                        </p>
-
-                    </a>
-
-
+                <div class="hm-method-photo">
+                    <img src="img/faycel-lecture.webp" alt="" loading="lazy" width="600" height="572">
                 </div>
 
             </div>
@@ -475,44 +300,28 @@
         </section>
 
 
-
         <!-- =================================================
-             CTA CONTACT
+             CONTACT / RÉSEAUX
         ================================================== -->
 
-        <section class="home-cta">
+        <section class="hm-section" id="contact">
 
             <div class="container">
 
-                <div class="cta-box">
+                <div class="hm-cta">
 
-                    <div>
+                    <h2>Suivez-moi et contactez-moi</h2>
+                    <p>Cours, conseils et vidéos sur les réseaux sociaux</p>
 
-                        <p class="section-label">
-                            UNE QUESTION ?
-                        </p>
-
-                        <h2>
-                            Parlons de votre projet
-                        </h2>
-
-                        <p>
-                            Pour toute question concernant
-                            les cours, la technologie ou
-                            la robotique, n'hésitez pas
-                            à me contacter.
-                        </p>
-
+                    <div class="hm-socials">
+                        <a class="hm-social" style="--c:#0866FF" href="https://www.facebook.com/alastadh.fysl.234144" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></svg><span>Facebook</span></a>
+                        <a class="hm-social" style="--c:#000000" href="https://www.tiktok.com/@profaycel" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg><span>TikTok</span></a>
+                        <a class="hm-social" style="--c:#E1306C" href="https://www.instagram.com/faycel_khlifii/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg><span>Instagram</span></a>
+                        <a class="hm-social" style="--c:#0A66C2" href="https://www.linkedin.com/in/faycel-khlifi-49824514b/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="4"/><text x="12" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="11" fill="#fff">in</text></svg><span>LinkedIn</span></a>
+                        <a class="hm-social" style="--c:#25D366" data-wa="contact" href="https://wa.me/21697699271" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg><span>WhatsApp</span></a>
                     </div>
 
-
-                    <a
-                        href="contact.html"
-                        class="button button-primary">
-
-                        Me contacter
-
-                    </a>
+                    <a class="hm-btn hm-btn-wa" data-wa="contact" href="https://wa.me/21697699271" target="_blank" rel="noopener" dir="ltr">💬 +216 97 699 271</a>
 
                 </div>
 
@@ -522,7 +331,6 @@
 
 
     </main>
-
 
 
     <!-- =====================================================
@@ -535,23 +343,17 @@
 
             <div class="footer-content">
 
-
                 <div>
 
-                    <a
-                        href="index.html"
-                        class="footer-logo">
-
+                    <a href="index.html" class="footer-logo">
                         Profaycel
-
                     </a>
 
                     <p>
-                        Éducation • Technologie • Robotique
+                        Professeur Faycel Khlifi — Maths & Technologie
                     </p>
 
                 </div>
-
 
                 <div class="footer-links">
 
@@ -563,15 +365,21 @@
                         Cours
                     </a>
 
+                    <a href="robotique.html">
+                        Robotique
+                    </a>
+
                     <a href="contact.html">
                         Contact
                     </a>
 
+                    <a href="confidentialite.html">
+                        Politique de confidentialité
+                    </a>
+
                 </div>
 
-
             </div>
-
 
             <div class="footer-bottom">
 
@@ -586,9 +394,7 @@
     </footer>
 
 
-
-    <!-- JAVASCRIPT -->
-
+    <script src="i18n.js"></script>
     <script src="script.js"></script>
 
 </body>

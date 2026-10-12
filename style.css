@@ -6059,3 +6059,190 @@ body > .footer:not(:has(.container)) p {
     }
 
 }
+
+
+/* =========================================================
+   LANGUE : BOUTON « ع | FR », CHOIX AU PREMIER PASSAGE, ARABE
+========================================================= */
+
+.lang-switch {
+    display: inline-flex;
+    flex-shrink: 0;
+
+    overflow: hidden;
+
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--white);
+}
+
+.lang-switch button {
+    min-width: 38px;
+    padding: 7px 12px;
+
+    border: 0;
+    background: transparent;
+    color: var(--text-light);
+
+    font-size: 0.85rem;
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+.lang-switch button.on {
+    background: var(--dark);
+    color: var(--white);
+}
+
+.header-register-button {
+    background: var(--white);
+    color: var(--dark);
+    border: 1px solid var(--border);
+}
+
+.header-register-button:hover {
+    color: var(--white);
+}
+
+.lang-choice {
+    z-index: 3000;
+}
+
+.lang-choice-box {
+    max-width: 420px;
+
+    text-align: center;
+}
+
+.lang-choice-logo {
+    margin-bottom: 8px;
+
+    color: var(--dark);
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.lang-choice-logo span {
+    color: var(--primary);
+}
+
+.lang-choice-box p {
+    margin-bottom: 22px;
+
+    color: var(--text-light);
+    font-weight: 600;
+}
+
+.lang-choice-buttons {
+    display: grid;
+    gap: 12px;
+}
+
+.lang-choice-buttons button {
+    min-height: 56px;
+
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    background: var(--white);
+    color: var(--dark);
+
+    font-size: 1.15rem;
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+.lang-choice-buttons button:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.lang-choice-buttons button[lang="ar"] {
+    font-family: "Cairo", Tahoma, sans-serif;
+}
+
+@media (max-width: 800px) {
+
+    .navigation .lang-switch {
+        align-self: center;
+    }
+
+}
+
+
+/* ---------- Arabe (de droite à gauche) ---------- */
+
+html[lang="ar"] body {
+    font-family: "Cairo", Tahoma, "Segoe UI", Arial, sans-serif;
+}
+
+html[lang="ar"] h1,
+html[lang="ar"] h2,
+html[lang="ar"] h3,
+html[lang="ar"] .section-label,
+html[lang="ar"] .student-label,
+html[lang="ar"] .hm-label {
+    letter-spacing: 0;
+}
+
+html[dir="rtl"] .student-label,
+html[dir="rtl"] .section-label {
+    text-transform: none;
+}
+
+html[dir="rtl"] .install-app-button {
+    left: auto;
+    right: 20px;
+}
+
+html[dir="rtl"] .back-to-top {
+    right: auto;
+    left: 24px;
+}
+
+html[dir="rtl"] .historique-presences {
+    padding-left: 0;
+    padding-right: 18px;
+}
+
+html[dir="rtl"] .ios-etapes {
+    padding-left: 0;
+    padding-right: 20px;
+}
+
+html[dir="rtl"] .appel-eleve small {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+/* Les codes et adresses restent de gauche à droite */
+html[dir="rtl"] .code-input,
+html[dir="rtl"] input[type="email"],
+html[dir="rtl"] input[type="password"] {
+    direction: ltr;
+    text-align: right;
+}
+
+/* Le logo « Profaycel » se lit toujours de gauche à droite */
+html[dir="rtl"] .logo,
+html[dir="rtl"] .footer-logo,
+html[dir="rtl"] .lang-choice-logo {
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+
+@media (max-width: 800px) {
+
+    /* Bouton « Inscription » lisible dans le menu ☰ */
+    .navigation .header-actions .header-register-button {
+        color: var(--dark);
+    }
+
+    /* En arabe, le bouton ☰ va de l'autre côté */
+    html[dir="rtl"] .mobile-menu-button {
+        margin-left: 0;
+        margin-right: auto;
+    }
+
+}

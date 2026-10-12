@@ -724,7 +724,26 @@ document.addEventListener("DOMContentLoaded", function () {
                     oldLogout.remove();
                 }
 
+                // Les anciens boutons « Espace Élève / Espace Parent / Administration »
+                // sont remplacés par un seul bouton « Mon espace » selon le rôle
+                headerActions.querySelectorAll(
+                    'a[href="eleve.html"], a[href="parent.html"], a[href="admin.html"], .header-space-button, .header-register-button'
+                ).forEach(function (lien) {
+                    lien.remove();
+                });
+
                 if (session) {
+
+                    const role = session.user.user_metadata.role;
+
+                    const espaceLink = document.createElement("a");
+                    espaceLink.className = "header-button header-space-button";
+                    espaceLink.textContent = "🏠 Mon espace";
+                    espaceLink.href = role === "admin"
+                        ? "admin.html"
+                        : role === "parent" ? "parent.html" : "eleve.html";
+
+                    headerActions.insertBefore(espaceLink, headerActions.firstChild);
 
                     const logoutLink = document.createElement("a");
                     logoutLink.href = "#";
@@ -743,10 +762,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     headerActions.insertBefore(
                         logoutLink,
-                        headerActions.firstChild
+                        espaceLink.nextSibling
                     );
 
                 } else {
+
+                    const registerLink = document.createElement("a");
+                    registerLink.href = "register.html";
+                    registerLink.className = "header-button header-register-button";
+                    registerLink.textContent = "Inscription";
+
+                    headerActions.insertBefore(
+                        registerLink,
+                        headerActions.firstChild
+                    );
+
 
                     const loginLink = document.createElement("a");
                     loginLink.href = "login.html";
@@ -755,7 +785,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     headerActions.insertBefore(
                         loginLink,
-                        headerActions.firstChild
+                        registerLink.nextSibling
                     );
 
                 }
