@@ -1,0 +1,23 @@
+@font-face { font-family: Cairo; font-weight: 900; src: url('../brand/fonts/Cairo-Black.ttf'); }
+@font-face { font-family: Cairo; font-weight: 800; src: url('../brand/fonts/Cairo-ExtraBold.ttf'); }
+@font-face { font-family: Cairo; font-weight: 700; src: url('../brand/fonts/Cairo-Bold.ttf'); }
+@font-face { font-family: Cairo; font-weight: 600; src: url('../brand/fonts/Cairo-SemiBold.ttf'); }
+:root { --bg1: #1F2C9C; --bg2: #0B1350; --accent: #FFC928; --good: #22C55E; --bad: #EF4444; --text: #fff; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg2); }
+body { font-family: Cairo, sans-serif; color: var(--text); direction: rtl; position: relative;
+       background: radial-gradient(120% 70% at 50% 30%, var(--bg1) 0%, var(--bg2) 75%); }
+.layer { position: absolute; inset: 0; }
+.grid { position: absolute; inset: -200px; opacity: .10;
+        background-image: linear-gradient(#fff 1.5px, transparent 1.5px), linear-gradient(90deg, #fff 1.5px, transparent 1.5px);
+        background-size: 90px 90px; }
+.center { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; }
+.pill { display: inline-block; background: rgba(255,255,255,.12); border: 2px solid rgba(255,255,255,.18);
+        border-radius: 999px; padding: 10px 34px; font-weight: 700; font-size: 40px; }
+.accent { color: var(--accent); }
+#subs { position: absolute; left: 50px; right: 50px; top: 1335px; text-align: center; font-weight: 900; font-size: 76px;
+        line-height: 1.25; text-shadow: 0 6px 0 rgba(0,0,0,.35), 0 0 24px rgba(0,0,0,.35); transform-origin: center; }
+#subs .hi { color: var(--accent); }
+#progress { position: absolute; top: 0; right: 0; height: 12px; background: var(--accent); border-radius: 0 0 0 8px; }
+.brand { position: absolute; bottom: 300px; width: 100%; text-align: center; font-weight: 700; font-size: 34px; opacity: .55;
+         direction: ltr; letter-spacing: 1px; }

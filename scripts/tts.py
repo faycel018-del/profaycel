@@ -91,22 +91,29 @@ def edge(text, out):
 
 
 def piper(text, out):
-    """Offline and free (open source). The model is downloaded once from huggingface.co into brand/voices/."""
-    import wave
-    from piper import PiperVoice
+    """Offline and free (open source). The model comes from the sherpa-onnx GitHub releases (huggingface.co is blocked here):
+    https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-<model>.tar.bz2 → brand/voices/"""
+    import tarfile, wave
+    from piper import PiperVoice, SynthesisConfig
     c = CFG["piper"]; vdir = ROOT / "brand/voices"; vdir.mkdir(parents=True, exist_ok=True)
-    model = vdir / f"{c['model']}.onnx"
+    model = vdir / f"vits-piper-{c['model']}" / f"{c['model']}.onnx"
     if not model.exists():
-        lang, name, q = c["model"].split("-")  # ar_JO-kareem-medium
-        base = (f"https://huggingface.co/rhasspy/piper-voices/resolve/main/{lang.split('_')[0]}/{lang}/{name}/{q}/"
-                f"{c['model']}.onnx")
-        for suffix in ("", ".json"):
-            urllib.request.urlretrieve(base + suffix, str(model) + suffix)
+        tb = vdir / "model.tar.bz2"
+        urllib.request.urlretrieve("https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/"
+                                   f"vits-piper-{c['model']}.tar.bz2", tb)
+        with tarfile.open(tb) as t:
+            t.extractall(vdir)
+        tb.unlink()
     voice = PiperVoice.load(str(model))
+    cfg = SynthesisConfig(length_scale=c.get("length_scale", 0.85), noise_scale=c.get("noise_scale", 0.6),
+                          noise_w_scale=c.get("noise_w", 0.8))
     wav = Path(out).with_suffix(".wav")
     with wave.open(str(wav), "wb") as wf:
-        voice.synthesize_wav(text, wf)
-    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(wav), "-af", "aresample=48000",
+        voice.synthesize_wav(text, wf, syn_config=cfg)
+    # light polish: warmth, presence, gentle compression
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(wav), "-af",
+                    "aresample=48000,highpass=f=70,equalizer=f=180:t=q:w=1:g=2,equalizer=f=3500:t=q:w=1.5:g=2.5,"
+                    "acompressor=threshold=-18dB:ratio=2.5:attack=5:release=120:makeup=2,silenceremove=start_periods=1:start_threshold=-45dB",
                     "-c:a", "libmp3lame", "-b:a", "192k", out], check=True)
     wav.unlink()
     return spread_words(text, duration(out))

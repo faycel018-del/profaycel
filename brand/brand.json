@@ -8,27 +8,30 @@
   ],
   "tone": "Close, funny, fast: Tunisian dialect with simple words",
   "colors": {
-    "primary": "#111111",
-    "accent": "#FFD400",
-    "secondary": "#FF3B5C",
-    "text": "#FFFFFF"
+    "bg1": "#1F2C9C",
+    "bg2": "#0B1350",
+    "accent": "#FFC928",
+    "text": "#FFFFFF",
+    "good": "#22C55E",
+    "bad": "#EF4444",
+    "card": "rgba(255,255,255,0.08)"
   },
   "subtitles": {
-    "font": "DejaVu Sans",
+    "font": "Cairo Black",
     "size_ratio": 0.045,
     "color": "#FFFFFF",
     "highlight": "#FFD400",
     "outline": "#000000"
   },
   "thumbnail": {
-    "fallback_font": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+    "fallback_font": "/home/user/studio/brand/fonts/Cairo-Black.ttf"
   },
   "grade_default": "warm",
   "music_volume": 0.22,
   "academy": "FH Academy Center",
   "voice": {
-    "provider": "silent",
-    "_providers": "edge (free, no account, excellent: needs speech.platform.bing.com) | piper (free, offline: needs huggingface.co once) | elevenlabs | azure | silent (preview)",
+    "provider": "piper",
+    "_providers": "piper (free, offline, works now) | edge (free, better: needs speech.platform.bing.com) | elevenlabs | azure | silent",
     "elevenlabs": {
       "voice_id": "",
       "model": "eleven_multilingual_v2",
@@ -51,7 +54,10 @@
     },
     "language": "fusha",
     "piper": {
-      "model": "ar_JO-kareem-medium"
+      "model": "ar_JO-kareem-medium",
+      "length_scale": 0.86,
+      "noise_scale": 0.6,
+      "noise_w": 0.8
     }
   }
 }

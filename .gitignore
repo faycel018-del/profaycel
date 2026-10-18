@@ -7,3 +7,7 @@ projects/*/work/
 .cache/
 lessons/frames/
 lessons/*.pptx
+brand/voices/
+brand/asr/
+motion/*/timings.js
+projects/lessons/*.mp4

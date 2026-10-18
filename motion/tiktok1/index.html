@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../base.css">
+<style>
+  .chip { position: absolute; top: 150px; width: 100%; text-align: center; }
+  .chip .pill { font-size: 38px; }
+  .big { font-weight: 900; font-size: 112px; white-space: nowrap; line-height: 1.15; text-shadow: 0 10px 0 rgba(0,0,0,.25); }
+  .big2 { font-weight: 900; font-size: 150px; white-space: nowrap; color: var(--accent); text-shadow: 0 10px 0 rgba(0,0,0,.25); }
+  /* 3D cube */
+  .stage3d { position: absolute; left: 50%; top: 760px; width: 0; height: 0; perspective: 1400px; }
+  .cube { position: absolute; width: 320px; height: 320px; left: -160px; top: -160px; transform-style: preserve-3d; }
+  .face { position: absolute; width: 320px; height: 320px; border-radius: 34px; background: #fff;
+          border: 6px solid #0B1350; box-shadow: inset 0 0 0 10px #e8ecff; }
+  .face.f1 { transform: translateZ(160px); } .face.f6 { transform: rotateY(180deg) translateZ(160px); }
+  .face.f2 { transform: rotateY(90deg) translateZ(160px); } .face.f5 { transform: rotateY(-90deg) translateZ(160px); }
+  .face.f3 { transform: rotateX(90deg) translateZ(160px); } .face.f4 { transform: rotateX(-90deg) translateZ(160px); }
+  /* die pips */
+  .pips { position: absolute; inset: 14%; display: grid; grid-template: repeat(3, 1fr) / repeat(3, 1fr); }
+  .pips i { width: 62%; height: 62%; margin: auto; border-radius: 50%; background: #111a4a; visibility: hidden; }
+  .eye { position: absolute; font-size: 130px; left: 880px; top: 690px; }
+  .arrow { position: absolute; left: 0; top: 0; }
+  .stamp { position: absolute; left: 50%; top: 760px; width: 420px; height: 420px; margin: -210px 0 0 -210px; border-radius: 50%;
+           background: var(--bad); display: flex; align-items: center; justify-content: center; font-size: 300px; font-weight: 900;
+           box-shadow: 0 0 0 22px rgba(239,68,68,.25), 0 30px 60px rgba(0,0,0,.35); }
+  .badpill { position: absolute; top: 1060px; width: 100%; text-align: center; }
+  .badpill span { background: var(--bad); border-radius: 999px; padding: 12px 46px; font-weight: 900; font-size: 64px; }
+  /* net */
+  .slot { position: absolute; width: 190px; height: 190px; border: 5px dashed rgba(255,255,255,.35); border-radius: 26px; }
+  .tile { position: absolute; width: 190px; height: 190px; border-radius: 26px; background: #fff; border: 5px solid #0B1350;
+          box-shadow: 0 18px 30px rgba(0,0,0,.35); }
+  .tile.front { box-shadow: 0 0 0 8px var(--accent), 0 18px 30px rgba(0,0,0,.35); }
+  .lbl { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; background: var(--accent); color: #0B1350;
+         font-weight: 900; font-size: 34px; padding: 2px 22px; border-radius: 999px; }
+  .lbl.below { top: 196px; } .lbl.above { bottom: 196px; }
+  .lbl.red { background: #fff; color: #c81e1e; }
+  /* rule card */
+  .card { position: absolute; left: 70px; right: 70px; top: 470px; padding: 70px 60px 60px; border-radius: 48px; text-align: center;
+          background: linear-gradient(160deg, rgba(255,255,255,.14), rgba(255,255,255,.05)); border: 3px solid rgba(255,255,255,.22);
+          box-shadow: 0 40px 80px rgba(0,0,0,.35); }
+  .check { width: 170px; height: 170px; border-radius: 50%; background: var(--good); margin: 0 auto 26px; display: flex;
+           align-items: center; justify-content: center; font-size: 110px; font-weight: 900; }
+  .card h2 { color: var(--accent); font-weight: 900; font-size: 80px; }
+  .card p { font-weight: 800; font-size: 66px; line-height: 1.35; margin-top: 18px; }
+  .card p b { color: var(--accent); }
+  /* cta */
+  .logo { font-family: Cairo; font-weight: 900; font-size: 170px; direction: ltr; letter-spacing: -2px; }
+  .logo span { color: #8DB3FF; }
+  .name { white-space: nowrap; font-weight: 900; font-size: 74px; margin-top: 10px; }
+  .subj { font-weight: 700; font-size: 40px; opacity: .8; }
+  .chips { margin-top: 34px; display: flex; gap: 18px; justify-content: center; }
+  .chips .pill { white-space: nowrap; font-size: 40px; background: rgba(255,255,255,.14); }
+  .btn { margin-top: 60px; display: inline-block; white-space: nowrap; background: #fff; color: #0B1350; font-weight: 900; font-size: 42px;
+         padding: 20px 56px; border-radius: 999px; box-shadow: 0 16px 40px rgba(0,0,0,.35); }
+</style></head>
+<body>
+  <div class="grid" id="grid"></div>
+  <div id="progress"></div>
+  <div class="chip" id="chip"><span class="pill">📐 الإسقاط المتعامد · <span class="accent">8 أساسي</span></span></div>
+
+  <!-- hook -->
+  <div class="center" id="hook" style="top:720px">
+    <div class="big" id="h1">المسقط اليميني</div>
+    <div class="big2" id="h2">أين نرسمه؟</div>
+  </div>
+
+  <!-- 3D cube + eye -->
+  <div class="stage3d" id="stage"><div class="cube" id="cube"></div></div>
+  <svg class="arrow" id="arrow" width="1080" height="1920"><path id="arrowPath" d="M 870 760 Q 790 700 720 760" fill="none"
+       stroke="#FFC928" stroke-width="10" stroke-dasharray="22 18" stroke-linecap="round"/></svg>
+  <div class="eye" id="eye">👁️</div>
+
+  <!-- wrong -->
+  <div class="stamp" id="stamp">✕</div>
+  <div class="badpill" id="badpill"><span>خطأ شائع!</span></div>
+
+  <!-- net -->
+  <div class="layer" id="net"></div>
+
+  <!-- rule -->
+  <div class="card" id="card">
+    <div class="check" id="check">✓</div>
+    <h2>القاعدة الذهبية</h2>
+    <p>المسقط يُرسم دائمًا<br>في <b>الجهة المقابلة</b><br>لجهة النظر</p>
+  </div>
+
+  <!-- cta -->
+  <div class="center" id="cta" style="top:800px;width:1000px">
+    <div class="logo">Pro<span>faycel</span></div>
+    <div class="name">الأستاذ فيصل الخليفي</div>
+    <div class="subj">رياضيات · تكنولوجيا</div>
+    <div class="chips"><span class="pill">7 أساسي</span><span class="pill">8 أساسي</span><span class="pill">9 أساسي</span></div>
+    <div class="btn">▶ الإصلاح الكامل على YouTube و Facebook</div>
+  </div>
+
+  <div id="subs"></div>
+  <div class="brand">@profaycel</div>
+
+<script src="../lib.js"></script>
+<script src="timings.js"></script>
+<script>
+// ---------- build the die faces ----------
+const PIPS = {1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8]};
+const pipsHTML = n => '<div class="pips">' + [...Array(9)].map((_, i) => `<i style="visibility:${PIPS[n].includes(i) ? 'visible' : 'hidden'}"></i>`).join('') + '</div>';
+$('#cube').innerHTML = [1, 2, 3, 4, 5, 6].map(n => `<div class="face f${n}">${pipsHTML(n)}</div>`).join('');
+
+// net: European method — front center, right view on the LEFT, left view on the right, back far right, top view below, bottom view above
+const C = 200, X0 = 145, Y0 = 470;
+const slotXY = (c, r) => [X0 + c * C, Y0 + r * C];
+const NET = [
+  {id: 'front', n: 1, c: 1, r: 1, label: 'الأمامي', scene: 'open', from: [445, 600], pos: 'below'},
+  {id: 'right', n: 2, c: 0, r: 1, label: 'اليميني', scene: 'right', from: [1250, 470], pos: 'below'},
+  {id: 'left',  n: 5, c: 2, r: 1, label: 'اليساري', scene: 'left',  from: [-300, 470], pos: 'below'},
+  {id: 'top',   n: 3, c: 1, r: 2, label: 'العلوي',  scene: 'topbottom', from: [345, -300], pos: 'below', at: 0},
+  {id: 'bottom',n: 4, c: 1, r: 0, label: 'السفلي',  scene: 'topbottom', from: [345, 2100], pos: 'above', at: 3},
+  {id: 'back',  n: 6, c: 3, r: 1, label: 'الخلفي',  scene: 'back', from: [1250, 900], pos: 'below'},
+];
+$('#net').innerHTML = NET.map(f => { const [x, y] = slotXY(f.c, f.r);
+  return `<div class="slot" id="slot-${f.id}" style="left:${x}px;top:${y}px"></div>`; }).join('') +
+  NET.map(f => `<div class="tile ${f.id === 'front' ? 'front' : ''}" id="tile-${f.id}">${pipsHTML(f.n)}<div class="lbl ${f.pos}">${f.label}</div></div>`).join('');
+
+// ---------- timeline ----------
+window.draw = t => {
+  const end = S('cta').end;
+  progressBar(t); subtitles(t);
+  style('#grid', {transform: `translate(${(t * 18) % 90}px, ${(t * 12) % 90}px)`});
+  style('#chip', {opacity: prog(t, .1, .4) * (1 - prog(t, S('cta').start, .3))});
+
+  // HOOK
+  const hk = S('hook'); const hOut = prog(t, hk.end - .25, .3);
+  popIn('#h1', t, W('hook', 2) - .1, .45); popIn('#h2', t, W('hook', 4) - .1, .5, .3);
+  style('#hook', {opacity: 1 - hOut, transform: `translate(-50%,-50%) scale(${1 + hOut * .3})`});
+  if (t > hk.end) style('#hook', {opacity: 0});
+
+  // CUBE (look + wrong + open start)
+  const lk = S('look'), op = S('open');
+  const cIn = prog(t, lk.start, .6, ease.back), cOut = prog(t, op.start + .1, .5, ease.inOut);
+  const yaw = -35 + t * 22, pitch = -22;
+  style('#stage', {opacity: cIn * (1 - cOut), transform: `scale(${lerp(.4, 1, cIn) * lerp(1, .3, cOut)})`});
+  style('#cube', {transform: `rotateX(${pitch}deg) rotateY(${yaw}deg)`});
+  const eyeIn = prog(t, W('look', 2), .4, ease.back);
+  style('#eye', {opacity: eyeIn * (1 - cOut), transform: `scale(${eyeIn}) translateY(${Math.sin(t * 3) * 8}px)`});
+  const len = 260, aP = prog(t, W('look', 3), .6);
+  style('#arrow', {opacity: (1 - cOut) * (aP > 0 ? 1 : 0)});
+  $('#arrowPath').style.strokeDashoffset = (1 - aP) * len;
+
+  // WRONG
+  const wr = S('wrong'); const sIn = prog(t, wr.start, .35, ease.back), sOut = prog(t, op.start - .2, .3);
+  const shake = t > wr.start && t < wr.start + .5 ? Math.sin(t * 90) * 14 * (1 - (t - wr.start) / .5) : 0;
+  style('#stamp', {opacity: sIn * (1 - sOut), transform: `scale(${lerp(2.2, 1, sIn)}) translateX(${shake}px) rotate(-8deg)`});
+  style('#badpill', {opacity: prog(t, wr.start + .25, .3) * (1 - sOut), transform: `translateY(${(1 - prog(t, wr.start + .25, .4, ease.back)) * 60}px)`});
+  // dim the cube during the "wrong" stamp
+  if (t > wr.start && t < op.start) style('#stage', {filter: `brightness(${1 - .55 * sIn})`});
+  else style('#stage', {filter: 'none'});
+
+  // NET
+  const rl = S('rule');
+  const netOut = prog(t, rl.start, .5, ease.inOut);
+  style('#net', {opacity: 1 - netOut, transform: `translateY(${-netOut * 200}px) scale(${1 - netOut * .2})`});
+  NET.forEach(f => {
+    const slotIn = prog(t, op.start + .3, .5);
+    style(`#slot-${f.id}`, {opacity: slotIn * .9});
+    const sc = S(f.scene);
+    const t0 = f.at !== undefined ? W(f.scene, f.at) : (f.id === 'front' ? W('open', 4) : sc.start + .15);
+    const p = prog(t, t0, .9, ease.inOut);
+    const [x1, y1] = slotXY(f.c, f.r), [x0, y0] = f.from;
+    const arc = Math.sin(p * Math.PI) * -160;
+    const land = prog(t, t0 + .85, .35, ease.back);
+    const el = $(`#tile-${f.id}`);
+    style(el, {left: lerp(x0, x1, p) + 'px', top: lerp(y0, y1, p) + arc + 'px', opacity: p > 0 ? 1 : 0,
+               transform: `rotate(${(1 - p) * 220}deg) scale(${p < 1 ? lerp(1.25, 1, p) : lerp(1.12, 1, land)})`});
+    el.querySelector('.lbl').style.opacity = prog(t, t0 + .8, .3);
+  });
+
+  // RULE
+  const ci = prog(t, rl.start + .2, .55, ease.back), cOut2 = prog(t, S('cta').start, .35);
+  style('#card', {opacity: prog(t, rl.start + .2, .3) * (1 - cOut2), transform: `translateY(${(1 - ci) * 140}px) scale(${lerp(.9, 1, ci)})`});
+  popIn('#check', t, rl.start + .45, .5, .2);
+
+  // CTA
+  const ct = S('cta'); const k = prog(t, ct.start + .1, .6, ease.back);
+  style('#cta', {opacity: prog(t, ct.start + .1, .3), transform: `translate(-50%,-50%) scale(${lerp(.8, 1, k)})`});
+};
+</script></body></html>
