@@ -119,6 +119,54 @@ def piper(text, out):
     return spread_words(text, duration(out))
 
 
+def polish(src, out, tempo=1.0):
+    """Light voice polish: warmth, presence, compression, trimmed leading silence."""
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(src), "-af",
+                    f"aresample=48000,atempo={tempo},highpass=f=70,equalizer=f=200:t=q:w=1:g=1.5,"
+                    "equalizer=f=3500:t=q:w=1.5:g=2,acompressor=threshold=-18dB:ratio=2.5:attack=5:release=120:makeup=2,"
+                    "silenceremove=start_periods=1:start_threshold=-45dB",
+                    "-c:a", "libmp3lame", "-b:a", "192k", str(out)], check=True)
+
+
+def gtts(text, out):
+    """Google voice (Translate endpoint): free, no key. Max ~180 characters per request → split at punctuation."""
+    import urllib.parse
+    c = CFG.get("gtts", {})
+    parts, cur = [], ""
+    for piece in re.split(r"(?<=[،,.!؟?:])\s+", text):
+        if len(cur) + len(piece) + 1 > 180 and cur:
+            parts.append(cur); cur = piece
+        else:
+            cur = f"{cur} {piece}".strip()
+    if cur: parts.append(cur)
+    raw = Path(out).with_suffix(".raw.mp3")
+    with open(raw, "wb") as f:
+        for p in parts:
+            url = ("https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=" + c.get("lang", "ar")
+                   + "&ttsspeed=1&q=" + urllib.parse.quote(p))
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=60) as r:
+                f.write(r.read())
+    polish(raw, out, c.get("tempo", 1.06)); raw.unlink()
+    return spread_words(text, duration(out))
+
+
+def gemini(text, out):
+    """Gemini TTS (Google AI Studio): very natural voice, free key from aistudio.google.com → GEMINI_API_KEY."""
+    c = CFG["gemini"]
+    body = json.dumps({"contents": [{"parts": [{"text": f"{c['style']}: {text}"}]}],
+                       "generationConfig": {"responseModalities": ["AUDIO"], "speechConfig": {
+                           "voiceConfig": {"prebuiltVoiceConfig": {"voiceName": c["voice"]}}}}}).encode()
+    r = json.loads(post(f"https://generativelanguage.googleapis.com/v1beta/models/{c['model']}:generateContent",
+                        body, {"Content-Type": "application/json", "x-goog-api-key": os.environ["GEMINI_API_KEY"]}))
+    pcm = base64.b64decode(r["candidates"][0]["content"]["parts"][0]["inlineData"]["data"])
+    raw = Path(out).with_suffix(".pcm"); raw.write_bytes(pcm)
+    wav = Path(out).with_suffix(".g.wav")
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "s16le", "-ar", "24000", "-ac", "1", "-i", str(raw), str(wav)], check=True)
+    polish(wav, out, c.get("tempo", 1.0)); raw.unlink(); wav.unlink()
+    return spread_words(text, duration(out))
+
+
 def silent(text, out):
     d = max(1.2, len(text.split()) / CFG["silent"]["words_per_sec"])
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "lavfi", "-i", "anullsrc=r=48000:cl=mono",
@@ -126,7 +174,8 @@ def silent(text, out):
     return spread_words(text, d)
 
 
-PROVIDERS = {"elevenlabs": elevenlabs, "azure": azure, "edge": edge, "piper": piper, "silent": silent}
+PROVIDERS = {"gemini": gemini, "gtts": gtts, "elevenlabs": elevenlabs, "azure": azure, "edge": edge, "piper": piper,
+             "silent": silent}
 
 
 def synth(text, out, provider=None):

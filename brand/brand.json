@@ -30,8 +30,8 @@
   "music_volume": 0.22,
   "academy": "FH Academy Center",
   "voice": {
-    "provider": "piper",
-    "_providers": "piper (free, offline, works now) | edge (free, better: needs speech.platform.bing.com) | elevenlabs | azure | silent",
+    "provider": "gtts",
+    "_providers": "gemini (best + free: GEMINI_API_KEY from aistudio.google.com) | gtts (free, works now) | edge (needs speech.platform.bing.com) | piper (offline, robotic) | elevenlabs | azure | silent",
     "elevenlabs": {
       "voice_id": "",
       "model": "eleven_multilingual_v2",
@@ -58,6 +58,16 @@
       "length_scale": 0.86,
       "noise_scale": 0.6,
       "noise_w": 0.8
+    },
+    "gtts": {
+      "lang": "ar",
+      "tempo": 1.06
+    },
+    "gemini": {
+      "model": "gemini-2.5-flash-preview-tts",
+      "voice": "Charon",
+      "tempo": 1.0,
+      "style": "اقرأ بالعربية الفصحى بصوت أستاذ متحمّس ودافئ، بإيقاع حيوي وواضح، كأنك تشرح لتلاميذ في سن 13 سنة"
     }
   }
 }
