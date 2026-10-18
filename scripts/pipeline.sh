@@ -15,14 +15,12 @@ for f in $formats; do
   echo "▶ 4/5 export $f"
   out=$("$S/export.sh" "$final" "$f" blur "$work" | tail -1)
   if [ "${SUBS:-1}" = 1 ]; then
-    case $f in vertical) W=1080 H=1920;; portrait) W=1080 H=1350;; square) W=1080 H=1080;; landscape) W=1920 H=1080;; esac
     words="$work/${n}_3grade.words.json"
     if [ ! -f "$words" ]; then python3 "$S/subs.py" transcribe "$final" --lang "$lang" || echo "⚠ transcription failed — continuing without subtitles"; fi
     if [ -f "$words" ]; then
       pos=0.68; [ "$f" = landscape ] && pos=0.85
       echo "▶ 5/5 subtitles $f"
-      python3 "$S/subs.py" style "$words" "$work/${n}_$f.ass" --w $W --h $H --pos $pos >/dev/null
-      python3 "$S/subs.py" burn "$out" "$work/${n}_$f.ass" "$proj/exports/${n}_$f.mp4" >/dev/null
+      python3 "$S/subs.py" overlay "$out" "$words" "$proj/exports/${n}_$f.mp4" --pos $pos >/dev/null
       continue
     fi
   fi
