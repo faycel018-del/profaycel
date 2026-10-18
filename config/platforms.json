@@ -1,0 +1,21 @@
+{
+  "_note": "Platform specs used by scripts/export.sh. Check them every few months, because platforms change their limits.",
+  "audio": { "lufs": -14, "true_peak": -1.0, "sample_rate": 48000, "bitrate": "192k" },
+  "formats": {
+    "vertical":  { "w": 1080, "h": 1920, "use": ["tiktok", "reels", "shorts", "fb_reels", "stories"] },
+    "portrait":  { "w": 1080, "h": 1350, "use": ["instagram_feed", "facebook_feed"] },
+    "square":    { "w": 1080, "h": 1080, "use": ["facebook_feed", "instagram_feed"] },
+    "landscape": { "w": 1920, "h": 1080, "use": ["youtube", "facebook_video"] }
+  },
+  "platforms": {
+    "tiktok":   { "format": "vertical",  "fps": 30, "ideal_seconds": [21, 45],  "max_seconds": 600,
+                  "safe_zone": "Keep text out of the bottom 20% and the right-hand 15% (buttons and caption sit there)" },
+    "reels":    { "format": "vertical",  "fps": 30, "ideal_seconds": [15, 30],  "max_seconds": 180,
+                  "safe_zone": "Keep text out of the bottom 25% and the top 10%" },
+    "shorts":   { "format": "vertical",  "fps": 30, "ideal_seconds": [25, 50],  "max_seconds": 180,
+                  "safe_zone": "Keep text out of the bottom 20%" },
+    "fb_reels": { "format": "vertical",  "fps": 30, "ideal_seconds": [15, 60],  "max_seconds": 90 },
+    "youtube":  { "format": "landscape", "fps": 30, "ideal_seconds": [480, 900], "max_seconds": 43200,
+                  "thumbnail": "1280x720 JPG, under 2MB" }
+  }
+}

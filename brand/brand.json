@@ -1,0 +1,11 @@
+{
+  "name": "Studio 360",
+  "handle": "@your_handle",
+  "language": ["ar-TN", "fr", "en"],
+  "tone": "Close, funny, fast: Tunisian dialect with simple words",
+  "colors": { "primary": "#111111", "accent": "#FFD400", "secondary": "#FF3B5C", "text": "#FFFFFF" },
+  "subtitles": { "font": "DejaVu Sans", "size_ratio": 0.045, "color": "#FFFFFF", "highlight": "#FFD400", "outline": "#000000" },
+  "thumbnail": { "fallback_font": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" },
+  "grade_default": "warm",
+  "music_volume": 0.22
+}

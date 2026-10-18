@@ -1,0 +1,5 @@
+projects/*/raw/
+projects/*/work/
+*.mp4
+*.mov
+*.wav
