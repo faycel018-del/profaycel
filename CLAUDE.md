@@ -5,9 +5,10 @@ The owner speaks **Tunisian Arabic**: reply in Tunisian dialect, and put technic
 
 ## How we work (always follow this order)
 1. **Idea** → `/video-idea`: ideas, hooks and a script. Store them in `ideas/ideas.md`, or in the project's `script.md`.
-2. **Project** → `./scripts/new_project.sh <slug>`, then the raw footage goes into `projects/<date>_<slug>/raw/`.
-3. **Edit** → `/video-edit`, or for everything at once: `./scripts/pipeline.sh <raw.mp4> [grade] ["vertical landscape"]`.
-4. **Publish** → `/video-publish`: caption, hashtags, timing, and scheduling through Metricool when it is connected.
+2. **Lessons (pptx)** → `/lesson-video`.
+3. **Project** → `./scripts/new_project.sh <slug>`, then the raw footage goes into `projects/<date>_<slug>/raw/`.
+4. **Edit** → `/video-edit`, or for everything at once: `./scripts/pipeline.sh <raw.mp4> [grade] ["vertical landscape"]`.
+5. **Publish** → `/video-publish`: caption, hashtags, timing, and scheduling through Metricool when it is connected.
 
 ## Tools (scripts/)
 | script | what it does |
@@ -19,6 +20,9 @@ The owner speaks **Tunisian Arabic**: reply in Tunisian dialect, and put technic
 | `music.sh video music out [vol]` | music with ducking under the voice |
 | `export.sh in <vertical\|portrait\|square\|landscape\|all> [blur\|crop\|fit]` | export to platform specs (H.264, AAC, faststart) |
 | `subs.py transcribe/style/from-srt/burn` | animated subtitles with word highlighting (Arabic OK) |
+| `deck_steps.py deck.pptx outdir` | PowerPoint → one image per click (the answers appear) |
+| `tts.py "text" out.mp3` | voice-over (ElevenLabs / Azure ar-TN / silent) + word timings |
+| `lesson_video.py story.json --format vertical\|landscape` | full lesson video: zoom, sounds, intro/outro, subtitles |
 | `thumbnail.py video out.jpg --text ".." [--sub] [--at] [--size yt\|vertical]` | thumbnail with Arabic text |
 
 The specs live in `config/platforms.json`. The brand (colors, fonts, tone) lives in `brand/brand.json`.
@@ -29,7 +33,14 @@ The specs live in `config/platforms.json`. The brand (colors, fonts, tone) lives
 - Subtitles: check the spelling in `*.words.json` before `style`, because Whisper gets Tunisian words wrong. Keep them out of the bottom 20% (safe zone).
 - After every export, run `probe.sh` and take a frame (`ffmpeg -ss T -i f -frames:v 1 x.png`) and look at it before saying it's done.
 - When writing hooks and scripts, follow `docs/viral-playbook.md`. For a shoot, give advice from `docs/lighting.md`.
-- `subs.py` reverses the order of Arabic words on purpose, because libass splits bidi at tags. Don't "fix" it.
+- Arabic subtitles: use `subs.py overlay` (Pillow). libass gets the word order wrong when the colors change inside a line.
+- Lessons (pptx): follow `/lesson-video`. Lessons live in `lessons/`, storyboards in `lessons/storyboards/`.
+- The voice: `docs/voice-setup.md`. Keys only come from environment variables.
+
+## Content strategy (Prof Faycel, @profaycel)
+- **TikTok/Reels:** a hook short from each lesson ("the mistake that trips up a lot of students"), a challenge, a quiz. No talk that sounds like an ad.
+- **YouTube/Facebook:** "the full textbook correction", one lesson per video, with chapters, organized in playlists by year (7th, 8th, 9th grade).
+- Every short points to the full correction, and the full correction points to the website/app and the courses.
 
 ## Connectors (if connected)
 - **Metricool**: post scheduling, best time to post, analytics.

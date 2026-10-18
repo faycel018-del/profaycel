@@ -1,11 +1,52 @@
 {
-  "name": "Studio 360",
-  "handle": "@your_handle",
-  "language": ["ar-TN", "fr", "en"],
+  "name": "Prof Faycel",
+  "handle": "@profaycel",
+  "language": [
+    "ar-TN",
+    "fr",
+    "en"
+  ],
   "tone": "Close, funny, fast: Tunisian dialect with simple words",
-  "colors": { "primary": "#111111", "accent": "#FFD400", "secondary": "#FF3B5C", "text": "#FFFFFF" },
-  "subtitles": { "font": "DejaVu Sans", "size_ratio": 0.045, "color": "#FFFFFF", "highlight": "#FFD400", "outline": "#000000" },
-  "thumbnail": { "fallback_font": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" },
+  "colors": {
+    "primary": "#111111",
+    "accent": "#FFD400",
+    "secondary": "#FF3B5C",
+    "text": "#FFFFFF"
+  },
+  "subtitles": {
+    "font": "DejaVu Sans",
+    "size_ratio": 0.045,
+    "color": "#FFFFFF",
+    "highlight": "#FFD400",
+    "outline": "#000000"
+  },
+  "thumbnail": {
+    "fallback_font": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+  },
   "grade_default": "warm",
-  "music_volume": 0.22
+  "music_volume": 0.22,
+  "academy": "FH Academy Center",
+  "voice": {
+    "provider": "silent",
+    "_providers": "elevenlabs (best, can clone your voice) | azure (free tier, Tunisian voices ar-TN) | edge (free, unofficial) | silent (preview with no voice)",
+    "elevenlabs": {
+      "voice_id": "",
+      "model": "eleven_multilingual_v2",
+      "stability": 0.45,
+      "similarity": 0.8,
+      "style": 0.3
+    },
+    "azure": {
+      "voice": "ar-TN-HediNeural",
+      "region": "westeurope",
+      "rate": "+4%"
+    },
+    "edge": {
+      "voice": "ar-TN-HediNeural",
+      "rate": "+4%"
+    },
+    "silent": {
+      "words_per_sec": 2.4
+    }
+  }
 }

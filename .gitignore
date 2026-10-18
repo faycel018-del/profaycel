@@ -3,3 +3,7 @@ projects/*/work/
 *.mp4
 *.mov
 *.wav
+
+.cache/
+lessons/frames/
+lessons/*.pptx

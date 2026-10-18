@@ -1,0 +1,124 @@
+#!/usr/bin/env python3
+"""Voice-over: text → mp3 + word timings (for subtitles). The provider is chosen in brand.json → voice.provider
+
+  tts.py "النص بالدارجة" out.mp3 [--provider elevenlabs|azure|edge|silent]
+  → out.mp3 + out.words.json  [{"w":..,"s":..,"e":..}]
+
+Keys come from environment variables (the environment's secrets, never in the code):
+  ELEVENLABS_API_KEY · AZURE_SPEECH_KEY
+The result is cached in .cache/tts by text+voice, so nothing is paid twice.
+"""
+import argparse, base64, hashlib, json, os, re, shutil, subprocess, sys, urllib.request
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+CFG = json.loads((ROOT / "brand/brand.json").read_text())["voice"]
+CACHE = ROOT / ".cache/tts"
+
+
+def duration(f):
+    return float(subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration",
+                                          "-of", "csv=p=0", str(f)]))
+
+
+def spread_words(text, total, lead=0.05):
+    """Approximate word timings, proportional to word length (good enough for 2–3 word subtitle chunks)."""
+    words = text.split()
+    weights = [len(w) + 2 for w in words]
+    span = max(0.1, total - 2 * lead); t = lead; out = []
+    for w, wt in zip(words, weights):
+        d = span * wt / sum(weights)
+        out.append({"w": w, "s": round(t, 3), "e": round(t + d, 3)}); t += d
+    return out
+
+
+def post(url, body, headers):
+    req = urllib.request.Request(url, data=body, headers=headers, method="POST")
+    with urllib.request.urlopen(req, timeout=120) as r:
+        return r.read()
+
+
+def elevenlabs(text, out):
+    c = CFG["elevenlabs"]; key = os.environ["ELEVENLABS_API_KEY"]
+    body = json.dumps({"text": text, "model_id": c["model"],
+                       "voice_settings": {"stability": c["stability"], "similarity_boost": c["similarity"],
+                                          "style": c["style"], "use_speaker_boost": True}}).encode()
+    r = json.loads(post(f"https://api.elevenlabs.io/v1/text-to-speech/{c['voice_id']}/with-timestamps"
+                        "?output_format=mp3_44100_128", body,
+                        {"xi-api-key": key, "Content-Type": "application/json"}))
+    Path(out).write_bytes(base64.b64decode(r["audio_base64"]))
+    al = r.get("alignment") or {}
+    chars, st, en = al.get("characters", []), al.get("character_start_times_seconds", []), al.get("character_end_times_seconds", [])
+    words, cur = [], None
+    for ch, s, e in zip(chars, st, en):
+        if ch.isspace():
+            if cur: words.append(cur); cur = None
+        elif cur is None:
+            cur = {"w": ch, "s": s, "e": e}
+        else:
+            cur["w"] += ch; cur["e"] = e
+    if cur: words.append(cur)
+    return words or spread_words(text, duration(out))
+
+
+def azure(text, out):
+    c = CFG["azure"]
+    ssml = (f"<speak version='1.0' xml:lang='ar-TN'><voice name='{c['voice']}'>"
+            f"<prosody rate='{c['rate']}'>{text}</prosody></voice></speak>").encode()
+    Path(out).write_bytes(post(f"https://{c['region']}.tts.speech.microsoft.com/cognitiveservices/v1", ssml,
+                               {"Ocp-Apim-Subscription-Key": os.environ["AZURE_SPEECH_KEY"],
+                                "Content-Type": "application/ssml+xml",
+                                "X-Microsoft-OutputFormat": "audio-48khz-192kbitrate-mono-mp3",
+                                "User-Agent": "studio360"}))
+    return spread_words(text, duration(out))
+
+
+def edge(text, out):
+    import asyncio, edge_tts
+    c = CFG["edge"]; words = []
+
+    async def run():
+        com = edge_tts.Communicate(text, c["voice"], rate=c["rate"], boundary="WordBoundary")
+        with open(out, "wb") as f:
+            async for ch in com.stream():
+                if ch["type"] == "audio":
+                    f.write(ch["data"])
+                elif ch["type"] == "WordBoundary":
+                    s = ch["offset"] / 1e7
+                    words.append({"w": ch["text"], "s": round(s, 3), "e": round(s + ch["duration"] / 1e7, 3)})
+    asyncio.run(run())
+    return words or spread_words(text, duration(out))
+
+
+def silent(text, out):
+    d = max(1.2, len(text.split()) / CFG["silent"]["words_per_sec"])
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "lavfi", "-i", "anullsrc=r=48000:cl=mono",
+                    "-t", f"{d:.2f}", "-c:a", "libmp3lame", "-b:a", "64k", out], check=True)
+    return spread_words(text, d)
+
+
+PROVIDERS = {"elevenlabs": elevenlabs, "azure": azure, "edge": edge, "silent": silent}
+
+
+def synth(text, out, provider=None):
+    provider = provider or CFG["provider"]
+    text = re.sub(r"\s+", " ", text).strip()
+    sub = CFG.get(provider, {})
+    h = hashlib.sha1(json.dumps([provider, sub, text], ensure_ascii=False).encode()).hexdigest()[:16]
+    CACHE.mkdir(parents=True, exist_ok=True)
+    cmp3, cjson = CACHE / f"{h}.mp3", CACHE / f"{h}.json"
+    if not cmp3.exists():
+        words = PROVIDERS[provider](text, str(cmp3))
+        cjson.write_text(json.dumps(words, ensure_ascii=False))
+    shutil.copy(cmp3, out)
+    words = json.loads(cjson.read_text())
+    Path(out).with_suffix(".words.json").write_text(json.dumps(words, ensure_ascii=False, indent=1))
+    return words
+
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument("text"); ap.add_argument("out"); ap.add_argument("--provider")
+    a = ap.parse_args()
+    w = synth(a.text, a.out, a.provider)
+    print(a.out, f"{duration(a.out):.2f}s", len(w), "words")
