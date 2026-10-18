@@ -130,16 +130,16 @@ def main():
         if vert:
             vertical_bg(bg, sb.get("hook", ""), sb.get("title", ""))
 
-        def finish(seg_v, audio_inputs, dur, name):
-            """Composite the slide (or the card) onto the background, mix the audio."""
+        def finish(seg_v, audio_inputs, dur, name, full=False):
+            """Composite the slide onto the background (vertical), mix the audio. full = the clip already fills the frame."""
             seg = tmp / f"{name}.mp4"
             ins = ["-i", str(seg_v)]
-            if vert:
+            if vert and not full:
                 ins += ["-loop", "1", "-i", str(bg)]
                 vf = f"[1:v][0:v]overlay=0:{vy}:shortest=1,format=yuv420p[v]"
             else:
                 vf = "[0:v]format=yuv420p[v]"
-            k = 2 if vert else 1
+            k = 2 if vert and not full else 1
             amix, labels = [], ""
             for i, (f, delay, vol) in enumerate(audio_inputs):
                 ins += ["-i", str(f)]
@@ -153,16 +153,27 @@ def main():
 
         def card_seg(name, title, sub, foot, dur, sfx):
             png = tmp / f"{name}.png"
-            if vert:  # in vertical the card fills the slide viewport
-                card(png, vw, vh, title, sub, foot)
-            else:
-                card(png, W, H, title, sub, foot)
+            card(png, W, H, title, sub, foot)  # cards fill the whole frame
             v = tmp / f"{name}_v.mp4"
             fr = int(dur * FPS)
             run(["ffmpeg", "-y", "-loglevel", "error", "-loop", "1", "-i", str(png), "-vf",
-                 zoom_filter([0.5, 0.5, 1.0], [0.5, 0.5, 0.94], fr, vw, vh, vw * 2, vh * 2) + ",fade=t=in:d=0.25",
+                 zoom_filter([0.5, 0.5, 1.0], [0.5, 0.5, 0.94], fr, W, H, int(W * 1.5), int(H * 1.5)) + ",fade=t=in:d=0.25",
                  "-frames:v", str(fr), "-c:v", "libx264", "-preset", "veryfast", "-crf", "16", str(v)])
-            finish(v, [(SFX / sfx, 0, 1.0)], dur, name)
+            finish(v, [(SFX / sfx, 0, 1.0)], dur, name, full=True)
+
+        # ---- cover (TikTok/Reels/YouTube): the background + the slide with its answers, no subtitles
+        cover_img = frames / f"{sb.get('cover', sb['scenes'][-1]['img'])}.png"
+        if vert:
+            cv = Image.open(bg).convert("RGB")
+            cv.paste(Image.open(cover_img).convert("RGB").resize((vw, vh)), (0, vy))
+        else:
+            cv = Image.open(cover_img).convert("RGB").resize((W, H))
+            d = ImageDraw.Draw(cv); hook = clean(sb.get("hook", sb["title"]))
+            f = fit_text(d, hook, W * 0.9, 120)
+            d.rectangle((0, H * 0.70, W, H), fill=NAVY)
+            d.text((W / 2, H * 0.85), hook, font=f, fill=YELLOW, anchor="mm", stroke_width=5, stroke_fill="#000000")
+        out.parent.mkdir(parents=True, exist_ok=True)
+        cv.save(out.with_suffix(".cover.jpg"), quality=92)
 
         # ---- intro
         if sb.get("intro", True):
@@ -199,7 +210,7 @@ def main():
 
         # ---- outro
         if sb.get("outro"):
-            card_seg("outro", sb["outro"], BRAND["handle"], "تابعني · Like · Partage", 3.0, "hit.wav")
+            card_seg("outro", sb["outro"], sb.get("outro_sub", BRAND["handle"]), "تابعني · Like · Partage", 3.0, "hit.wav")
 
         # ---- join
         lst = tmp / "list.txt"

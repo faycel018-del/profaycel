@@ -127,29 +127,21 @@ def overlay(a):
         img = Image.new("RGBA", (W, SH), (0, 0, 0, 0))
         line = " ".join(g["w"] for g in grp); d = ImageDraw.Draw(img)
         rtl = bool(RTL.search(line))
-        tw = d.textlength(line, font=font)
-        if tw > W * 0.92 and len(grp) > 1:
-            return frame_small(grp, hi)
-        d.text((W / 2, SH / 2), line, font=font, fill=s["color"], anchor="mm", stroke_width=stroke, stroke_fill=s["outline"])
+        f = font; tw = d.textlength(line, font=f)
+        if tw > W * 0.92:  # long line: shrink the font to fit (never squash it)
+            f = font.font_variant(size=int(font.size * W * 0.92 / tw)); tw = d.textlength(line, font=f)
+        d.text((W / 2, SH / 2), line, font=f, fill=s["color"], anchor="mm", stroke_width=stroke, stroke_fill=s["outline"])
         if hi is not None:
-            pre = d.textlength(" ".join(g["w"] for g in grp[:hi]) + (" " if hi else ""), font=font)
-            ww = d.textlength(grp[hi]["w"], font=font)
+            pre = d.textlength(" ".join(g["w"] for g in grp[:hi]) + (" " if hi else ""), font=f)
+            ww = d.textlength(grp[hi]["w"], font=f)
             left = (W - tw) / 2
             x0 = left + tw - pre - ww if rtl else left + pre
             yl = Image.new("RGBA", (W, SH), (0, 0, 0, 0))
-            ImageDraw.Draw(yl).text((W / 2, SH / 2), line, font=font, fill=s["highlight"], anchor="mm",
+            ImageDraw.Draw(yl).text((W / 2, SH / 2), line, font=f, fill=s["highlight"], anchor="mm",
                                     stroke_width=stroke, stroke_fill=s["outline"])
             mask = Image.new("L", (W, SH), 0)
             ImageDraw.Draw(mask).rectangle((x0 - stroke, 0, x0 + ww + stroke, SH), fill=255)
             img.paste(yl, (0, 0), Image.composite(yl, Image.new("RGBA", (W, SH)), mask).split()[3])
-        return img
-
-    def frame_small(grp, hi):  # long line: split into two subtitle lines by halving the group
-        half = len(grp) // 2 or 1
-        a_ = frame(grp[:half], hi if hi is not None and hi < half else None)
-        b_ = frame(grp[half:], hi - half if hi is not None and hi >= half else None)
-        img = Image.new("RGBA", (W, SH), (0, 0, 0, 0))
-        img.paste(a_.resize((W, SH // 2)), (0, 0)); img.paste(b_.resize((W, SH // 2)), (0, SH // 2))
         return img
 
     with tempfile.TemporaryDirectory() as tmp:
