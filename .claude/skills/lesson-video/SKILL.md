@@ -11,9 +11,11 @@ Read the slide text (`python3 -c` with zipfile) and look at the images before wr
 
 ## 2. Write the storyboard (in `lessons/storyboards/<slug>_<type>.json`)
 Format: see the top of `scripts/lesson_video.py`. Each scene = one image + what's said + an optional zoom `[cx, cy, w]`.
-**Narration rules (Tunisian dialect):**
+**Narration language:** `brand.json → voice.language`. Currently **fusha** (Modern Standard Arabic): simple, warm, like a teacher speaking to his students, with no stiffness.
+**Narration rules:**
 - Speak like Prof Faycel to his students: close, simple, with a light touch of humor. Short sentences (under 20 words per scene).
-- Words: توا، برشا، ديما، باش، ركّز معايا، ساهلة، شوف… plus the technical terms exactly as they appear in the textbook (المسقط الرأسي، الصمام الثنائي…).
+- Fusha: easy words (لاحظوا، انتبهوا جيّدًا، الآن، إذن، تذكّروا…) and the technical terms exactly as they appear in the textbook. Add the vowel marks (tashkeel) to words the TTS might misread.
+- If the dialect is requested: توا، برشا، ديما، باش، ركّز معايا…
 - One scene per click, and the voice explains **why** the answer is what it is, not just what it is.
 - Accuracy first: every piece of information must match the slide and the textbook. When something is unclear, ask.
 - Write the words fully spelled out (the TTS reads them): "ثمانية" not "8" if the reading matters.
@@ -32,5 +34,5 @@ Format: see the top of `scripts/lesson_video.py`. Each scene = one image + what'
 - Thumbnail: `scripts/thumbnail.py` (frame from the slide + a short hook).
 
 ## 5. The voice
-`brand/brand.json → voice.provider`: `elevenlabs` (Prof Faycel's cloned voice), `azure` (ar-TN-HediNeural), `silent` (preview).
+`brand/brand.json → voice.provider`: `edge` (free, ar-TN-HediNeural), `piper` (free, offline), `elevenlabs`, `azure`, `silent` (preview).
 If the voice can't be produced (no key / host blocked): render a silent preview and tell the user what's missing.

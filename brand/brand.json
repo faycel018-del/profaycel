@@ -28,7 +28,7 @@
   "academy": "FH Academy Center",
   "voice": {
     "provider": "silent",
-    "_providers": "elevenlabs (best, can clone your voice) | azure (free tier, Tunisian voices ar-TN) | edge (free, unofficial) | silent (preview with no voice)",
+    "_providers": "edge (free, no account, excellent: needs speech.platform.bing.com) | piper (free, offline: needs huggingface.co once) | elevenlabs | azure | silent (preview)",
     "elevenlabs": {
       "voice_id": "",
       "model": "eleven_multilingual_v2",
@@ -43,10 +43,15 @@
     },
     "edge": {
       "voice": "ar-TN-HediNeural",
-      "rate": "+4%"
+      "rate": "+0%",
+      "_other_voices": "ar-SA-HamedNeural, ar-SA-ZariyahNeural (female), ar-EG-ShakirNeural, ar-TN-ReemNeural (female)"
     },
     "silent": {
       "words_per_sec": 2.4
+    },
+    "language": "fusha",
+    "piper": {
+      "model": "ar_JO-kareem-medium"
     }
   }
 }

@@ -90,6 +90,28 @@ def edge(text, out):
     return words or spread_words(text, duration(out))
 
 
+def piper(text, out):
+    """Offline and free (open source). The model is downloaded once from huggingface.co into brand/voices/."""
+    import wave
+    from piper import PiperVoice
+    c = CFG["piper"]; vdir = ROOT / "brand/voices"; vdir.mkdir(parents=True, exist_ok=True)
+    model = vdir / f"{c['model']}.onnx"
+    if not model.exists():
+        lang, name, q = c["model"].split("-")  # ar_JO-kareem-medium
+        base = (f"https://huggingface.co/rhasspy/piper-voices/resolve/main/{lang.split('_')[0]}/{lang}/{name}/{q}/"
+                f"{c['model']}.onnx")
+        for suffix in ("", ".json"):
+            urllib.request.urlretrieve(base + suffix, str(model) + suffix)
+    voice = PiperVoice.load(str(model))
+    wav = Path(out).with_suffix(".wav")
+    with wave.open(str(wav), "wb") as wf:
+        voice.synthesize_wav(text, wf)
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(wav), "-af", "aresample=48000",
+                    "-c:a", "libmp3lame", "-b:a", "192k", out], check=True)
+    wav.unlink()
+    return spread_words(text, duration(out))
+
+
 def silent(text, out):
     d = max(1.2, len(text.split()) / CFG["silent"]["words_per_sec"])
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "lavfi", "-i", "anullsrc=r=48000:cl=mono",
@@ -97,7 +119,7 @@ def silent(text, out):
     return spread_words(text, d)
 
 
-PROVIDERS = {"elevenlabs": elevenlabs, "azure": azure, "edge": edge, "silent": silent}
+PROVIDERS = {"elevenlabs": elevenlabs, "azure": azure, "edge": edge, "piper": piper, "silent": silent}
 
 
 def synth(text, out, provider=None):
