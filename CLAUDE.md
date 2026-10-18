@@ -21,8 +21,10 @@ The owner speaks **Tunisian Arabic**: reply in Tunisian dialect, and put technic
 | `export.sh in <vertical\|portrait\|square\|landscape\|all> [blur\|crop\|fit]` | export to platform specs (H.264, AAC, faststart) |
 | `subs.py transcribe/style/from-srt/burn` | animated subtitles with word highlighting (Arabic OK) |
 | `deck_steps.py deck.pptx outdir` | PowerPoint → one image per click (the answers appear) |
-| `tts.py "text" out.mp3` | voice-over (ElevenLabs / Azure ar-TN / silent) + word timings |
+| `tts.py "text" out.mp3` | voice-over (piper / edge / elevenlabs / azure / silent) + word timings |
 | `lesson_video.py story.json --format vertical\|landscape` | full lesson video: zoom, sounds, intro/outro, subtitles |
+| `motion_video.py story.json` | **motion design**: HTML page (motion/) + voice + sounds + music → mp4 |
+| `asr.py audio` | local Whisper speech recognition: to check the voice |
 | `thumbnail.py video out.jpg --text ".." [--sub] [--at] [--size yt\|vertical]` | thumbnail with Arabic text |
 
 The specs live in `config/platforms.json`. The brand (colors, fonts, tone) lives in `brand/brand.json`.
@@ -36,6 +38,15 @@ The specs live in `config/platforms.json`. The brand (colors, fonts, tone) lives
 - Arabic subtitles: use `subs.py overlay` (Pillow). libass gets the word order wrong when the colors change inside a line.
 - Lessons (pptx): follow `/lesson-video`. Lessons live in `lessons/`, storyboards in `lessons/storyboards/`.
 - The voice: `docs/voice-setup.md`. Keys only come from environment variables.
+
+## Production standards (agreed with Prof Faycel)
+- **Never deliver a video without a voice.** The voice: `piper` (free, works now) or `edge` (better, once speech.platform.bing.com is allowed).
+- **The font:** Cairo (Black for headings, ExtraBold/Bold for body text) from `brand/fonts/`. Never DejaVu.
+- **The look:** the brand's blue gradient (#1F2C9C → #0B1350), yellow #FFC928, white, rounded pills, light grid in the background.
+- **Don't copy the textbook slides as they are:** use them as reference for the content, and design the scenes yourself in `motion/<name>/index.html`
+  (CSS/3D/SVG) → `scripts/motion_video.py`. Reference example: `motion/tiktok1/`.
+- Strong hook in the first 2s, a visual change every 2–4s, sound effects on every appearance, karaoke subtitles, a progress bar, a clear CTA.
+- Before delivery: `scripts/asr.py` on the video (check the pronunciation) + 6 frames assembled with montage and looked at.
 
 ## Content strategy (Prof Faycel, @profaycel)
 - **TikTok/Reels:** a hook short from each lesson ("the mistake that trips up a lot of students"), a challenge, a quiz. No talk that sounds like an ad.
