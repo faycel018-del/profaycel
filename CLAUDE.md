@@ -3,6 +3,10 @@
 A studio for making short and long videos for TikTok, Instagram Reels, YouTube (Shorts and long-form) and Facebook.
 The owner speaks **Tunisian Arabic**: reply in Tunisian dialect, and put technical terms in English or French.
 
+## New session
+The container starts empty: run `./scripts/setup.sh` first (libraries + voice and Whisper models from GitHub).
+The studio lives in the `studio` branch of `faycel018-del/profaycel`. The lessons (pptx) are in the `lesson-decks` branch → `lessons/`.
+
 ## How we work (always follow this order)
 1. **Idea** → `/video-idea`: ideas, hooks and a script. Store them in `ideas/ideas.md`, or in the project's `script.md`.
 2. **Lessons (pptx)** → `/lesson-video`.
