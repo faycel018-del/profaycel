@@ -154,6 +154,8 @@ def gtts(text, out):
 def gemini(text, out):
     """Gemini TTS (Google AI Studio): very natural voice, free key from aistudio.google.com → GEMINI_API_KEY."""
     c = CFG["gemini"]
+    if not os.environ.get("GEMINI_API_KEY"):
+        sys.exit("GEMINI_API_KEY is missing: create a free key at aistudio.google.com and add it to the environment's secrets")
     body = json.dumps({"contents": [{"parts": [{"text": f"{c['style']}: {text}"}]}],
                        "generationConfig": {"responseModalities": ["AUDIO"], "speechConfig": {
                            "voiceConfig": {"prebuiltVoiceConfig": {"voiceName": c["voice"]}}}}}).encode()
@@ -197,6 +199,9 @@ def synth(text, out, provider=None):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("text"); ap.add_argument("out"); ap.add_argument("--provider")
+    ap.add_argument("--voice", help="override the voice for this provider (e.g. Gemini: Charon, Puck, Orus, Fenrir, Kore)")
     a = ap.parse_args()
+    if a.voice:
+        CFG.setdefault(a.provider or CFG["provider"], {})["voice"] = a.voice
     w = synth(a.text, a.out, a.provider)
     print(a.out, f"{duration(a.out):.2f}s", len(w), "words")

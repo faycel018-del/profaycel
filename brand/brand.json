@@ -30,7 +30,7 @@
   "music_volume": 0.22,
   "academy": "FH Academy Center",
   "voice": {
-    "provider": "gtts",
+    "provider": "gemini",
     "_providers": "gemini (best + free: GEMINI_API_KEY from aistudio.google.com) | gtts (free, works now) | edge (needs speech.platform.bing.com) | piper (offline, robotic) | elevenlabs | azure | silent",
     "elevenlabs": {
       "voice_id": "",
