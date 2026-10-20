@@ -165,7 +165,10 @@ def gemini(text, out):
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{c['model']}:generateContent"
     for attempt in range(6):  # free tier: few requests per minute → wait for the retryDelay Google sends back
         try:
-            r = json.loads(post(url, body, headers)); break
+            r = json.loads(post(url, body, headers))
+            if r.get("candidates", [{}])[0].get("content"): break
+            print(f"  Gemini returned no audio ({r['candidates'][0].get('finishReason')}), retrying…", file=sys.stderr)
+            continue
         except urllib.error.HTTPError as e:
             msg = e.read().decode(errors="replace")
             if e.code != 429 or attempt == 5 or "PerDay" in msg:
@@ -173,6 +176,8 @@ def gemini(text, out):
             m = re.search(r'"retryDelay":\s*"(\d+)', msg)
             wait = int(m.group(1)) + 2 if m else 30 * (attempt + 1)
             print(f"  Gemini 429, waiting {wait}s…", file=sys.stderr); time.sleep(wait)
+    else:
+        raise SystemExit("Gemini: no audio after 6 tries")
     pcm = base64.b64decode(r["candidates"][0]["content"]["parts"][0]["inlineData"]["data"])
     raw = Path(out).with_suffix(".pcm"); raw.write_bytes(pcm)
     wav = Path(out).with_suffix(".g.wav")
