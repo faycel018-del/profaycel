@@ -11,3 +11,4 @@ brand/voices/
 brand/asr/
 motion/*/timings.js
 projects/lessons/*.mp4
+__pycache__/
