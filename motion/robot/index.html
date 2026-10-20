@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../base.css">
+<style>
+  .sc { position: absolute; inset: 0; opacity: 0; }
+  .t-xl { font-weight: 900; font-size: 108px; line-height: 1.15; white-space: nowrap; text-shadow: 0 10px 0 rgba(0,0,0,.25); }
+  .t-l { font-weight: 900; font-size: 92px; line-height: 1.25; text-shadow: 0 8px 0 rgba(0,0,0,.25); }
+  .t-m { font-weight: 800; font-size: 64px; line-height: 1.35; }
+  .emoji { font-size: 260px; line-height: 1; }
+  .xmark { position: absolute; left: 50%; top: 560px; width: 380px; height: 380px; margin-left: -190px; }
+  .xmark:before, .xmark:after { content: ''; position: absolute; left: 50%; top: 50%; width: 460px; height: 40px; margin: -20px 0 0 -230px;
+     background: var(--bad); border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+  .xmark:before { transform: rotate(45deg); } .xmark:after { transform: rotate(-45deg); }
+  .stack { position: absolute; left: 140px; right: 140px; top: 560px; display: flex; flex-direction: column; gap: 26px; }
+  .weight { background: rgba(255,255,255,.12); border: 3px solid rgba(255,255,255,.2); border-radius: 30px; padding: 26px 40px;
+            font-weight: 900; font-size: 70px; display: flex; justify-content: space-between; align-items: center; }
+  .count { font-weight: 900; font-size: 300px; color: var(--accent); line-height: 1; direction: ltr; text-shadow: 0 14px 0 rgba(0,0,0,.25); }
+  .row3 { position: absolute; left: 60px; right: 60px; top: 470px; display: flex; justify-content: space-around; }
+  .bubble { width: 290px; text-align: center; }
+  .bubble .e { font-size: 150px; } .bubble .w { font-weight: 900; font-size: 64px; }
+  .vs { position: absolute; width: 100%; top: 900px; text-align: center; }
+  .strike { position: relative; display: inline-block; opacity: .6; }
+  .strike:after { content: ''; position: absolute; right: -10px; top: 52%; height: 14px; background: var(--bad); border-radius: 8px; width: var(--w, 0%); }
+  .card2 { position: absolute; left: 70px; right: 70px; border-radius: 40px; padding: 40px 50px; display: flex; align-items: center; gap: 36px;
+           box-shadow: 0 30px 60px rgba(0,0,0,.35); }
+  .card2 .e { font-size: 150px; } .card2 .tx { font-weight: 900; font-size: 64px; line-height: 1.3; }
+  .card2.good { top: 430px; background: linear-gradient(135deg, #16A34A, #15803D); }
+  .card2.bad { top: 820px; background: linear-gradient(135deg, #DC2626, #991B1B); }
+  .card2 small { display: block; font-size: 46px; font-weight: 800; opacity: .9; }
+  .chips { position: absolute; width: 100%; top: 820px; display: flex; flex-direction: column; align-items: center; gap: 22px; }
+  .chip2 { background: #fff; color: #0B1350; border-radius: 999px; padding: 14px 50px; font-weight: 900; font-size: 60px; box-shadow: 0 14px 30px rgba(0,0,0,.3); }
+  .face { position: absolute; left: 50%; top: 560px; font-size: 280px; transform: translate(-50%, -50%); }
+  .quote { position: absolute; left: 70px; right: 70px; top: 430px; text-align: center; padding: 70px 50px; border-radius: 48px;
+           background: linear-gradient(160deg, rgba(255,255,255,.15), rgba(255,255,255,.05)); border: 3px solid rgba(255,255,255,.22);
+           box-shadow: 0 40px 80px rgba(0,0,0,.35); }
+  .quote .q { font-size: 200px; color: var(--accent); line-height: .6; font-weight: 900; }
+  .comment { position: absolute; left: 90px; right: 90px; top: 760px; background: #fff; color: #111; border-radius: 34px; padding: 34px 40px;
+             display: flex; gap: 26px; align-items: center; box-shadow: 0 30px 60px rgba(0,0,0,.35); }
+  .avatar { width: 110px; height: 110px; border-radius: 50%; background: linear-gradient(135deg, #FFC928, #FF8A00); flex: none;
+            display: flex; align-items: center; justify-content: center; font-size: 64px; }
+  .comment .nm { font-weight: 800; font-size: 34px; color: #666; } .comment .tx { font-weight: 900; font-size: 58px; }
+  .caret { display: inline-block; width: 6px; height: 58px; background: #111; vertical-align: middle; margin-right: 4px; }
+  .arrow { position: absolute; width: 100%; text-align: center; top: 1060px; font-size: 130px; }
+  .tag { position: absolute; top: 140px; width: 100%; text-align: center; }
+</style></head>
+<body>
+  <div class="grid" id="grid"></div>
+  <div id="progress"></div>
+  <div class="tag" id="tag"><span class="pill">💬 كلمة للأساتذة</span></div>
+
+  <div class="sc" id="s-hook">
+    <div class="center" style="top:720px"><div class="emoji" id="robot">🤖</div></div>
+    <div class="xmark" id="x"></div>
+    <div class="center" style="top:1060px"><div class="t-xl" id="h1">التلميذ <span class="accent">موش روبو</span></div></div>
+  </div>
+
+  <div class="sc" id="s-pressure">
+    <div class="center" style="top:420px"><div class="t-l">الضغط 😮‍💨</div></div>
+    <div class="stack">
+      <div class="weight" id="w1"><span>البرنامج</span><span>📚</span></div>
+      <div class="weight" id="w2"><span>الامتحانات</span><span>📝</span></div>
+      <div class="weight" id="w3"><span>الأولياء</span><span>📞</span></div>
+    </div>
+  </div>
+
+  <div class="sc" id="s-child">
+    <div class="center" style="top:560px"><div class="emoji" id="kid">🧒</div></div>
+    <div class="center" style="top:930px"><div class="count" id="age">0</div><div class="t-l" style="margin-top:-30px">عام</div></div>
+  </div>
+
+  <div class="sc" id="s-mistakes">
+    <div class="row3">
+      <div class="bubble" id="b1"><div class="e">❌</div><div class="w">يغلط</div></div>
+      <div class="bubble" id="b2"><div class="e">💭</div><div class="w">يتلهّى</div></div>
+      <div class="bubble" id="b3"><div class="e">🤷</div><div class="w">ينسى</div></div>
+    </div>
+    <div class="vs" id="vs">
+      <div class="t-l"><span class="strike" id="bad">خايب</span></div>
+      <div class="t-xl accent" id="small" style="margin-top:10px">صغير 💛</div>
+    </div>
+  </div>
+
+  <div class="sc" id="s-forgive">
+    <div class="card2 good" id="g"><div class="e">🤝</div><div class="tx">كي تسامحو مرة<small id="g2">يتذكّرها العمر الكل</small></div></div>
+    <div class="card2 bad" id="r"><div class="e">💔</div><div class="tx">كي تذلّو مرة<small id="r2">زادة يتذكّرها العمر الكل</small></div></div>
+  </div>
+
+  <div class="sc" id="s-happy">
+    <div class="face" id="face">😔</div>
+    <div class="chips">
+      <div class="chip2" id="c1">💬 كلمة باهية</div>
+      <div class="chip2" id="c2">😄 ضحكة صغيرة</div>
+      <div class="chip2" id="c3">✨ جو مزيان</div>
+    </div>
+  </div>
+
+  <div class="sc" id="s-close">
+    <div class="quote" id="quote">
+      <div class="q">”</div>
+      <div class="t-m" id="q1">الأستاذ الباهي<br>موش اللي <span style="color:#FCA5A5">يخوّف</span>...</div>
+      <div class="t-l" id="q2" style="margin-top:30px">هو اللي يتذكّروه<br><span class="accent">بالخير</span></div>
+      <div class="t-m" id="q3" style="margin-top:20px;opacity:.85">بعد <span class="accent" id="yrs">0</span> عام ✨</div>
+    </div>
+  </div>
+
+  <div class="sc" id="s-cta">
+    <div class="center" style="top:520px"><div class="t-l">عندك أستاذ تتذكّرو<br><span class="accent">بالخير</span>؟ 🥹</div></div>
+    <div class="comment" id="cm"><div class="avatar">👤</div><div><div class="nm">إنت · توا</div><div class="tx"><span id="typed"></span><span class="caret" id="caret"></span></div></div></div>
+    <div class="arrow" id="arr">👇</div>
+  </div>
+
+  <div id="subs"></div>
+  <div class="brand">@profaycel</div>
+
+<script src="../lib.js"></script>
+<script src="timings.js"></script>
+<script>
+const show = (id, t, fadeIn = .3, fadeOut = .25) => {
+  const s = S(id), o = prog(t, s.start, fadeIn) * (1 - prog(t, s.end - fadeOut, fadeOut));
+  style('#s-' + id, {opacity: o, transform: `translateY(${(1 - prog(t, s.start, .45)) * 60}px)`});
+  return t >= s.start - .01 && t <= s.end + .01;
+};
+const slideIn = (el, t, t0, dx = 0, dy = 120) => {
+  const p = prog(t, t0, .45, ease.back);
+  style(el, {opacity: clamp((t - t0) / .2), transform: `translate(${(1 - p) * dx}px, ${(1 - p) * dy}px)`});
+};
+window.draw = t => {
+  progressBar(t); subtitles(t);
+  style('#grid', {transform: `translate(${(t * 18) % 90}px, ${(t * 12) % 90}px)`});
+  style('#tag', {opacity: prog(t, .2, .4) * (1 - prog(t, S('cta').start, .3))});
+
+  if (show('hook', t)) {
+    popIn('#robot', t, W('hook', 0) - .1, .5, .3);
+    const xp = prog(t, W('hook', 2), .3, ease.back);
+    style('#x', {opacity: clamp((t - W('hook', 2)) / .1), transform: `scale(${lerp(1.8, 1, xp)})`});
+    popIn('#h1', t, W('hook', 1) - .05, .45);
+    const shake = Math.sin(t * 80) * 10 * clamp(1 - (t - W('hook', 7)) / .4) * (t > W('hook', 7) ? 1 : 0);
+    style('#s-hook .center', {});
+    style('#h1', {translate: `${shake}px 0`});
+  }
+  if (show('pressure', t)) {
+    ['#w1', '#w2', '#w3'].forEach((el, i) => slideIn(el, t, W('pressure', 4 + i) - .1, i % 2 ? -300 : 300, 0));
+    const press = prog(t, W('pressure', 6) + .3, .8);
+    style('.stack', {transform: `scale(${1 - press * .04}) translateY(${press * 20}px)`});
+  }
+  if (show('child', t)) {
+    popIn('#kid', t, W('child', 5) - .1, .5, .3);
+    const n = Math.round(12 * prog(t, W('child', 6), .7, ease.out));
+    $('#age').textContent = n;
+    style('#age', {transform: `scale(${1 + .15 * Math.sin(prog(t, W('child', 7), .3) * Math.PI)})`});
+  }
+  if (show('mistakes', t)) {
+    ['#b1', '#b2', '#b3'].forEach((el, i) => popIn(el, t, W('mistakes', i) - .05, .4, .3));
+    style('#vs', {opacity: prog(t, W('mistakes', 3), .3)});
+    $('#bad').style.setProperty('--w', `${prog(t, W('mistakes', 5) + .2, .35) * 110}%`);
+    popIn('#small', t, W('mistakes', 7) - .05, .5, .4);
+  }
+  if (show('forgive', t)) {
+    slideIn('#g', t, W('forgive', 0), 0, 160); style('#g2', {opacity: prog(t, W('forgive', 3), .3)});
+    slideIn('#r', t, W('forgive', 6), 0, 160); style('#r2', {opacity: prog(t, W('forgive', 9), .3)});
+    const glow = prog(t, W('forgive', 10), .5);
+    style('#g', {boxShadow: `0 0 ${glow * 60}px rgba(34,197,94,.8), 0 30px 60px rgba(0,0,0,.35)`});
+  }
+  if (show('happy', t)) {
+    ['#c1', '#c2', '#c3'].forEach((el, i) => slideIn(el, t, W('happy', 4 + i * 2) - .1, 0, 100));
+    const flip = t >= W('happy', 11);
+    $('#face').textContent = flip ? '😄' : (t >= W('happy', 4) ? '🙂' : '😔');
+    const bump = prog(t, W('happy', 11), .4, ease.back);
+    style('#face', {transform: `translate(-50%,-50%) scale(${flip ? lerp(.6, 1.1, bump) : 1}) rotate(${flip ? (1 - bump) * -20 : 0}deg)`});
+  }
+  if (show('close', t)) {
+    const k = prog(t, S('close').start, .6, ease.back);
+    style('#quote', {transform: `scale(${lerp(.85, 1, k)})`});
+    style('#q2', {opacity: prog(t, W('close', 5), .35)});
+    style('#q3', {opacity: prog(t, W('close', 9), .3)});
+    $('#yrs').textContent = Math.round(20 * prog(t, W('close', 9), .6));
+  }
+  if (show('cta', t, .3, .01)) {
+    slideIn('#cm', t, W('cta', 5) - .1, 0, 140);
+    const txt = 'الأستاذ ...', n = Math.floor(clamp((t - W('cta', 6)) / 1.4) * txt.length);
+    $('#typed').textContent = txt.slice(0, n);
+    style('#caret', {opacity: Math.floor(t * 2.5) % 2});
+    style('#arr', {opacity: prog(t, W('cta', 5), .3), transform: `translateY(${Math.abs(Math.sin(t * 5)) * 30}px)`});
+  }
+};
+</script></body></html>

@@ -57,10 +57,13 @@ def music_bed(dur, path, bpm=96):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("story"); ap.add_argument("--out"); ap.add_argument("--preview", type=float, default=0)
+    ap.add_argument("--provider", help="override the voice provider (e.g. silent for a timing preview)")
     a = ap.parse_args()
     sb = json.loads(Path(a.story).read_text())
     page = (ROOT / sb["page"]).resolve()
     out = Path(a.out or Path(a.story).with_suffix(".mp4"))
+    if sb.get("voice_style"):  # per-video speaking style (Gemini)
+        tts.CFG.setdefault("gemini", {})["style"] = sb["voice_style"]
     with tempfile.TemporaryDirectory() as tmpd:
         tmp = Path(tmpd); t, scenes, voice, cues = 0.0, [], [], []
         for i, sc in enumerate(sb["scenes"]):
@@ -68,7 +71,7 @@ def main():
             words = []
             if sc.get("say"):
                 mp3 = tmp / f"v{i}.mp3"
-                ws = tts.synth(sc["say"], str(mp3))
+                ws = tts.synth(sc["say"], str(mp3), a.provider)
                 d = tts.duration(mp3)
                 voice.append((mp3, t + lead))
                 words = [{"w": w["w"], "s": round(t + lead + w["s"], 3), "e": round(t + lead + w["e"], 3)} for w in ws]
