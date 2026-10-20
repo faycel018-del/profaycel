@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Motion-design video: an HTML page (motion/<name>/index.html) + Piper voice + sounds + music.
 
-usage: motion_video.py story.json [--out file.mp4] [--preview 0]   (preview N = render only the first N seconds)
+usage: motion_video.py story.json [--out file.mp4] [--preview 0] [--voice Orus]   (preview N = render only the first N seconds)
 
 story.json:
 { "page": "motion/tiktok1/index.html", "music": true,
@@ -58,7 +58,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("story"); ap.add_argument("--out"); ap.add_argument("--preview", type=float, default=0)
     ap.add_argument("--provider", help="override the voice provider (e.g. silent for a timing preview)")
+    ap.add_argument("--voice", help="override the voice (e.g. Gemini: Charon, Orus, Fenrir) to compare versions")
     a = ap.parse_args()
+    if a.voice:
+        tts.CFG.setdefault(a.provider or tts.CFG["provider"], {})["voice"] = a.voice
     sb = json.loads(Path(a.story).read_text())
     page = (ROOT / sb["page"]).resolve()
     out = Path(a.out or Path(a.story).with_suffix(".mp4"))
