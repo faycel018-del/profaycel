@@ -11,5 +11,6 @@ fi
 if [ ! -d "$ROOT/brand/voices/vits-piper-ar_JO-kareem-medium" ]; then
   mkdir -p "$ROOT/brand/voices" && curl -sSL "$R/tts-models/vits-piper-ar_JO-kareem-medium.tar.bz2" | tar xj -C "$ROOT/brand/voices"
 fi
-[ -n "${GEMINI_API_KEY:-}" ] && echo "✅ GEMINI_API_KEY found" || echo "⚠️ GEMINI_API_KEY is missing (see docs/voice-setup.md)"
+code=$(curl -s -o /dev/null -w "%{http_code}" "https://generativelanguage.googleapis.com/v1beta/models${GEMINI_API_KEY:+?key=$GEMINI_API_KEY}")
+[ "$code" = 200 ] && echo "✅ Gemini: OK" || echo "⚠️ Gemini: HTTP $code (secret network / GEMINI_API_KEY ?)"
 echo "✅ ready"

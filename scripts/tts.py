@@ -154,13 +154,16 @@ def gtts(text, out):
 def gemini(text, out):
     """Gemini TTS (Google AI Studio): very natural voice, free key from aistudio.google.com → GEMINI_API_KEY."""
     c = CFG["gemini"]
-    if not os.environ.get("GEMINI_API_KEY"):
-        sys.exit("GEMINI_API_KEY is missing: create a free key at aistudio.google.com and add it to the environment's secrets")
+    # The key comes either from GEMINI_API_KEY, or from a "network secret" that the environment's proxy
+    # injects itself (header x-goog-api-key on generativelanguage.googleapis.com): in that case we never see it.
+    headers = {"Content-Type": "application/json"}
+    if os.environ.get("GEMINI_API_KEY"):
+        headers["x-goog-api-key"] = os.environ["GEMINI_API_KEY"]
     body = json.dumps({"contents": [{"parts": [{"text": f"{c['style']}: {text}"}]}],
                        "generationConfig": {"responseModalities": ["AUDIO"], "speechConfig": {
                            "voiceConfig": {"prebuiltVoiceConfig": {"voiceName": c["voice"]}}}}}).encode()
     r = json.loads(post(f"https://generativelanguage.googleapis.com/v1beta/models/{c['model']}:generateContent",
-                        body, {"Content-Type": "application/json", "x-goog-api-key": os.environ["GEMINI_API_KEY"]}))
+                        body, headers))
     pcm = base64.b64decode(r["candidates"][0]["content"]["parts"][0]["inlineData"]["data"])
     raw = Path(out).with_suffix(".pcm"); raw.write_bytes(pcm)
     wav = Path(out).with_suffix(".g.wav")
