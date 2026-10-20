@@ -8,7 +8,7 @@ Keys come from environment variables (the environment's secrets, never in the co
   ELEVENLABS_API_KEY · AZURE_SPEECH_KEY
 The result is cached in .cache/tts by text+voice, so nothing is paid twice.
 """
-import argparse, base64, hashlib, json, os, re, shutil, subprocess, sys, urllib.request
+import argparse, base64, hashlib, json, os, re, shutil, subprocess, sys, time, urllib.error, urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -162,8 +162,17 @@ def gemini(text, out):
     body = json.dumps({"contents": [{"parts": [{"text": f"{c['style']}: {text}"}]}],
                        "generationConfig": {"responseModalities": ["AUDIO"], "speechConfig": {
                            "voiceConfig": {"prebuiltVoiceConfig": {"voiceName": c["voice"]}}}}}).encode()
-    r = json.loads(post(f"https://generativelanguage.googleapis.com/v1beta/models/{c['model']}:generateContent",
-                        body, headers))
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{c['model']}:generateContent"
+    for attempt in range(6):  # free tier: few requests per minute → wait for the retryDelay Google sends back
+        try:
+            r = json.loads(post(url, body, headers)); break
+        except urllib.error.HTTPError as e:
+            msg = e.read().decode(errors="replace")
+            if e.code != 429 or attempt == 5 or "PerDay" in msg:
+                raise SystemExit(f"Gemini HTTP {e.code}: {msg[:600]}")
+            m = re.search(r'"retryDelay":\s*"(\d+)', msg)
+            wait = int(m.group(1)) + 2 if m else 30 * (attempt + 1)
+            print(f"  Gemini 429, waiting {wait}s…", file=sys.stderr); time.sleep(wait)
     pcm = base64.b64decode(r["candidates"][0]["content"]["parts"][0]["inlineData"]["data"])
     raw = Path(out).with_suffix(".pcm"); raw.write_bytes(pcm)
     wav = Path(out).with_suffix(".g.wav")
